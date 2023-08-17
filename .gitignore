@@ -1,0 +1,4 @@
+/demo/bin/
+/demo/build/
+/demo/lib/zoom_meeting_sdk/*.so
+/demo/lib/zoom_meeting_sdk/*.1
