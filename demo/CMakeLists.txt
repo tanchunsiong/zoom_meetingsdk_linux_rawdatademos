@@ -12,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
-pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
+
 
 # 添加包含目录和编译选项
 include_directories(${GTKMM_INCLUDE_DIRS})
@@ -22,10 +22,13 @@ add_definitions(${GTKMM_CFLAGS_OTHER})
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/h)
-
+include_directories(/usr/include/glib-2.0/)
+include_directories(/usr/include/glib-2.0/glib)
+include_directories(/usr/lib/x86_64-linux-gnu/glib-2.0/include/)
 
 link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk)
-
+link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs)
+link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs/Qt/lib)
 
 add_executable(meetingSDKDemo 
               ${CMAKE_SOURCE_DIR}/meeting_sdk_demo.cpp

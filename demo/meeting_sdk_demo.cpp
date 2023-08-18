@@ -1,558 +1,361 @@
-#include <limits.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+/*!
+* \file zoom_sdk_def.h
+* \brief ZOOM windows SDK Common Definition File.
+* 
+*/
+#ifndef _ZOOM_SDK_DEF_H_
+#define _ZOOM_SDK_DEF_H_
+#if defined(WIN32)
+#include <tchar.h>
+typedef wchar_t zchar_t;
+#define TLS_KEY_DEF uint32_t
+#else
+#include <stdint.h>
 #include <unistd.h>
-#include <glib.h>
-#include <gtkmm.h>
-#include <sstream>
-#include <thread>
-#include <sys/syscall.h>
-#include <fstream>
-#include <iosfwd>
-#include <iostream>
- #include "json.hpp"
+#include <cstring>
+#include <float.h>
+typedef char zchar_t;
+typedef uint64_t UINT64;
+typedef int64_t INT64;
+typedef float  FLOAT;
+typedef void* HWND;
+#define TLS_KEY_DEF pthread_key_t
+#endif//#if defined(WIN32)
+#define PLATFORM_IMPORT	__declspec(dllimport)  
+#define PLATFORM_EXPORT	__declspec(dllexport)
+#ifdef ZOOM_SDK_DLL_EXPORT
+#define SDK_API PLATFORM_EXPORT
+#elif defined ZOOM_SDK_DLL_IMPORT
+#define SDK_API PLATFORM_IMPORT
+#else
+#define SDK_API
+#endif
 
-#include "zoom_sdk.h"
-#include "auth_service_interface.h"
-#include "meeting_sdk_util.h"
-#include "init_auth_sdk_workflow.h"
-#include "RegressionTestRawdataRender.h"
+#define ZOOM_SDK_NAMESPACE ZOOMSDK
+#define BEGIN_ZOOM_SDK_NAMESPACE namespace ZOOM_SDK_NAMESPACE {
+#define END_ZOOM_SDK_NAMESPACE };
+#define USING_ZOOM_SDK_NAMESPACE using namespace ZOOM_SDK_NAMESPACE;
 
-
-using Json = nlohmann::json;
-USING_ZOOM_SDK_NAMESPACE
-
-
-GMainLoop *loop;
-
-std::string meeting_number, token, meeting_password;
-bool _inited = false;
-unsigned int userID;
-bool inMeeting = false;
-CAuthSDKWorkFlow  m_AuthSDKWorkFlow;
-CRegressionTestRawdataRender m_CRegressioRawdata;
-
-void InitMeetingSDK()
+BEGIN_ZOOM_SDK_NAMESPACE
+/*! \enum SDKError
+    \brief SDK error types.
+    Here are more detailed structural descriptions.
+*/ 
+enum SDKError
 {
-    ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
-    ZOOM_SDK_NAMESPACE::InitParam initParam;
-	initParam.strWebDomain = "https://zoom.us";
-	initParam.strSupportUrl = "https://zoom.us";
-	
-    //set language id
-	initParam.emLanguageID = ZOOM_SDK_NAMESPACE::LANGUAGE_English;
-	
-    //change icon
-	//initParam.uiWindowIconSmallID = IDI_ICON_LOGO;
-	//initParam.uiWindowIconBigID = IDI_ICON_LOGO;
-	//initParam.hResInstance = GetModuleHandle(NULL);
-	initParam.enableLogByDefault = true;
-	initParam.enableGenerateDump = true;
-    
-    //dreamtcs this is removed
-    //initParam.obConfigOpts.optionalFeatures = true;
+	SDKERR_SUCCESS = 0,///<Success.
+	SDKERR_NO_IMPL,///<This feature is currently invalid. 
+	SDKERR_WRONG_USAGE,///<Incorrect usage of the feature. 
+	SDKERR_INVALID_PARAMETER,///<Wrong parameter.
+	SDKERR_MODULE_LOAD_FAILED,///<Loading module failed.
+	SDKERR_MEMORY_FAILED,///<No memory is allocated. 
+	SDKERR_SERVICE_FAILED,///<Internal service error.
+	SDKERR_UNINITIALIZE,///<Not initialized before the usage.
+	SDKERR_UNAUTHENTICATION,///<Not authorized before the usage.
+	SDKERR_NORECORDINGINPROCESS,///<No recording in process.
+	SDKERR_TRANSCODER_NOFOUND,///<Transcoder module is not found.
+	SDKERR_VIDEO_NOTREADY,///<The video service is not ready.
+	SDKERR_NO_PERMISSION,///<No permission.
+	SDKERR_UNKNOWN,///<Unknown error.
+	SDKERR_OTHER_SDK_INSTANCE_RUNNING,///<The other instance of the SDK is in process.
+	SDKERR_INTERNAL_ERROR,///<SDK internal error.
+	SDKERR_NO_AUDIODEVICE_ISFOUND,///<No audio device found.
+	SDKERR_NO_VIDEODEVICE_ISFOUND,///<No video device found.
+	SDKERR_TOO_FREQUENT_CALL,///<API calls too frequently.
+	SDKERR_FAIL_ASSIGN_USER_PRIVILEGE, ///<User can't be assigned with new privilege.
+	SDKERR_MEETING_DONT_SUPPORT_FEATURE,///<The current meeting doesn't support the feature.
+	SDKERR_MEETING_NOT_SHARE_SENDER,///<The current user is not the presenter.
+	SDKERR_MEETING_YOU_HAVE_NO_SHARE,///<There is no sharing.
+	SDKERR_MEETING_VIEWTYPE_PARAMETER_IS_WRONG, ///<Incorrect ViewType parameters.
+	SDKERR_MEETING_ANNOTATION_IS_OFF, ///<Annotation is disabled.
+	SDKERR_SETTING_OS_DONT_SUPPORT, ///<Current OS doesn't support the setting.
+	SDKERR_EMAIL_LOGIN_IS_DISABLED, ///<Email login is disable
+	SDKERR_HARDWARE_NOT_MEET_FOR_VB, ///<Computer doesn't meet the minimum requirements to use virtual background feature.
+	SDKERR_NEED_USER_CONFIRM_RECORD_DISCLAIMER,  ///<Need process disclaimer.
+	SDKERR_NO_SHARE_DATA,///<There is no raw data of sharing.
+	SDKERR_SHARE_CANNOT_SUBSCRIBE_MYSELF,
+	SDKERR_NOT_IN_MEETING,
+	SDKERR_NOT_JOIN_AUDIO,
+	SDKERR_HARDWARE_DONT_SUPPORT, ///<The current device doesn't support the feature.
+};
 
-    err = ZOOM_SDK_NAMESPACE::InitSDK(initParam);
-    if ( err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS )
-    {
-         //printf("Init meetingSdk:error");
-      
-         std::cerr << "Init meetingSdk:error " << std::endl;
-         _inited = false;
-    }
-    else
-    {
-      
-        std::cerr << "Init meetingSdk:success" << std::endl;
-        _inited = true;
-        //printf("Init meetingSdk:success");
-    }
-    
-    
-}
-
-void AuthMeetingSDK(std::string token)
+/*! \enum SDK_LANGUAGE_ID
+    \brief The text resource type used by the SDK.
+    Here are more detailed structural descriptions.
+*/
+enum SDK_LANGUAGE_ID
 {
-   ZOOM_SDK_NAMESPACE::AuthContext param;
-   param.jwt_token = token.c_str();
-   if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != m_AuthSDKWorkFlow.Auth(param))
-		{
-      
-			std::cerr << "AuthSDK:error " << std::endl;
-		}
-   else
-		{
-  
-			std::cerr << "AuthSDK:success " << std::endl;
-		}
-    
-}
+	LANGUAGE_Unknow = 0,///<For initialization.
+	LANGUAGE_English,///<In English.
+	LANGUAGE_Chinese_Simplified,///<In simplified Chinese.
+	LANGUAGE_Chinese_Traditional,///<In traditional Chinese.
+	LANGUAGE_Japanese,///<In Japanese.
+	LANGUAGE_Spanish,///<In Spanish.
+	LANGUAGE_German,///<In German.
+	LANGUAGE_French,///<In French.
+	LANGUAGE_Portuguese,///<In Portuguese.
+	LANGUAGE_Russian,///<In Russian.
+	LANGUAGE_Korean,///<In Korean.
+	LANGUAGE_Vietnamese,///<In Vietnamese.
+	LANGUAGE_Italian,///<In Italian.
+	LANGUAGE_Polish,///<In Polish.
+	LANGUAGE_Turkish,///<In Turkish.
+	LANGUAGE_Indonesian,//<In Indonesian.
+	LANGUAGE_Dutch//<In Dutch.
+};
 
-void JoinMeeting(std::string meeting_number, std::string meeting_password)
+enum ZoomSDKRawDataMemoryMode 
 {
-    while(!SDKInterfaceWrap::GetInst().auth)
-    {
-    
-        std::cerr << "auth is not reading ,please wait " << std::endl;
-      break;
-    }
+	ZoomSDKRawDataMemoryModeStack,
+	ZoomSDKRawDataMemoryModeHeap
+};
 
-    ZOOM_SDK_NAMESPACE::JoinParam joinParam;
-    ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SERVICE_FAILED);
-	joinParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_WITHOUT_LOGIN;
-    ZOOM_SDK_NAMESPACE::JoinParam4WithoutLogin& withoutloginParam = joinParam.param.withoutloginuserJoin;
-	withoutloginParam.meetingNumber =  std::stoull(meeting_number);
-	withoutloginParam.vanityID = NULL;
-	withoutloginParam.userName = "LinuxChun";
-	withoutloginParam.psw = meeting_password.c_str();
-	withoutloginParam.customer_key = NULL;
-	withoutloginParam.webinarToken = NULL;
-	withoutloginParam.isVideoOff = true;
-	withoutloginParam.isAudioOff = false;
-	//normalParam.isDirectShareDesktop = false;
-    ZOOM_SDK_NAMESPACE::IMeetingService* m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
-   do
-   {
-        if (m_pMeetingService)
-        {
-            err = m_pMeetingService->Join(joinParam);
-        }
-        else
-        {
-   
-            std::cerr << "join_meeting m_pMeetingService:Null " << std::endl;
-            break;
-        }
-
-        if ( ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS == err )
-        {
-         
-              std::cerr << "joinmeeting:success" << std::endl;
-            
-        }
-        else 
-        {
-     
-              std::cerr << "joinmeeting:errors" << std::endl;
-        }
-   }
-   while(false);
-    
-}
-
-void LeaveMeeting()
+#if (defined WIN32 )
+/*! \struct tagWndPosition
+    \brief The position of the window. The coordinate of position is that of monitor when the parent window is null. If the the parent window is not null, the position coordinate is that of the parent window.
+    Here are more detailed structural descriptions.
+*/
+typedef struct tagWndPosition 
 {
-    ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
-    ZOOM_SDK_NAMESPACE::IMeetingService* m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
-    do
-    {
-        if(NULL == m_pMeetingService)
-        {
-        
-               std::cerr << "leave_meeting m_pMeetingService:Null" << std::endl;
-            break;
-        }
-        else 
-        {
-            status = m_pMeetingService->GetMeetingStatus();
-        }
+	int left;///<Specifies the X-axis coordinate of the top-left corner of the window
+	int top;///<Specifies the Y-axis coordinate of the top-left of the window.
+	HWND hSelfWnd;///<Specifies the window handle of the window itself.
+	HWND hParent;///<Specifies the window handle of the parent window. If the value is NULL, the position coordinate is the monitor coordinate.
+	tagWndPosition()
+	{
+		left = 0;
+		top = 0;
+		hSelfWnd = NULL;
+		hParent = NULL;
+	}
+}WndPosition;
 
-        if (status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_IDLE ||
-            status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_ENDED ||
-            status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED)
-        {
-        
-                std::cerr << "leave_meeting not in meeting" << std::endl;
-            break;
-        }
-
-        if( SDKError::SDKERR_SUCCESS == m_pMeetingService->Leave(ZOOM_SDK_NAMESPACE::LEAVE_MEETING) )
-        {
-            std::cerr << "leave_meeting success" << std::endl;
-            break;
-        }
-        else
-        {
-       
-            std::cerr << "leave_meeting error" << std::endl;
-            break;
-        }
-    }
-    while(false);
-   
-}
-
-void Login()
+/*! \enum CustomizedLanguageType
+    \brief Custom resource type used by the SDK.
+    Here are more detailed structural descriptions.
+*/
+enum CustomizedLanguageType
 {
-    std::string text ="zaktokenhere";
-    const char* token = text.c_str();
-    if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != m_AuthSDKWorkFlow.Login(token))
-		{
-         
-			std::cerr << "Login:error " << std::endl;
+	CustomizedLanguage_None,///<No use of the custom resource.
+	CustomizedLanguage_FilePath,///<Use the specified file path to assign the custom resource.
+	CustomizedLanguage_Content,///<Use the specified content to assign the custom resource.
+};
 
-            return;
-		}
-   else
-		{
-       
-			std::cerr << "Login:success " << std::endl;
-		}
-}
-
-void gen_okken()
+/*! \struct CustomizedLanguageType
+    \brief The custom resource information used by the SDK.
+    Here are more detailed structural descriptions.
+*/ 
+typedef struct tagCustomizedLanguageInfo
 {
-   m_AuthSDKWorkFlow.GetSSOUrl();
-}
+	const char* langName;///<Resource name.
+	const char* langInfo;///<The value should be the full path of the resource file when the langType value is CustomizedLanguage_FilePath, including the file name. When the langType value is CustomizedLanguage_Content, the value saves the content of the resource.
+	CustomizedLanguageType langType;///<Use the custom resource type.
+	tagCustomizedLanguageInfo()
+	{
+		langName = NULL;
+		langInfo = NULL;
+		langType = CustomizedLanguage_None;
+	}
 
-void getuserID()
+}CustomizedLanguageInfo;
+
+/*! \struct tagConfigurableOptions
+    \brief SDK configuration options. 
+	\remarks This structure is used only for the SDK initialization to configure the custom resource file and choose whether to use the UI mode.
+    Here are more detailed structural descriptions.
+*/
+#define ENABLE_CUSTOMIZED_UI_FLAG (1 << 5)
+typedef struct tagConfigurableOptions
 {
-   if(!SDKInterfaceWrap::GetInst().inMeeting)
-    {
+	CustomizedLanguageInfo customizedLang;///The custom resource information.
+	int optionalFeatures;///<Additional functional configuration. The function currently supports whether to use the custom UI mode only. When the value of the optionalFeatures&ENABLE_CUSTOMIZED_UI_FLAG is TRUE, it means the custom UI mode will be used. Otherwise the Zoom UI mode will be used.
+	const zchar_t* sdkPathPostfix;
+	tagConfigurableOptions()
+	{
+		optionalFeatures = 0;
+		sdkPathPostfix = NULL;
+	}
 
-         std::cerr << "getuserID is not inMeeting ,please wait" << std::endl;
-        return;
-    }
-    ZOOM_SDK_NAMESPACE::IList<unsigned int >* pParticipantsList = SDKInterfaceWrap::GetInst().GetMeetingService()->GetMeetingParticipantsController()->GetParticipantsList();
-	unsigned int myUserID = 0;
-    if (pParticipantsList == NULL || (pParticipantsList && pParticipantsList->GetCount() == 0))
-    {
-        ZOOM_SDK_NAMESPACE::IUserInfo* pMyInfo = SDKInterfaceWrap::GetInst().GetMeetingService()->GetMeetingParticipantsController()->GetMySelfUser();
-        if (pMyInfo)
-        {
-            myUserID = pMyInfo->GetUserID();
-            userID = myUserID;
-        }
-        return;
-    }
+}ConfigurableOptions;
 
-    std::string username_id = "";
-    for (int i = 0; i < pParticipantsList->GetCount(); i++)
-		{
-			unsigned int user_id = pParticipantsList->GetItem(i);
-			std::string sUserName = SDKInterfaceWrap::GetInst().GetMeetingService()->GetMeetingParticipantsController()->GetUserByUserID(user_id)->GetUserName();
-            username_id += "userName:  " + sUserName + "userId:  " +std::to_string(user_id);
-            
-		}
- 
-       std::cerr << username_id << std::endl;
-}
-void StartMeeting()
+/*! \enum SDK_APP_Locale
+    \brief SDK_APP locale type.
+    Here are more detailed structural descriptions.
+*/
+enum SDK_APP_Locale
 {
-    if(!SDKInterfaceWrap::GetInst().login)
-    {
- 
-          std::cerr << "login is not reading ,please wait" << std::endl;
-        return;
-    }
+	SDK_APP_Locale_Default,
+	SDK_APP_Locale_CN,
+};
 
-    ZOOM_SDK_NAMESPACE::StartParam startParam;
-	startParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_NORMALUSER;
-	startParam.param.normaluserStart.vanityID = NULL;
-	startParam.param.normaluserStart.customer_key = NULL;
-	startParam.param.normaluserStart.isVideoOff = false;
-	startParam.param.normaluserStart.isAudioOff = false;
-	//startParam.param.normaluserStart.isDirectShareDesktop = false;
-    ZOOM_SDK_NAMESPACE::IMeetingService* m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
-    ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingService->Start(startParam);
-   if( SDKError::SDKERR_SUCCESS == err)
-   {
-       
-           std::cerr << "StartMeeting success" << std::endl;
-   }
-   else
-   {
-   
-           std::cerr << "StartMeeting error" << std::endl;
-   }
-}
-
-void subscribe()
+enum ZoomSDKVideoRenderMode
 {
-    m_CRegressioRawdata.Init();
-    userID = std::stoi("userid");
-    ZOOM_SDK_NAMESPACE::SDKError err = m_CRegressioRawdata.subscribe(userID, ZOOM_SDK_NAMESPACE::ZoomSDKRawDataType::RAW_DATA_TYPE_VIDEO);
-    if( SDKError::SDKERR_SUCCESS == err)
-    {
-        
-           std::cerr << "subscribe success" << std::endl;
-    }
-    else
-    {
-     
-           std::cerr << "subscribe error" << std::endl;
-    }
-}
+	ZoomSDKVideoRenderMode_None = 0,
+	ZoomSDKVideoRenderMode_Auto,
+	ZoomSDKVideoRenderMode_D3D11EnableFLIP,
+	ZoomSDKVideoRenderMode_D3D11,
+	ZoomSDKVideoRenderMode_D3D9,
+	ZoomSDKVideoRenderMode_GDI,
+};
 
-
-void mute_unmute_video()
+enum ZoomSDKRenderPostProcessing
 {
-    ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
-    ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
-    ZOOM_SDK_NAMESPACE::IMeetingService* m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
-    ZOOM_SDK_NAMESPACE::IMeetingVideoController* pVideoCtrl = m_pMeetingService->GetMeetingVideoController();
-    if (pVideoCtrl == NULL)
-    {
-      
-        std::cerr << "pVideoCtrl is null" << std::endl;
-        return;
-    }
-	
-    ZOOM_SDK_NAMESPACE::IMeetingParticipantsController* pUserCtrl = m_pMeetingService->GetMeetingParticipantsController();
-    if(!pUserCtrl)
-        return;
+	ZoomSDKRenderPostProcessing_None = 0,
+	ZoomSDKRenderPostProcessing_Auto,
+	ZoomSDKRenderPostProcessing_Enable,
+	ZoomSDKRenderPostProcessing_Disable,
+};
 
-    ZOOM_SDK_NAMESPACE::IUserInfo* pUserMe = pUserCtrl->GetMySelfUser();
-    if(!pUserMe)
-        return;
-    
-    if(pUserMe->IsVideoOn())
-    {
-        err = pVideoCtrl->MuteVideo();
-    }
-    else
-    {
-        err = pVideoCtrl->UnmuteVideo();
-    }
+enum ZoomSDKVideoCaptureMethod
+{
+	ZoomSDKVideoCaptureMethod_None = 0,
+	ZoomSDKVideoCaptureMethod_Auto,
+	ZoomSDKVideoCaptureMethod_DirectSHow,
+	ZoomSDKVideoCaptureMethod_MediaFoundation,
+};
 
-    if( SDKError::SDKERR_SUCCESS == err)
-    {
-     
-         std::cerr << "mute_unmute_video success" << std::endl;
-    }
-    else
-    {
-      
-         std::cerr << "mute_unmute_video error" << std::endl;
-    }
+typedef struct tagZoomSDKRenderOptions
+{
+	ZoomSDKVideoRenderMode    videoRenderMode;
+	ZoomSDKRenderPostProcessing renderPostProcessing;
+	ZoomSDKVideoCaptureMethod videoCaptureMethod;
+	tagZoomSDKRenderOptions()
+	{
+		videoRenderMode = ZoomSDKVideoRenderMode_None;
+		renderPostProcessing = ZoomSDKRenderPostProcessing_Auto;
+		videoCaptureMethod = ZoomSDKVideoCaptureMethod_Auto;
+	}
+}ZoomSDKRenderOptions;
+#endif
+typedef struct tagRawDataOptions
+{
+	bool enableRawdataIntermediateMode; ///<false -- YUV420data, true -- intermediate data
+	ZoomSDKRawDataMemoryMode  videoRawdataMemoryMode;
+	ZoomSDKRawDataMemoryMode  shareRawdataMemoryMode;
+	ZoomSDKRawDataMemoryMode  audioRawdataMemoryMode;
+	tagRawDataOptions()
+	{
+		enableRawdataIntermediateMode = false;
+		videoRawdataMemoryMode = ZoomSDKRawDataMemoryModeStack;
+		shareRawdataMemoryMode = ZoomSDKRawDataMemoryModeStack;
+		audioRawdataMemoryMode = ZoomSDKRawDataMemoryModeStack;
+	}
+}RawDataOptions;
 
-}
+/*! \struct tagInitParam
+    \brief Initialize the SDK Parameter.
+    Here are more detailed structural descriptions.
+*/
+typedef struct tagInitParam  
+{
+	const zchar_t* strWebDomain;///<Web domain.
+	const zchar_t* strBrandingName;///<Branding name.
+	const zchar_t* strSupportUrl;///<Support URL.
+	SDK_LANGUAGE_ID emLanguageID;///<The ID of the SDK language.
+	bool enableGenerateDump; ///<Enable generate dump file if the app crashed.
+	bool enableLogByDefault;///<Enable log feature.
+	unsigned int uiLogFileSize; ///<Size of a log file in M(megabyte). The default size is 5M. There are 5 log files in total and the file size varies from 1M to 50M. 
+	RawDataOptions rawdataOpts;
+#if defined(WIN32)
+	void* hResInstance;///<Resource module handle.
+	unsigned int uiWindowIconSmallID;///<The ID of the small icon on the window.
+	unsigned int uiWindowIconBigID;///<The ID of the big Icon on the window.
+	ConfigurableOptions obConfigOpts;///<The configuration options of the SDK.
+	SDK_APP_Locale locale;
+	ZoomSDKRenderOptions renderOpts;
+	bool permonitor_awareness_mode;
+#endif
+	int wrapperType;
+	tagInitParam()
+	{
+		strWebDomain = NULL;
+		strBrandingName = NULL;
+		strSupportUrl = NULL;
+		emLanguageID = LANGUAGE_Unknow;
+		enableGenerateDump = false;
+		enableLogByDefault = false;
+		uiLogFileSize = 5;
+		wrapperType = 0;
+#if defined(WIN32)
+		hResInstance = (void*)-1;
+		uiWindowIconSmallID = 0;
+		uiWindowIconBigID = 0;
+		locale = SDK_APP_Locale_Default;
+		permonitor_awareness_mode = true;
+#endif
+	}
+}InitParam;
 
-// int main(int argc, char* argv[])
-// {
-    
-//     //joinVideoSDKSession(session_name, session_psw, session_token);
-//     // 初始化GTKmm应用程序
-//     auto app = Gtk::Application::create(argc, argv);
+/*! \enum ShareType
+	Type of current sharing received by the user.
+	Here are more detailed structural descriptions..
+*/
+enum ShareType
+{
+	SHARE_TYPE_UNKNOWN,///<Type unknown.
+	SHARE_TYPE_AS,///<Type of sharing the application.
+	SHARE_TYPE_DS,///<Type of sharing the desktop.
+	SHARE_TYPE_WB,///<Type of sharing the white-board.
+	SHARE_TYPE_AIRHOST,///<Type of sharing data from the device connected WIFI. 
+	SHARE_TYPE_CAMERA,///<Type of sharing the camera.
+	SHARE_TYPE_DATA,///<Type of sharing the data.
+	SHARE_TYPE_VIDEO_FILE,///<Type of sharing the video file.
+};
 
-//     // 创建主窗口
-//     Gtk::Window window;
-//     window.set_default_size(600, 400);  // 设置默认大小为300x200像素
-//     window.set_title("meetingsdk Demo");
+/*! \enum LastErrorType
+    \brief The last error types of the SDK.
+    Here are more detailed structural descriptions.
+*/
+enum LastErrorType
+{
+	LastErrorType_None,///<No error.
+	LastErrorType_Auth,///<Error during verification.
+	LastErrorType_Login,///<Error during login.
+	LastErrorType_Meeting,///<The associated error with the meeting.
+	LastErrorType_System,///<The associated error with the SDK bottom layer.
+};
 
-//     // 创建垂直布局容器
-//     Gtk::Box box(Gtk::ORIENTATION_VERTICAL);
-//     window.add(box);
-    
-//     //水平容器
-//     Gtk::Box* hbox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+/// \brief Error mechanism interface provided by the SDK
+///This feature is gradually improved, so some errors may not be supported.
+class IZoomLastError
+{
+public:
+	/// \brief Get the last error type.
+	/// \return If the function succeeds, the error type will be returned. For more details, see \link LastErrorType \endlink enum.
+	virtual LastErrorType GetErrorType() const = 0 ;
+	/// \brief Get the last error code.
+	/// \return If the function succeeds, the error code will be returned.
+	virtual UINT64 GetErrorCode() const = 0;
 
-//     // 创建文本框
-//     Gtk::ScrolledWindow scrolled_window;
-//     Gtk::TextView text_view;
-//     Gtk::TextView text_view_userid;
-//     scrolled_window.add(text_view);
-//     scrolled_window.add(text_view_userid);
-//     box.pack_start(scrolled_window);
-    
-//     // 创建输入框
-//     Gtk::Entry entryA ;
-//     hbox->pack_start(entryA);
+	/// \brief Get the description for the last error.
+	/// \return If the function succeeds, the error description will be returned. If there is no error, it will return an empty string of length zero(0).
+	virtual const zchar_t* GetErrorDescription() const = 0;
+	virtual ~IZoomLastError(){};
+};
+template<class T>
+class IList
+{
+public:
+	virtual ~IList(){};
+	virtual int GetCount() = 0;
+	virtual T   GetItem(int index) = 0;
+};
+#if (defined WIN32)
+#define SDK_NULL_AUDIO_FILE_HANDLE (0xffffffff)
+const RECT _SDK_TEST_VIDEO_INIT_RECT = {0,0,0,0};
+#endif
+enum FrameDataFormat
+{
+	FrameDataFormat_I420_LIMITED,
+	FrameDataFormat_I420_FULL,
+};
 
-//     Gtk::Button* buttongen_token = Gtk::manage(new Gtk::Button("gen_token"));
-//     hbox->pack_start(*buttongen_token, Gtk::PACK_SHRINK);
-//     buttongen_token->signal_clicked().connect([](){
-//         gen_okken();
-//     });
+enum ZoomSDKAudioChannel
+{
+	ZoomSDKAudioChannel_Mono,
+	ZoomSDKAudioChannel_Stereo,
+};
 
-//     // 将水平布局容器添加到垂直布局容器中
-//     box.pack_start(*hbox, Gtk::PACK_SHRINK);
+END_ZOOM_SDK_NAMESPACE
 
-
-//     // 创建按钮 a
-//     Gtk::Button button_a("Init sdk");
-//     button_a.set_size_request(100, 50);
-//     button_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(InitMeetingSDK), &text_view));
-//     box.pack_start(button_a);
-
-//     // 创建按钮 b
-//     Gtk::Button button_b("auth sdk");
-//     button_b.set_size_request(100, 50);
-//     button_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(AuthMeetingSDK), &text_view));
-//     box.pack_start(button_b);
-
-//     // 创建按钮 c
-//     Gtk::Button button_c("join meeting");
-//     button_c.set_size_request(100, 50);
-//     button_c.signal_clicked().connect(sigc::bind(sigc::ptr_fun(JoinMeeting), &text_view,&text_view_userid));
-//     box.pack_start(button_c);
-
-//     // 创建按钮 d
-//     Gtk::Button button_d("leave meeting");
-//     button_d.set_size_request(100, 50);
-//     button_d.signal_clicked().connect(sigc::bind(sigc::ptr_fun(LeaveMeeting), &text_view));
-//     box.pack_start(button_d);
-   
-//    // 创建按钮 e
-//     Gtk::Button button_e("start meeting");
-//     button_e.set_size_request(100, 50);
-//     button_e.signal_clicked().connect(sigc::bind(sigc::ptr_fun(StartMeeting), &text_view,&text_view_userid));
-//     box.pack_start(button_e);
-
-//     // 创建按钮 f
-//     Gtk::Button button_f("login");
-//     button_f.set_size_request(100, 50);
-//     button_f.signal_clicked().connect(sigc::bind(sigc::ptr_fun(Login), &text_view,&entryA));
-//     box.pack_start(button_f);
-    
-//     // 创建按钮 g
-//     Gtk::Button button_g("subscribe");
-//     button_g.set_size_request(100, 50);
-//     button_g.signal_clicked().connect(sigc::bind(sigc::ptr_fun(subscribe), &text_view,&entryA));
-//     box.pack_start(button_g);
-
-//     // 创建按钮 h
-//     Gtk::Button button_h("getuser_ID");
-//     button_h.set_size_request(100, 50);
-//     button_h.signal_clicked().connect(sigc::bind(sigc::ptr_fun(getuserID), &text_view,&text_view_userid,&entryA));
-//     box.pack_start(button_h);
-
-//     // 创建按钮 i
-//     Gtk::Button button_i("mute_unmute_video");
-//     button_i.set_size_request(100, 50);
-//     button_i.signal_clicked().connect(sigc::bind(sigc::ptr_fun(mute_unmute_video), &text_view));
-//     box.pack_start(button_i);
-   
-   
-    
-//     // 显示所有控件
-//     // button_a.show();
-//     // button_b.show();
-//     // button_c.show();
-//     // button_d.show();
-//     // button_e.show();
-//     // button_f.show();
-//     // scrolled_window.show();
-//     // text_view.show();
-//     // box.show();
-//     window.show_all();
-
-//     // 获取并打印线程ID
-//     std::ostringstream oss;
-//     oss << "Thread ID: " << syscall(SYS_gettid) << std::endl;
-//     Glib::RefPtr<Gtk::TextBuffer> buffer = text_view.get_buffer();
-//     buffer->insert(buffer->end(), oss.str());
-
-//     // 显示窗口和运行主循环
-//     return app->run(window);
-// }
-    gboolean timeout_callback(gpointer data)
-    {
-        return TRUE;
-    }
-
-    void my_handler(int s)
-    {
-
-        printf("\nCaught signal %d\n", s);
-        JoinMeeting(meeting_number,meeting_password);
-        //LeaveMeeting();
-        //printf("Leaving session.\n");
-        //std::exit(0);
-    }
-    std::string getSelfDirPath()
-    {
-        char dest[PATH_MAX];
-        memset(dest, 0, sizeof(dest)); // readlink does not null terminate!
-        if (readlink("/proc/self/exe", dest, PATH_MAX) == -1)
-        {
-        }
-
-        char *tmp = strrchr(dest, '/');
-        if (tmp)
-            *tmp = 0;
-        printf("getpath\n");
-        return std::string(dest);
-    }
-    int main(int argc, char *argv[])
-    {
-        std::string self_dir = getSelfDirPath();
-        printf("self path: %s\n", self_dir.c_str());
-        self_dir.append("/config.json");
-
-        std::ifstream t(self_dir.c_str());
-        t.seekg(0, std::ios::end);
-        size_t size = t.tellg();
-        std::string buffer(size, ' ');
-        t.seekg(0);
-        t.read(&buffer[0], size);
-
-       
-        do
-        {
-            Json config_json;
-            try
-            {
-                config_json = Json::parse(buffer);
-                printf("config all_content: %s\n", buffer.c_str());
-            }
-            catch (Json::parse_error &ex)
-            {
-                break;
-            }
-
-            if (config_json.is_null())
-            {
-                break;
-            }
-
-            Json json_meeting_number = config_json["meeting_number"];
-            Json json_token = config_json["token"];
-            Json json_meeting_password = config_json["meeting_password"];
-            if (!json_meeting_number.is_null())
-            {
-                meeting_number = json_meeting_number.get<std::string>();
-                printf("config meeting_number: %s\n", meeting_number.c_str());
-            }
-            if (!json_token.is_null())
-            {
-                token = json_token.get<std::string>();
-                printf("config token: %s\n", token.c_str());
-            }
-            if (!json_meeting_password.is_null())
-            {
-                meeting_password = json_meeting_password.get<std::string>();
-                printf("config meeting_password: %s\n", meeting_password.c_str());
-            }
-        } while (false);
-
-        if (meeting_number.size() == 0 || token.size() == 0)
-        {
-            return 0;
-        }
-
-        //init
-        InitMeetingSDK();
-        //auth
-        AuthMeetingSDK(token);
-        //join
-         printf("begin to join: %s\n", self_dir.c_str());
-		JoinMeeting(meeting_number,meeting_password);
-   
-
-        struct sigaction sigIntHandler;
-
-        sigIntHandler.sa_handler = my_handler;
-        sigemptyset(&sigIntHandler.sa_mask);
-        sigIntHandler.sa_flags = 0;
-
-        sigaction(SIGINT, &sigIntHandler, NULL);
-
-        loop = g_main_loop_new(NULL, FALSE);
-
-        // add source to default context
-        g_timeout_add(100, timeout_callback, loop);
-        g_main_loop_run(loop);
-        return 0;
-    }
+#endif

@@ -186,7 +186,7 @@ public:
 		//Call_SINK_Pool(ISDKInMeetingServiceMgrEvent, _sdk_inmeeting_service_mgr_event_pool, onMeetingStatusChanged(status, iResult))
 		//Call_SINK_Pool(ZOOM_SDK_NAMESPACE::IMeetingServiceEvent, _meeting_service_event_pool, onMeetingStatusChanged(status, iResult))
 		ZOOM_SDK_NAMESPACE::MeetingStatus meetingstatus = status;
-		std::cerr << "onMeetingStatusChanged" << std::endl;
+		std::cerr << "meeting_sdk_util::onMeetingStatusChanged:" << status << std::endl;
 		if (ZOOM_SDK_NAMESPACE::MeetingStatus::MEETING_STATUS_INMEETING == status)
 		{
 			inMeeting = true;
