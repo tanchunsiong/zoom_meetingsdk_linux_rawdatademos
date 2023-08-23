@@ -23,6 +23,8 @@
 #include "MeetingReminderEventListener.h"
 
  #include "json.hpp"
+ 
+#include <pthread.h>
 
 USING_ZOOM_SDK_NAMESPACE
 
@@ -30,10 +32,12 @@ using Json = nlohmann::json;
 GMainLoop *loop;
 std::string meeting_number, token, meeting_password, recording_token;
 
+
 CRegressionTestRawdataRender video_render_;
 CRegressionTestRawdataRender share_render_;
 unsigned int userID;
 bool inMeeting = false;
+bool isHeadless = true;
 CAuthSDKWorkFlow  m_AuthSDKWorkFlow;
 
 
@@ -46,7 +50,7 @@ CAuthSDKWorkFlow  m_AuthSDKWorkFlow;
     {
 
         printf("\nCaught signal %d\n", s);
-        //JoinMeeting(meeting_number,meeting_password);
+       
         //LeaveMeeting();
         printf("Leaving session.\n");
         std::exit(0);
@@ -65,6 +69,8 @@ CAuthSDKWorkFlow  m_AuthSDKWorkFlow;
         printf("getpath\n");
         return std::string(dest);
     }
+
+
 
 void initAppSettings(){
 
@@ -133,6 +139,8 @@ void ReadJsonSettings(){
                 printf("config json_recording_token: %s\n", recording_token.c_str());
             }
         } while (false);
+
+        printf("directory of config file: %s\n", self_dir.c_str());
 }
 
 void InitMeetingSDK(Gtk::TextView* text_view)
@@ -157,15 +165,19 @@ void InitMeetingSDK(Gtk::TextView* text_view)
     if ( err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS )
     {
          //printf("Init meetingSdk:error");
-         Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-         buffer->set_text("Init meetingSdk:error\n");
+         if (text_view){
+            Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+            buffer->set_text("Init meetingSdk:error\n");
+         }
          std::cerr << "Init meetingSdk:error " << std::endl;
         
     }
     else
     {
-        Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-         buffer->set_text("Init meetingSdk:success\n");
+           if (text_view){
+            Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+            buffer->set_text("Init meetingSdk:success\n");
+           }
         std::cerr << "Init meetingSdk:success" << std::endl;
        
         //printf("Init meetingSdk:success");
@@ -210,27 +222,36 @@ void AuthMeetingSDK(Gtk::TextView* text_view)
 	param.jwt_token = token.c_str();
 	}
 
+    ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult = m_AuthSDKWorkFlow.Auth(param);
 
-   if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != m_AuthSDKWorkFlow.Auth(param))
+     
+   if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS !=sdkErrorResult)
 		{
+            if (text_view){
             Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
             buffer->set_text("AuthSDK:error\n");
+            }
 			std::cerr << "AuthSDK:error " << std::endl;
 		}
    else
 		{
+             if (text_view){
             Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
             buffer->set_text("AuthSDK:success\n");
 			std::cerr << "AuthSDK:success " << std::endl;
+             }
 		}
 }
 
 void JoinMeeting(Gtk::TextView* text_view,Gtk::TextView* text_view_userid,Gtk::Entry* entryA)
 {
+      std::cerr << "Joining Meeting"  << std::endl;
     if(!SDKInterfaceWrap::GetInst().auth)
-    {
-        Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-        buffer->set_text("auth is not reading ,please wait\n");
+    { 
+        if (text_view){
+            Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+            buffer->set_text("auth is not reading ,please wait\n");
+        }
         return;
     }
 
@@ -279,21 +300,25 @@ void JoinMeeting(Gtk::TextView* text_view,Gtk::TextView* text_view_userid,Gtk::E
         }
         else
         {
-            Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-            buffer->set_text("join_meeting m_pMeetingService:Null\n");
+            if (text_view){
+                Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+                buffer->set_text("join_meeting m_pMeetingService:Null\n");
+            }
             break;
         }
 
         if ( ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS == err )
         {
-            Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-            buffer->set_text("joinmeeting:success\n");
-            
+                if (text_view){
+                    Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+                    buffer->set_text("joinmeeting:success\n");
+                }
         }
         else 
-        {
-            Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-            buffer->set_text("joinmeeting:errors\n");
+        {    if (text_view){
+                    Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+                    buffer->set_text("joinmeeting:errors\n");
+             }
         }
    }
    while(false);
@@ -564,164 +589,178 @@ void un_subscribe_video(Gtk::TextView* text_view)
         buffer->set_text("un_subscribe_video error\n");
     }
 }
+
+//dreamtcs
+  static void OnAuthenticationComplete(bool success){
+    if (success){
+        JoinMeeting(nullptr,nullptr,nullptr);
+    }
+  }
+
+
 int main(int argc, char* argv[])
 {
 
    ReadJsonSettings();
 
-    // 初始化GTKmm应用程序
-    auto app = Gtk::Application::create(argc, argv);
+    if (!isHeadless){
 
-    Gtk::Window window;
-    window.set_default_size(600, 500);
-    window.set_title("meetingsdk Demo");
-    Gtk::Paned paned;
-    window.add(paned);
-    // 创建垂直布局容器
-    Gtk::Box box(Gtk::ORIENTATION_VERTICAL);
-    paned.add(box);
+        // 初始化GTKmm应用程序
+        auto app = Gtk::Application::create(argc, argv);
 
-    //水平容器
-    Gtk::Box* hbox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+        Gtk::Window window;
+        window.set_default_size(600, 500);
+        window.set_title("meetingsdk Demo");
+        Gtk::Paned paned;
+        window.add(paned);
+        // 创建垂直布局容器
+        Gtk::Box box(Gtk::ORIENTATION_VERTICAL);
+        paned.add(box);
 
-    // 创建文本框
-    Gtk::ScrolledWindow scrolled_window;
-    Gtk::TextView text_view;
-    Gtk::TextView text_view_userid;
-    scrolled_window.add(text_view);
-    scrolled_window.add(text_view_userid);
-    box.pack_start(scrolled_window);
+        //水平容器
+        Gtk::Box* hbox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
+
+        // 创建文本框
+        Gtk::ScrolledWindow scrolled_window;
+        Gtk::TextView text_view;
+        Gtk::TextView text_view_userid;
+        scrolled_window.add(text_view);
+        scrolled_window.add(text_view_userid);
+        box.pack_start(scrolled_window);
+        
+        // 创建文本框
+        Gtk::ScrolledWindow scrolled_window_r;
+        Gtk::TextView text_view_r;
+        Gtk::TextView text_view_userid_r;
+        scrolled_window.add(text_view_r);
+        scrolled_window.add(text_view_userid_r);
+        // 创建输入框
+        Gtk::Entry entryA ;
+        hbox->pack_start(entryA);
+
+        Gtk::Button* buttongen_token = Gtk::manage(new Gtk::Button("gen_token"));
+        hbox->pack_start(*buttongen_token, Gtk::PACK_SHRINK);
+        buttongen_token->signal_clicked().connect([](){
+            gen_okken();
+        });
+
+        // 将水平布局容器添加到垂直布局容器中
+        box.pack_start(*hbox, Gtk::PACK_SHRINK);
+
+
+        // 创建按钮 a
+        Gtk::Button button_a("Init sdk");
+        button_a.set_size_request(100, 50);
+        button_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(InitMeetingSDK), &text_view));
+        box.pack_start(button_a);
+
+        // 创建按钮 b
+        Gtk::Button button_b("auth sdk");
+        button_b.set_size_request(100, 50);
+        button_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(AuthMeetingSDK), &text_view));
+        box.pack_start(button_b);
+
+        // 创建按钮 c
+        Gtk::Button button_c("join meeting");
+        button_c.set_size_request(100, 50);
+        button_c.signal_clicked().connect(sigc::bind(sigc::ptr_fun(JoinMeeting), &text_view,&text_view_userid,&entryA));
+        box.pack_start(button_c);
+
+        // 创建按钮 d
+        Gtk::Button button_d("leave meeting");
+        button_d.set_size_request(100, 50);
+        button_d.signal_clicked().connect(sigc::bind(sigc::ptr_fun(LeaveMeeting), &text_view));
+        box.pack_start(button_d);
     
-    // 创建文本框
-    Gtk::ScrolledWindow scrolled_window_r;
-    Gtk::TextView text_view_r;
-    Gtk::TextView text_view_userid_r;
-    scrolled_window.add(text_view_r);
-    scrolled_window.add(text_view_userid_r);
-    // 创建输入框
-    Gtk::Entry entryA ;
-    hbox->pack_start(entryA);
+    // 创建按钮 e
+        Gtk::Button button_e("start meeting");
+        button_e.set_size_request(100, 50);
+        button_e.signal_clicked().connect(sigc::bind(sigc::ptr_fun(StartMeeting), &text_view,&text_view_userid));
+        box.pack_start(button_e);
 
-    Gtk::Button* buttongen_token = Gtk::manage(new Gtk::Button("gen_token"));
-    hbox->pack_start(*buttongen_token, Gtk::PACK_SHRINK);
-    buttongen_token->signal_clicked().connect([](){
-        gen_okken();
-    });
+        // 创建按钮 f
+        Gtk::Button button_f("login");
+        button_f.set_size_request(100, 50);
+        button_f.signal_clicked().connect(sigc::bind(sigc::ptr_fun(Login), &text_view,&entryA));
+        box.pack_start(button_f);
+        
 
-    // 将水平布局容器添加到垂直布局容器中
-    box.pack_start(*hbox, Gtk::PACK_SHRINK);
+        // 创建按钮 h
+        Gtk::Button button_h("getuser_ID");
+        button_h.set_size_request(100, 50);
+        button_h.signal_clicked().connect(sigc::bind(sigc::ptr_fun(getuserID), &text_view,&text_view_userid,&entryA));
+        box.pack_start(button_h);
+
+        // 创建按钮 i
+        Gtk::Button button_i("mute_unmute_video");
+        button_i.set_size_request(100, 50);
+        button_i.signal_clicked().connect(sigc::bind(sigc::ptr_fun(mute_unmute_video), &text_view));
+        box.pack_start(button_i);
+
+        // 创建按钮 j
+        Gtk::Button button_j("clearn_sdk");
+        button_j.set_size_request(100, 50);
+        button_j.signal_clicked().connect(sigc::bind(sigc::ptr_fun(CleanSDK), &text_view));
+        box.pack_start(button_j);
+
+        // 创建按钮 v
+        Gtk::Button button_v("mute_unmute_audio");
+        button_v.set_size_request(100, 50);
+        button_v.signal_clicked().connect(sigc::bind(sigc::ptr_fun(mute_unmute_audio), &text_view,&entryA));
+        box.pack_start(button_v);
 
 
-    // 创建按钮 a
-    Gtk::Button button_a("Init sdk");
-    button_a.set_size_request(100, 50);
-    button_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(InitMeetingSDK), &text_view));
-    box.pack_start(button_a);
+        /////////////////////////////////////////////raw_data////////////////////////////////////////////////////
+        // 创建按钮 a
+        Gtk::Button button_r_a("subscribe_video");
+        button_r_a.set_size_request(100, 50);
+        button_r_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(subscribe_video), &text_view_r, &entryA));
+        box.pack_start(button_r_a);
 
-    // 创建按钮 b
-    Gtk::Button button_b("auth sdk");
-    button_b.set_size_request(100, 50);
-    button_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(AuthMeetingSDK), &text_view));
-    box.pack_start(button_b);
+        // 创建按钮 a
+        Gtk::Button button_r_b("un_subscribe_video");
+        button_r_b.set_size_request(100, 50);
+        button_r_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(un_subscribe_video), &text_view_r));
+        box.pack_start(button_r_b);
 
-    // 创建按钮 c
-    Gtk::Button button_c("join meeting");
-    button_c.set_size_request(100, 50);
-    button_c.signal_clicked().connect(sigc::bind(sigc::ptr_fun(JoinMeeting), &text_view,&text_view_userid,&entryA));
-    box.pack_start(button_c);
+        window.show_all();
 
-    // 创建按钮 d
-    Gtk::Button button_d("leave meeting");
-    button_d.set_size_request(100, 50);
-    button_d.signal_clicked().connect(sigc::bind(sigc::ptr_fun(LeaveMeeting), &text_view));
-    box.pack_start(button_d);
-   
-   // 创建按钮 e
-    Gtk::Button button_e("start meeting");
-    button_e.set_size_request(100, 50);
-    button_e.signal_clicked().connect(sigc::bind(sigc::ptr_fun(StartMeeting), &text_view,&text_view_userid));
-    box.pack_start(button_e);
+        //获取并打印线程ID
+        std::ostringstream oss;
+        oss << "Thread ID: " << syscall(SYS_gettid) << std::endl;
+        Glib::RefPtr<Gtk::TextBuffer> buffer = text_view.get_buffer();
+        buffer->insert(buffer->end(), oss.str());
+        return app->run(window);
+    
+    }
+    else{
+        //init
+        InitMeetingSDK(nullptr);
+        
+        SDKInterfaceWrap::SetAuthCompleteCallback(OnAuthenticationComplete);
 
-    // 创建按钮 f
-    Gtk::Button button_f("login");
-    button_f.set_size_request(100, 50);
-    button_f.signal_clicked().connect(sigc::bind(sigc::ptr_fun(Login), &text_view,&entryA));
-    box.pack_start(button_f);
+    
+        //auth
+        AuthMeetingSDK(nullptr);
+    
+     
     
 
-    // 创建按钮 h
-    Gtk::Button button_h("getuser_ID");
-    button_h.set_size_request(100, 50);
-    button_h.signal_clicked().connect(sigc::bind(sigc::ptr_fun(getuserID), &text_view,&text_view_userid,&entryA));
-    box.pack_start(button_h);
+        initAppSettings();
 
-    // 创建按钮 i
-    Gtk::Button button_i("mute_unmute_video");
-    button_i.set_size_request(100, 50);
-    button_i.signal_clicked().connect(sigc::bind(sigc::ptr_fun(mute_unmute_video), &text_view));
-    box.pack_start(button_i);
+    
 
-    // 创建按钮 j
-    Gtk::Button button_j("clearn_sdk");
-    button_j.set_size_request(100, 50);
-    button_j.signal_clicked().connect(sigc::bind(sigc::ptr_fun(CleanSDK), &text_view));
-    box.pack_start(button_j);
+        loop = g_main_loop_new(NULL, FALSE);
 
-     // 创建按钮 v
-    Gtk::Button button_v("mute_unmute_audio");
-    button_v.set_size_request(100, 50);
-    button_v.signal_clicked().connect(sigc::bind(sigc::ptr_fun(mute_unmute_audio), &text_view,&entryA));
-    box.pack_start(button_v);
-
-
-    /////////////////////////////////////////////raw_data////////////////////////////////////////////////////
-     // 创建按钮 a
-    Gtk::Button button_r_a("subscribe_video");
-    button_r_a.set_size_request(100, 50);
-    button_r_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(subscribe_video), &text_view_r, &entryA));
-    box.pack_start(button_r_a);
-
-    // 创建按钮 a
-    Gtk::Button button_r_b("un_subscribe_video");
-    button_r_b.set_size_request(100, 50);
-    button_r_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(un_subscribe_video), &text_view_r));
-    box.pack_start(button_r_b);
-
-    window.show_all();
-
-    //获取并打印线程ID
-    std::ostringstream oss;
-    oss << "Thread ID: " << syscall(SYS_gettid) << std::endl;
-    Glib::RefPtr<Gtk::TextBuffer> buffer = text_view.get_buffer();
-    buffer->insert(buffer->end(), oss.str());
-    return app->run(window);
-   
+        // add source to default context
+        g_timeout_add(100, timeout_callback, loop);
+        g_main_loop_run(loop);
+          usleep(2000000); 
+    
+        JoinMeeting(nullptr,nullptr,nullptr);
+        return 0;
+    }
 }
 
 
 
-
-    //  int main(int argc, char *argv[])
-    // {
-    //     ReadJsonSettings();
-
-    //     //init
-    //     InitMeetingSDK();
-    //     //auth
-    //     AuthMeetingSDK(token);
-    //     //join
-    //     printf("begin to join: %s\n", self_dir.c_str());
-	// 	JoinMeeting();
-
-
-    //     initAppSettings();
-
-    
-
-    //     loop = g_main_loop_new(NULL, FALSE);
-
-    //     // add source to default context
-    //     g_timeout_add(100, timeout_callback, loop);
-    //     g_main_loop_run(loop);
-    //     return 0;
-    // }

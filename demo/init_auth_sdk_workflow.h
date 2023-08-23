@@ -4,6 +4,9 @@
 class CAuthSDKWorkFlow : public ZOOM_SDK_NAMESPACE::IAuthServiceEvent
 {
 public:
+
+ 
+
 	CAuthSDKWorkFlow();
 	virtual ~CAuthSDKWorkFlow();
 
