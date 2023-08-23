@@ -64,9 +64,9 @@ public:
 	/// \brief Denies the user permission to start local recording and finally self-destroy.
 	virtual SDKError DenyLocalRecordingPrivilege() = 0;
 };
-
+#if defined(WIN32)
 class ICustomizedLocalRecordingLayoutHelper;
-
+#endif
 /// \brief Meeting recording callback event.
 ///
 class IMeetingRecordingCtrlEvent
@@ -95,7 +95,7 @@ public:
 	/// \param handler A pointer to the IRequestLocalRecordingPrivilegeHandler. For more details, see \link IRequestLocalRecordingPrivilegeHandler \endlink.
 	virtual void onLocalRecordingPrivilegeRequested(IRequestLocalRecordingPrivilegeHandler* handler) = 0;
 	
-
+#if defined(WIN32)
 	/// \brief Callback event of ending the conversion to MP4 format.
 	/// \param bsuccess TRUE indicates to convert successfully. FALSE not.
 	/// \param iResult This value is used to save the error code only when the convert fails.
@@ -112,7 +112,7 @@ public:
 	/// \param layout_helper An object pointer to ICustomizedLocalRecordingLayoutHelper. For more details, see \link ICustomizedLocalRecordingLayoutHelper \endlink.
 	///The layout_helper won't be released till the call ends. The user needs to complete the related layout before the call ends. 
 	virtual void onCustomizedLocalRecordingSourceNotification(ICustomizedLocalRecordingLayoutHelper* layout_helper) = 0;
-
+#endif
 };
 
 /// \brief Meeting recording controller interface.
@@ -214,6 +214,12 @@ public:
 	/// \return If the function succeeds, the return value is SDKErr_Success.
 	///Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
 	virtual SDKError ResumeCloudRecording() = 0;
+
+
+	/// \brief Determine if the specified user is enabled to start raw recording.
+	/// \return If the function succeeds, the return value is SDKErr_Success.
+	///Otherwise failed. To get extended error information, see \link SDKError \endlink enum.
+	virtual SDKError CanStartRawRecording() = 0;
 
 	/// \brief Start rawdata recording.
 	/// \return If the function succeeds, the return value is SDKErr_Success.

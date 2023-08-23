@@ -71,9 +71,10 @@ enum MeetingFailCode
 	MEETING_FAIL_WRITE_CONFIG_FILE			= 50,	///<Disabled to write the configure file.
 	MEETING_FAIL_FORBID_TO_JOIN_INTERNAL_MEETING = 60, ///<Forbidden to join the internal meeting.
 	CONF_FAIL_REMOVED_BY_HOST = 61, ///<Removed by the host. 
-	MEETING_FAIL_HOST_DISALLOW_OUTSIDE_USER_JOIN = 62,   //Forbidden to join meeting
-	MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR = 500,  //App join token error.
-	MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH = 1143, //Jmak user email not match
+	MEETING_FAIL_HOST_DISALLOW_OUTSIDE_USER_JOIN = 62,   ///<Forbidden to join meeting
+	MEETING_FAIL_UNABLE_TO_JOIN_EXTERNAL_MEETING = 63,  ///<To join a meeting hosted by an external Zoom account, your SDK app has to be published on Zoom Marketplace. You can refer to Section 6.1 of Zoom's API License Terms of Use.
+	MEETING_FAIL_APP_PRIVILEGE_TOKEN_ERROR = 500,  ///<App join token error.
+	MEETING_FAIL_JMAK_USER_EMAIL_NOT_MATCH = 1143, ///<Jmak user email not match
 	MEETING_FAIL_UNKNOWN = 0xffff,
 
 };  
@@ -436,17 +437,6 @@ enum StatisticsWarningType
 	Statistics_Warning_Busy_System,///<The system is busy.
 };
 
-/*! \enum OSSessionType
-    \brief OS session type.
-    Here are more detailed structural descriptions.
-*/
-enum OSSessionType
-{
-	OS_SessionType_NotHandle = 0,
-	OS_SessionType_Lock, ///<equals to WTS_SESSION_LOCK
-	OS_SessionType_Logoff,///<equals to WTS_SESSION_LOGOFF
-	OS_SessionType_Remote_DISCONNECT,///<equals to WTS_REMOTE_DISCONNECT
-};
 /// \brief Meeting service callback event.
 ///
 class IMeetingServiceEvent
@@ -476,7 +466,6 @@ public:
 #if defined(WIN32)
 class IAnnotationController;
 class IMeetingBreakoutRoomsController;
-class IMeetingChatController;
 class IMeetingConfiguration;
 class IMeetingH323Helper;
 class IMeetingPhoneHelper;
@@ -485,14 +474,14 @@ class IMeetingUIController;
 class IMeetingLiveStreamController;
 class IClosedCaptionController;
 class IMeetingQAController;
-class IMeetingBOController;
 class IMeetingInterpretationController;
 class IMeetingSignInterpretationController;
 class IEmojiReactionController;
 class IMeetingAANController;
 class ICustomImmersiveController;
-class IMeetingReminderController;
 #endif
+class IMeetingBOController;
+class IMeetingChatController;
 class IMeetingAudioController;
 class IMeetingParticipantsController;
 class IMeetingRecordingController;
@@ -501,6 +490,7 @@ class IMeetingVideoController;
 class IMeetingWaitingRoomController;
 class IMeetingWebinarController;
 class IMeetingRawArchivingController;
+class IMeetingReminderController;
 
 /// \brief Meeting Service Interface
 ///
@@ -618,6 +608,18 @@ public:
 	/// \brief Get the Raw Archiving controller.
 	/// \return If the function succeeds, the return value is a pointer to IMeetingRawArchivingController. Otherwise returns NULL.
 	virtual IMeetingRawArchivingController* GetMeetingRawArchivingController() = 0;
+
+	/// \brief Get the reminder controller.
+	/// \return If the function succeeds, the return value is a pointer to IMeetingReminderController. Otherwise the function returns NULL.
+	virtual IMeetingReminderController* GetMeetingReminderController() = 0;
+
+	/// \brief Get the chat controller interface.
+	/// \return If the function succeeds, the return value is a pointer to IMeetingChatController. Otherwise returns NULL.
+	virtual IMeetingChatController* GetMeetingChatController() = 0;
+
+	/// \brief Get the Breakout Room controller.
+	/// \return If the function succeeds, the return value is a pointer to IMeetingBOController. Otherwise returns NULL.
+	virtual IMeetingBOController* GetMeetingBOController() = 0;
 #if defined(WIN32)
 	/// \brief Get the meeting configuration interface.
 	/// \return If the function succeeds, the return value is the meeting configuration interface. Otherwise returns NULL.
@@ -634,10 +636,6 @@ public:
 	/// \brief Get the remote controller interface.
 	/// \return If the function succeeds, the return value is a pointer of IMeetingVideoController. Otherwise returns NULL.
 	virtual IMeetingRemoteController* GetMeetingRemoteController() = 0;
-
-	/// \brief Get the chat controller interface.
-	/// \return If the function succeeds, the return value is a pointer to IMeetingChatController. Otherwise returns NULL.
-	virtual IMeetingChatController* GetMeetingChatController() = 0;
 
 	/// \brief Get the meeting H.323 helper interface.
 	/// \return If the function succeeds, the return value is a pointer to IMeetingH323Helper. Otherwise returns NULL.
@@ -663,10 +661,6 @@ public:
 	/// \return If the function succeeds, the return value is a pointer to IMeetingQAController. Otherwise returns NULL.
 	virtual IMeetingQAController* GetMeetingQAController() = 0;
 
-	/// \brief Get the Breakout Room controller.
-	/// \return If the function succeeds, the return value is a pointer to IMeetingBOController. Otherwise returns NULL.
-	virtual IMeetingBOController* GetMeetingBOController() = 0;
-
 	/// \brief Get the Interpretation controller.
 	/// \return If the function succeeds, the return value is a pointer to IMeetingInterpretationController. Otherwise returns NULL.
 	virtual IMeetingInterpretationController* GetMeetingInterpretationController() = 0;
@@ -686,10 +680,6 @@ public:
 	/// \brief Get the immersive controller.
 	/// \return If the function succeeds, the return value is a pointer to ICustomImmersiveController. Otherwise the function returns NULL.
 	virtual ICustomImmersiveController* GetMeetingImmersiveController() = 0;
-
-	/// \brief Get the reminder controller.
-	/// \return If the function succeeds, the return value is a pointer to IMeetingReminderController. Otherwise the function returns NULL.
-	virtual IMeetingReminderController* GetMeetingReminderController() = 0;
 #endif
 };
 END_ZOOM_SDK_NAMESPACE

@@ -325,10 +325,10 @@ public:
 	{
 		//Call_SINK_Pool(ISDKInMeetingServiceMgrEvent, _sdk_inmeeting_service_mgr_event_pool, onRecordPriviligeChanged(bCanRec))
 	}
-	virtual void onCustomizedLocalRecordingSourceNotification(ZOOM_SDK_NAMESPACE::ICustomizedLocalRecordingLayoutHelper* layout_helper)
-	{
-		//Call_SINK_Pool(ISDKInMeetingServiceMgrEvent, _sdk_inmeeting_service_mgr_event_pool, onCustomizedLocalRecordingSourceNotification(layout_helper))
-	}
+	// virtual void onCustomizedLocalRecordingSourceNotification(ZOOM_SDK_NAMESPACE::ICustomizedLocalRecordingLayoutHelper* layout_helper)
+	// {
+	// 	//Call_SINK_Pool(ISDKInMeetingServiceMgrEvent, _sdk_inmeeting_service_mgr_event_pool, onCustomizedLocalRecordingSourceNotification(layout_helper))
+	// }
 
 	//IMeetingRemoteCtrlEvent
 	// virtual void onRemoteControlStatus(ZOOM_SDK_NAMESPACE::RemoteControlStatus status, unsigned int userId)

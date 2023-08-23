@@ -37,8 +37,11 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/init_auth_sdk_workflow.h
               ${CMAKE_SOURCE_DIR}/meeting_sdk_util.h
               ${CMAKE_SOURCE_DIR}/RegressionTestRawdataRender.cpp
+              ${CMAKE_SOURCE_DIR}/RegressionTestRawdataRender.h
               ${CMAKE_SOURCE_DIR}/custom_ui_eventSink.h
               ${CMAKE_SOURCE_DIR}/custom_ui_eventSink.cpp
+              ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.h
+              ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)
