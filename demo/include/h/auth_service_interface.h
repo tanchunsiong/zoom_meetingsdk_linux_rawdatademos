@@ -71,6 +71,18 @@ typedef enum
 	SDK_Notification_Service_StartFailed,
 	SDK_Notification_Service_Closed,
 }SDKNotificationServiceStatus;
+
+typedef enum
+{
+	SDK_Notification_Service_Error_Success = 0,///<Success.
+	SDK_Notification_Service_Error_Unknown,///<Unknown error.
+	SDK_Notification_Service_Error_Internal_Error,///<Internal error,need retry.
+	SDK_Notification_Service_Error_Invalid_Token,///<Invalid token.
+	SDK_Notification_Service_Error_Multi_Connect,///<Use same user/resource login again on the same device, the previous login application will receive this error.
+	SDK_Notification_Service_Error_Network_Issue,///<Network issue.
+	SDK_Notification_Service_Error_Max_Duration, ///<Server disconnects the connection if client stayed connected with server for more than 24 hours. Client need to reconnect/login again.	
+}SDKNotificationServiceError;
+
 #endif
 /*! \struct tagAuthContext
     \brief SDK Authentication parameter with jwt token.
@@ -158,7 +170,13 @@ public:
 #if defined(WIN32)
 	/// \brief Notification service status changed callback.
 	/// \param status The value of transfer meeting service. For more details, see \link SDKNotificationServiceStatus \endlink.
+	/// \deprecated This interface will be marked as deprecated, then it will be instead by onLiveTranscriptionMsgInfoReceived, please stop using it.
 	virtual void onNotificationServiceStatus(SDKNotificationServiceStatus status) = 0;
+
+	/// \brief Notification service status changed callback.
+	/// \param status The value of transfer meeting service. For more details, see \link SDKNotificationServiceStatus \endlink.
+	/// \param error Connection Notification service fail error code.For more details, see \link SDKNotificationServiceError \endlink enum.
+	virtual void onNotificationServiceStatus(SDKNotificationServiceStatus status, SDKNotificationServiceError error) = 0;
 #endif
 };
 #if defined(WIN32)
