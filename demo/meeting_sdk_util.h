@@ -97,7 +97,12 @@ class SDKInterfaceWrap
 	,public ZOOM_SDK_NAMESPACE::IMeetingVideoCtrlEvent
 	,public ZOOM_SDK_NAMESPACE::IMeetingParticipantsCtrlEvent
 {
+
+private:
+	//dreamtcs
+   static void (*authCompleteCallback)(bool);
 public:
+
 	static SDKInterfaceWrap& GetInst();
 	//bool IsSelectCustomizedUIMode() {return _customiezed_ui_mode;};
 	ZOOM_SDK_NAMESPACE::SDKError  Init(ZOOM_SDK_NAMESPACE::InitParam& param_);
@@ -134,7 +139,12 @@ public:
 	//ZOOM_SDK_NAMESPACE::ICustomizedAnnotationController* SDKInterfaceWrap::GetCustomizedAnnotationController(ZOOM_SDK_NAMESPACE::ICustomizedShareRender* pShareRender = NULL);
 	//ZOOM_SDK_NAMESPACE::IMeetingRemoteController* GetMeetingRemoteController();
 	ZOOM_SDK_NAMESPACE::IMeetingVideoController* GetMeetingVideoController();
+
 	
+	//dreamtcs
+	static void SetAuthCompleteCallback(void (*callback)(bool)) {
+        authCompleteCallback = callback;
+    }
 	
 	//auth service
 	virtual void onAuthenticationReturn(ZOOM_SDK_NAMESPACE::AuthResult ret)
@@ -144,13 +154,19 @@ public:
 		{
             std::cerr << "onAuthenticationReturn success" << std::endl;
 			auth = true;
-			
+			//dreamtcs
+			if (authCompleteCallback) {
+                authCompleteCallback(true); // Call the callback with success
+            }
 		}
 		else
 		{
         	std::cerr << "onAuthenticationReturn false" << std::endl;
 		}
-		
+		   
+   
+    
+    
 	}
 
 	virtual void onLoginReturnWithReason(ZOOM_SDK_NAMESPACE::LOGINSTATUS ret, ZOOM_SDK_NAMESPACE::IAccountInfo* pAccountInfo, ZOOM_SDK_NAMESPACE::LoginFailReason reason) 
@@ -500,6 +516,8 @@ private:
 	//ZOOM_SDK_NAMESPACE::ICustomizedAnnotationController* _customer_annotation_ctrl;
 	bool _customiezed_ui_mode;
 	ZOOM_SDK_NAMESPACE::IMeetingVideoController* _meeting_video_ctrl;
+
+
 };
 
 
