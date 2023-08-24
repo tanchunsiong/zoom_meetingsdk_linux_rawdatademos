@@ -1,7 +1,7 @@
 {
     "meeting_number": "9898533313",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBLZXkiOiJUS0lMeVQ3blRTQzNPS1NiY3RGTTNBIiwiaWF0IjoxNjkyNzcxMTUxLCJleHAiOjE2OTI5NDM5NTEsInRva2VuRXhwIjoxNjkyOTQzOTUxLCJtbiI6MjMxMDIzMTMzLCJyb2xlIjoxfQ.9Y80_uR9Mv24Vxr7THIeh-RLEAoThRqIX28hEIlQGEs",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZGtLZXkiOiJUS0lMeVQ3blRTQzNPS1NiY3RGTTNBIiwibW4iOiI5ODk4NTMzMzEzIiwicm9sZSI6MSwiaWF0IjoxNjkyODg3MDY4LCJleHAiOjE2OTI4ODkxNjgsImFwcEtleSI6IlRLSUx5VDduVFNDM09LU2JjdEZNM0EiLCJ0b2tlbkV4cCI6MTY5Mjg4OTE2OH0.5ixTzHZNgLuyhqTTmmhbOS2NYSr_m6NOl9IzV8g0VZc",
     "meeting_password": "005777",
     "recording_token":"",
-    "remote_url": "https://asdc.cc/meeting/"
+    "remote_url": "https://asdc.cc/meeting-csdk/"
 }
