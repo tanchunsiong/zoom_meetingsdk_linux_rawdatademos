@@ -24,13 +24,16 @@
 
  #include "json.hpp"
  
-#include <pthread.h>
+#include <curl/curl.h>
+// this needs sudo apt install libcurl4-openssl-dev (ubuntu)
+// this needs yum install libcurl-devel (centos)
+
 
 USING_ZOOM_SDK_NAMESPACE
 
 using Json = nlohmann::json;
 GMainLoop *loop;
-std::string meeting_number, token, meeting_password, recording_token;
+std::string meeting_number, token, meeting_password, recording_token,remote_url;
 
 
 CRegressionTestRawdataRender video_render_;
@@ -82,6 +85,110 @@ void initAppSettings(){
         sigaction(SIGINT, &sigIntHandler, NULL);
 }
 
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+     printf("WriteCallback \n");
+
+  
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    std::string response=(char*)contents;
+ 
+
+    
+        Json responses_json;
+        try
+        {
+            responses_json = Json::parse(response);
+            printf("config all_content: %s\n", response.c_str());
+        }
+        catch (Json::parse_error &ex)
+        {
+          
+        }
+
+        Json json_signature = responses_json["signature"];
+        Json json_sdkKey = responses_json["sdkKey"];
+
+        
+          if (!json_signature.is_null())
+            {
+                token = json_signature.get<std::string>();
+               
+            }
+
+  printf("Token in callback is: %s\n", token.c_str());
+    return size * nmemb;
+
+}
+
+
+
+void getJWTToken(std::string remote_url){
+  printf("declaring curl \n");
+  CURL *curl;
+  CURLcode res;
+  std::string readBuffer;
+  
+  char *json = NULL;
+  struct curl_slist *headers = NULL;
+  printf("initing curl \n");
+   curl = curl_easy_init();
+  if(curl) {
+   
+     
+    printf("setting remote url: %s\n", remote_url.c_str());
+  
+    curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+
+    //buffer size
+    printf("setting buffer \n");
+    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+    
+
+   //temp workaround to enable SSL / HTTPS
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+     curl_easy_setopt(curl, CURLOPT_CAINFO, "/root/release_demo/demo/bin/cacert.pem");
+    curl_easy_setopt(curl, CURLOPT_CAPATH, "/root/release_demo/demo/bin/cacert.pem");
+   
+   //headers
+   printf("setting headers \n");
+   headers = curl_slist_append(headers, "Expect:");
+   headers = curl_slist_append(headers, "Content-Type: application/json");
+   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  
+ 
+   std::string json = "{\"meetingNumber\":\""+meeting_number+"\",\"role\":1}";
+   printf("setting payload: %s\n", json.c_str());
+   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+    
+    //callback
+    printf("preparing callback \n");  
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    
+    //perform
+    printf("calling remote URL \n");  
+    res = curl_easy_perform(curl);
+    std::cout << readBuffer << std::endl;
+ 
+    /* Check for errors */
+    if(res != CURLE_OK)
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              curl_easy_strerror(res));
+ 
+    /* always cleanup */
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    
+  }
+ 
+}
+
+
+
+
 void ReadJsonSettings(){
 	    std::string self_dir = getSelfDirPath();
         printf("self path: %s\n", self_dir.c_str());
@@ -117,6 +224,7 @@ void ReadJsonSettings(){
             Json json_token = config_json["token"];
             Json json_meeting_password = config_json["meeting_password"];
 			Json json_recording_token = config_json["recording_token"];
+            Json json_remote_url = config_json["remote_url"];
 
             if (!json_meeting_number.is_null())
             {
@@ -137,6 +245,11 @@ void ReadJsonSettings(){
             {
                 recording_token = json_recording_token.get<std::string>();
                 printf("config json_recording_token: %s\n", recording_token.c_str());
+            }
+            	   if (!json_remote_url.is_null())
+            {
+                remote_url = json_remote_url.get<std::string>();
+                printf("config json_remote_url: %s\n", remote_url.c_str());
             }
         } while (false);
 
@@ -734,11 +847,15 @@ int main(int argc, char* argv[])
     
     }
     else{
+        //this does not work for centos at the moment, seg fault for SSL connections
+         getJWTToken(remote_url);
         //init
         InitMeetingSDK(nullptr);
         
         SDKInterfaceWrap::SetAuthCompleteCallback(OnAuthenticationComplete);
-
+        
+      
+       
     
         //auth
         AuthMeetingSDK(nullptr);

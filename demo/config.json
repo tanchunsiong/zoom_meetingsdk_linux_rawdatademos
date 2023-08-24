@@ -2,5 +2,6 @@
     "meeting_number": "9898533313",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBLZXkiOiJUS0lMeVQ3blRTQzNPS1NiY3RGTTNBIiwiaWF0IjoxNjkyNzcxMTUxLCJleHAiOjE2OTI5NDM5NTEsInRva2VuRXhwIjoxNjkyOTQzOTUxLCJtbiI6MjMxMDIzMTMzLCJyb2xlIjoxfQ.9Y80_uR9Mv24Vxr7THIeh-RLEAoThRqIX28hEIlQGEs",
     "meeting_password": "005777",
-    "recording_token":""
+    "recording_token":"",
+    "remote_url": "https://asdc.cc/meeting/"
 }
