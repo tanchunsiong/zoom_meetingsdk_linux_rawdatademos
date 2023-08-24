@@ -44,32 +44,37 @@ sudo yum install mesa-dri-drivers
 For Ubuntu you may try the below
 
 
-//this is from partner
-apt-get update \
-  && apt-get install -y --no-install-recommends --no-install-suggests \
-  libx11-xcb1 \
-  libxcb-xfixes0 \
-  libxcb-shape0 \
-  libxcb-shm0 \
-  libxcb-randr0 \
-  libxcb-image0 \
-  libxcb-keysyms1 \
-  libxcb-xtest0 \
-  libdbus-1-3 \
-  libglib2.0-0 \
-  libgbm1 \
-  libxfixes3 \
-  libgl1 \
-  libdrm2 \
-  libgssapi-krb5-2 \
-  openssl \
-  ca-certificates
+# Install necessary dependencies
+apt-get update && \
+    apt-get install -y build-essential cmake
 
-  //this is from chun
-  apt-get update
-  apt-get install gtkmm-3.0
-  //missing #include <SDL2/SDL.h>
-  sudo apt-get install libegl-mesa0 libsdl2-dev g++-multilib
+apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
+    libx11-xcb1 \
+    libxcb-xfixes0 \
+    libxcb-shape0 \
+    libxcb-shm0 \
+    libxcb-randr0 \
+    libxcb-image0 \
+    libxcb-keysyms1 \
+    libxcb-xtest0 \
+    libdbus-1-3 \
+    libglib2.0-0 \
+    libgbm1 \
+    libxfixes3 \
+    libgl1 \
+    libdrm2 \
+    libgssapi-krb5-2 \
+    openssl \
+    ca-certificates \
+    pkg-config \
+    libegl-mesa0 \
+    libsdl2-dev \
+    g++-multilib 
+
+apt-get install -y gtkmm-3.0
+
+# missing #include <SDL2/SDL.h>
+apt-get install libegl-mesa0 libsdl2-dev g++-multilib
 
 
 
