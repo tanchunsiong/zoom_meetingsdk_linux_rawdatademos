@@ -48,6 +48,8 @@ target_link_libraries(meetingSDKDemo gcc_s gcc)
 target_link_libraries(meetingSDKDemo meetingsdk)
 target_link_libraries(meetingSDKDemo glib-2.0)
 target_link_libraries(meetingSDKDemo ${GTKMM_LIBRARIES})
+target_link_libraries(meetingSDKDemo curl)
 
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.json COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/cacert.pem ${CMAKE_SOURCE_DIR}/bin/cacert.pem COPYONLY)
 file(COPY ${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/ DESTINATION ${CMAKE_SOURCE_DIR}/bin)

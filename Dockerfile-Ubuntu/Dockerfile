@@ -26,7 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     pkg-config \
     libegl-mesa0 \
     libsdl2-dev \
-    g++-multilib 
+    g++-multilib \
+    libcurl4-openssl-dev
 
 RUN apt-get install -y gtkmm-3.0
 
@@ -44,5 +45,5 @@ RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && 
 WORKDIR /app/demo/bin
 
 # Run the meetingSDKDemo binary when the container starts
-#CMD ["/bin/bash"]
-CMD ["./meetingSDKDemo"]
+#CMD ["./meetingSDKDemo"]
+CMD ["/bin/bash"]
