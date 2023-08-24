@@ -21,8 +21,11 @@
 #include "meeting_sdk_rawdata_audio.h"
 
 #include "MeetingReminderEventListener.h"
+#include <iostream>
+#include <thread>
+#include <mutex>
 
- #include "json.hpp"
+#include "json.hpp"
  
 #include <curl/curl.h>
 // this needs sudo apt install libcurl4-openssl-dev (ubuntu)
@@ -30,6 +33,9 @@
 
 
 USING_ZOOM_SDK_NAMESPACE
+
+std::mutex mtx;
+bool jwtTokenGenerated = false;
 
 using Json = nlohmann::json;
 GMainLoop *loop;
@@ -85,106 +91,6 @@ void initAppSettings(){
         sigaction(SIGINT, &sigIntHandler, NULL);
 }
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-     printf("WriteCallback \n");
-
-  
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    std::string response=(char*)contents;
- 
-
-    
-        Json responses_json;
-        try
-        {
-            responses_json = Json::parse(response);
-            printf("config all_content: %s\n", response.c_str());
-        }
-        catch (Json::parse_error &ex)
-        {
-          
-        }
-
-        Json json_signature = responses_json["signature"];
-        Json json_sdkKey = responses_json["sdkKey"];
-
-        
-          if (!json_signature.is_null())
-            {
-                token = json_signature.get<std::string>();
-               
-            }
-
-  printf("Token in callback is: %s\n", token.c_str());
-    return size * nmemb;
-
-}
-
-
-
-void getJWTToken(std::string remote_url){
-  printf("declaring curl \n");
-  CURL *curl;
-  CURLcode res;
-  std::string readBuffer;
-  
-  char *json = NULL;
-  struct curl_slist *headers = NULL;
-  printf("initing curl \n");
-   curl = curl_easy_init();
-  if(curl) {
-   
-     
-    printf("setting remote url: %s\n", remote_url.c_str());
-  
-    curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
-
-    //buffer size
-    printf("setting buffer \n");
-    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
-    
-
-   //temp workaround to enable SSL / HTTPS
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
-     curl_easy_setopt(curl, CURLOPT_CAINFO, "/root/release_demo/demo/bin/cacert.pem");
-    curl_easy_setopt(curl, CURLOPT_CAPATH, "/root/release_demo/demo/bin/cacert.pem");
-   
-   //headers
-   printf("setting headers \n");
-   headers = curl_slist_append(headers, "Expect:");
-   headers = curl_slist_append(headers, "Content-Type: application/json");
-   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-  
- 
-   std::string json = "{\"meetingNumber\":\""+meeting_number+"\",\"role\":1}";
-   printf("setting payload: %s\n", json.c_str());
-   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
-    
-    //callback
-    printf("preparing callback \n");  
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    
-    //perform
-    printf("calling remote URL \n");  
-    res = curl_easy_perform(curl);
-    std::cout << readBuffer << std::endl;
- 
-    /* Check for errors */
-    if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              curl_easy_strerror(res));
- 
-    /* always cleanup */
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
-    
-  }
- 
-}
 
 
 
@@ -327,12 +233,13 @@ void CleanSDK(Gtk::TextView* text_view)
 void AuthMeetingSDK(Gtk::TextView* text_view)
 {
 	ZOOM_SDK_NAMESPACE::AuthContext param;
-	param.jwt_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBLZXkiOiJUS0lMeVQ3blRTQzNPS1NiY3RGTTNBIiwiaWF0IjoxNjkyMzE1ODUzLCJleHAiOjE2OTI0ODg2NTMsInRva2VuRXhwIjoxNjkyNDg4NjUzLCJtbiI6MjMxMDIzMTMzLCJyb2xlIjoxfQ.wab_Z0X5i8KNuiXDJt9p-xFIxb5YDK7oM4JtDtjhabc";
-
+	param.jwt_token = "x.y.z";
 
 	if (!token.size() == 0){
 
 	param.jwt_token = token.c_str();
+    std::cerr << "AuthSDK:success " << std::endl;
+             
 	}
 
     ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult = m_AuthSDKWorkFlow.Auth(param);
@@ -709,6 +616,108 @@ void un_subscribe_video(Gtk::TextView* text_view)
         JoinMeeting(nullptr,nullptr,nullptr);
     }
   }
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+     printf("WriteCallback \n");
+
+  
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    std::string response=(char*)contents;
+ 
+
+    
+        Json responses_json;
+        try
+        {
+            responses_json = Json::parse(response);
+            printf("config all_content: %s\n", response.c_str());
+        }
+        catch (Json::parse_error &ex)
+        {
+          
+        }
+
+        Json json_signature = responses_json["signature"];
+        Json json_sdkKey = responses_json["sdkKey"];
+
+        
+          if (!json_signature.is_null())
+            {
+                token = json_signature.get<std::string>();
+               
+            }
+
+      printf("Token in callback is: %s\n", token.c_str());
+    std::lock_guard<std::mutex> lock(mtx);
+    jwtTokenGenerated = true;
+     
+    return size * nmemb;
+
+}
+
+
+void getJWTToken(std::string remote_url){
+  printf("declaring curl \n");
+  CURL *curl;
+  CURLcode res;
+  std::string readBuffer;
+  
+  char *json = NULL;
+  struct curl_slist *headers = NULL;
+  printf("initing curl \n");
+   curl = curl_easy_init();
+  if(curl) {
+   
+     
+    printf("setting remote url: %s\n", remote_url.c_str());
+  
+    curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+
+    //buffer size
+    printf("setting buffer \n");
+    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+    
+
+   //temp workaround to enable SSL / HTTPS
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+    curl_easy_setopt(curl, CURLOPT_CAINFO, "/root/release_demo/demo/bin/cacert.pem");
+    curl_easy_setopt(curl, CURLOPT_CAPATH, "/root/release_demo/demo/bin/cacert.pem");
+   
+   //headers
+   printf("setting headers \n");
+   headers = curl_slist_append(headers, "Expect:");
+   headers = curl_slist_append(headers, "Content-Type: application/json");
+   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  
+ 
+   std::string json = "{\"meetingNumber\":\""+meeting_number+"\",\"role\":1}";
+   printf("setting payload: %s\n", json.c_str());
+   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+    
+    //callback
+    printf("preparing callback \n");  
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    
+    //perform
+    printf("calling remote URL \n");  
+    res = curl_easy_perform(curl);
+    std::cout << readBuffer << std::endl;
+ 
+    /* Check for errors */
+    if(res != CURLE_OK)
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              curl_easy_strerror(res));
+ 
+    /* always cleanup */
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    
+  }
+ 
+}
 
 
 int main(int argc, char* argv[])
@@ -847,18 +856,30 @@ int main(int argc, char* argv[])
     
     }
     else{
-        //this does not work for centos at the moment, seg fault for SSL connections
-         getJWTToken(remote_url);
-        //init
-        InitMeetingSDK(nullptr);
-        
+
         SDKInterfaceWrap::SetAuthCompleteCallback(OnAuthenticationComplete);
-        
-      
-       
-    
-        //auth
+
+         std::thread tokenThread(getJWTToken, remote_url);
+         tokenThread.join(); 
+
+        //getJWTToken(remote_url);
+
+
+ 
+     if (jwtTokenGenerated) {
+         InitMeetingSDK(nullptr);
         AuthMeetingSDK(nullptr);
+     } else {
+         std::cout << "JWT token generation failed." << std::endl;
+     }
+
+    //     //init
+    //     InitMeetingSDK(nullptr);
+        
+        
+        
+    //    //auth
+    //    AuthMeetingSDK(nullptr);
     
      
     
@@ -872,9 +893,7 @@ int main(int argc, char* argv[])
         // add source to default context
         g_timeout_add(100, timeout_callback, loop);
         g_main_loop_run(loop);
-          usleep(2000000); 
-    
-        JoinMeeting(nullptr,nullptr,nullptr);
+
         return 0;
     }
 }

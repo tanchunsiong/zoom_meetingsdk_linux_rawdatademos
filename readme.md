@@ -39,6 +39,10 @@ sudo yum install mesa-libGL
 sudo yum install mesa-libGL-devel
 sudo yum install mesa-dri-drivers
 
+#for curl related calls
+  yum install -y openssl-devel 
+  yum install -y libcurl-devel 
+
 ==============================================================
 
 For Ubuntu you may try the below
@@ -69,7 +73,8 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
     pkg-config \
     libegl-mesa0 \
     libsdl2-dev \
-    g++-multilib 
+    g++-multilib \
+    libcurl4-openssl-dev
 
 apt-get install -y gtkmm-3.0
 

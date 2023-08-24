@@ -8,6 +8,7 @@ RUN yum install -y dnf-plugins-core \
     && dnf install -y epel-release epel-next-release \
     && yum install -y gtk3-devel gtkmm30 gtkmm30-devel SDL2-devel mesa-libGL mesa-libGL-devel mesa-dri-drivers \
     && yum install -y libxcb-devel xcb-util-image xcb-util-keysyms \
+    && yum install -y openssl-devel \
     && yum install -y libcurl-devel \
     && yum clean all
 
