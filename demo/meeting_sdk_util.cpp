@@ -7,6 +7,7 @@ SDKInterfaceWrap& SDKInterfaceWrap::GetInst()
 }
 //dreamtcs
 void (*SDKInterfaceWrap::authCompleteCallback)(bool) = nullptr;
+void (*SDKInterfaceWrap::inMeetingCallback)(bool) = nullptr;
 
 ZOOM_SDK_NAMESPACE::SDKError SDKInterfaceWrap::Init(ZOOM_SDK_NAMESPACE::InitParam& param_)
 {

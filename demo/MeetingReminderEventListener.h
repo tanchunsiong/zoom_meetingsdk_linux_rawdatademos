@@ -8,6 +8,8 @@ class MeetingReminderEventListener : public ZOOM_SDK_NAMESPACE::IMeetingReminder
 {
 public:
     MeetingReminderEventListener();
+
+  
    virtual void onReminderNotify(ZOOMSDK::IMeetingReminderContent* content, ZOOMSDK::IMeetingReminderHandler* handle);
     
 };

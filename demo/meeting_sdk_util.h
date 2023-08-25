@@ -101,6 +101,7 @@ class SDKInterfaceWrap
 private:
 	//dreamtcs
    static void (*authCompleteCallback)(bool);
+   static void (*inMeetingCallback)(bool);
 public:
 
 	static SDKInterfaceWrap& GetInst();
@@ -142,8 +143,13 @@ public:
 
 	
 	//dreamtcs
+	
 	static void SetAuthCompleteCallback(void (*callback)(bool)) {
         authCompleteCallback = callback;
+    }
+
+	static void SetInMeetingCallback(void (*callback)(bool)) {
+        inMeetingCallback = callback;
     }
 	
 	//auth service
@@ -175,6 +181,8 @@ public:
 		if(ret ==  ZOOM_SDK_NAMESPACE::LOGINSTATUS::LOGIN_SUCCESS)
 		{
 			login = true;
+
+			
 		}
 	}
 
@@ -206,6 +214,11 @@ public:
 		if (ZOOM_SDK_NAMESPACE::MeetingStatus::MEETING_STATUS_INMEETING == status)
 		{
 			inMeeting = true;
+
+			//dreamtcs
+			if (inMeetingCallback) {
+                inMeetingCallback(true); // Call the callback with success
+            }
 		}
 	}
 	virtual void onMeetingStatisticsWarningNotification(ZOOM_SDK_NAMESPACE::StatisticsWarningType type)

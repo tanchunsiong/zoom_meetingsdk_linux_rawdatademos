@@ -1,4 +1,4 @@
-#run these in /release_demo director
+#run these in /release_demo directory
 
 #build Centos 8
 
