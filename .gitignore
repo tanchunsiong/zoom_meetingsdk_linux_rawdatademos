@@ -2,5 +2,5 @@ demo/bin/
 demo/build/
 demo/lib/zoom_meeting_sdk/*.so
 demo/lib/zoom_meeting_sdk/*.1
-demo/lib/zoom_meeting_sdk/qt_libs/*
+demo/lib/zoom_meeting_sdk/qt_libs/Qt/*
 demo/include/h/*
