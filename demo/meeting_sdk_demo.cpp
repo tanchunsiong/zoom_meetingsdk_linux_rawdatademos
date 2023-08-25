@@ -46,7 +46,7 @@ CRegressionTestRawdataRender video_render_;
 CRegressionTestRawdataRender share_render_;
 unsigned int userID;
 bool inMeeting = false;
-bool isHeadless = true;
+bool isHeadless = false;
 CAuthSDKWorkFlow  m_AuthSDKWorkFlow;
 
 
@@ -616,6 +616,14 @@ void un_subscribe_video(Gtk::TextView* text_view)
         JoinMeeting(nullptr,nullptr,nullptr);
     }
   }
+
+//dreamtcs
+  static void inMeetingCallback(bool success){
+    if (success){
+         printf("InMeeting callback in main thread \n");
+    }
+  }
+
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
      printf("WriteCallback \n");
@@ -858,6 +866,7 @@ int main(int argc, char* argv[])
     else{
 
         SDKInterfaceWrap::SetAuthCompleteCallback(OnAuthenticationComplete);
+        SDKInterfaceWrap::SetInMeetingCallback(inMeetingCallback);
 
          std::thread tokenThread(getJWTToken, remote_url);
          tokenThread.join(); 
