@@ -165,12 +165,13 @@ void ReadJsonSettings(){
                 // Convert the input string to lowercase for case-insensitive comparison
                 std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
 
-                bool isHeadless = (stringValue == "true");
 
-                if (isHeadless) {
-                    std::cout << "Boolean value is true" << std::endl;
-                } else {
-                    std::cout << "Boolean value is false" << std::endl;
+                if (stringValue == "true") {
+                    std::cout << "isHeadless value is true" << std::endl;
+                    isHeadless=true;
+                } else if (stringValue == "false") {
+                    std::cout << "isHeadless value is false" << std::endl;
+                    isHeadless=false;
                 }
                
               
