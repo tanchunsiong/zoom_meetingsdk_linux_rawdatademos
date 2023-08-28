@@ -71,5 +71,5 @@
         "unordered_set": "cpp",
         "regex": "cpp"
     },
-    "cmake.sourceDirectory": "/root/release_demo/demo"
+    "cmake.sourceDirectory": "/root/zoom_m-sdk_linux_bot/demo"
 }
