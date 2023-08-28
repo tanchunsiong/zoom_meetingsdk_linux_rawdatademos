@@ -1,5 +1,6 @@
 #include "MeetingReminderEventListener.h" // Include the header file you've created
 #include <stdlib.h>
+#include <iostream>
 
 // You might need to include additional headers here if required
 
@@ -18,7 +19,8 @@
             const zchar_t* title = content->GetTitle();
             const zchar_t* dialogContent = content->GetContent();
             bool isBlocking = content->IsBlocking();
-            
+            std::cerr << "title :"  << title<< std::endl;
+             std::cerr << "dialogContent :"  << dialogContent<< std::endl;
             // You can implement your logic here based on the reminder type, title, content, and whether it's blocking
             
             // For demonstration, let's print the reminder details

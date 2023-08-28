@@ -45,8 +45,8 @@ std::string meeting_number, token, meeting_password, recording_token,remote_url;
 CRegressionTestRawdataRender video_render_;
 CRegressionTestRawdataRender share_render_;
 unsigned int userID;
-bool inMeeting = false;
-bool isHeadless = false;
+
+bool isHeadless = true;
 CAuthSDKWorkFlow  m_AuthSDKWorkFlow;
 
 
@@ -131,6 +131,7 @@ void ReadJsonSettings(){
             Json json_meeting_password = config_json["meeting_password"];
 			Json json_recording_token = config_json["recording_token"];
             Json json_remote_url = config_json["remote_url"];
+            Json json_isHeadless = config_json["isHeadless"];
 
             if (!json_meeting_number.is_null())
             {
@@ -152,10 +153,28 @@ void ReadJsonSettings(){
                 recording_token = json_recording_token.get<std::string>();
                 printf("config json_recording_token: %s\n", recording_token.c_str());
             }
-            	   if (!json_remote_url.is_null())
+            if (!json_remote_url.is_null())
             {
                 remote_url = json_remote_url.get<std::string>();
                 printf("config json_remote_url: %s\n", remote_url.c_str());
+            }
+            if (!json_isHeadless.is_null())
+            {
+
+                  std::string stringValue =  json_isHeadless.get<std::string>();
+                // Convert the input string to lowercase for case-insensitive comparison
+                std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
+
+                bool isHeadless = (stringValue == "true");
+
+                if (isHeadless) {
+                    std::cout << "Boolean value is true" << std::endl;
+                } else {
+                    std::cout << "Boolean value is false" << std::endl;
+                }
+               
+              
+             
             }
         } while (false);
 
@@ -233,8 +252,7 @@ void CleanSDK(Gtk::TextView* text_view)
 void AuthMeetingSDK(Gtk::TextView* text_view)
 {
 	ZOOM_SDK_NAMESPACE::AuthContext param;
-	param.jwt_token = "x.y.z";
-
+	
 	if (!token.size() == 0){
 
 	param.jwt_token = token.c_str();
