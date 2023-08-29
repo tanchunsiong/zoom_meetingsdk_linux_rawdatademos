@@ -80,6 +80,7 @@ void CRegressionTestRawdataAudio::onMicInitialize(ZOOM_SDK_NAMESPACE::IZoomSDKAu
 
 std::string CRegressionTestRawdataAudio::DoEnableVirtualCamera()
 {
+	 std::cerr << " CRegressionTestRawdataAudio::DoEnableVirtualCamera() " << std::endl;
 	ZOOM_SDK_NAMESPACE::SDKError err = CExternalVideoSource::GetInstance()->EnableVideoSource(this);
 	return ConvertSDKERRORToString(err);
 }
@@ -93,6 +94,7 @@ std::string CRegressionTestRawdataAudio::DoDisableVirtualCamera()
 std::string CRegressionTestRawdataAudio::DoChangeSendSize()
 {
 	CExternalVideoSource::GetInstance()->ChangeSendSize();
+	return "";
 }
 
 std::string CRegressionTestRawdataAudio::DoEnableCameraPreprocess()

@@ -9,8 +9,8 @@ CExternalVideoSource* CExternalVideoSource::s_pVideoSource = NULL;
 
 CExternalVideoSource::CExternalVideoSource()
 {
-	m_hThread = NULL;
-	m_hThreadAudio = NULL;
+	//m_hThread = NULL;
+	//m_hThreadAudio = NULL;
 	m_pSender = NULL;
 	m_nDataType = 1;
 	m_process_fp = NULL;
@@ -89,7 +89,7 @@ static void* MyThreadProc(void* arg) {
 		if (len > 0 && file_path[len - 1] != '/') {
 			strcat(file_path, "/");
 		}
-		strcat(file_path, "/home/shawchen/release-client-5.15.x/release_demo_test/YUVFile/");
+		strcat(file_path, "/root/zoom_m-sdk_linux_bot/YUVFile/");
 		if (pVideoSource->m_nDataType == 3)
 		{
 			w = 1920;
@@ -117,7 +117,7 @@ static void* MyThreadProc(void* arg) {
 			pFrameData = new char[nFrameLength];
 			strcat(file_path, "videofile_640_480.yuv");
 		}
-		std::string file_yuv_name = "/home/shawchen/release-client-5.15.x/release_demo_test/YUVFile/videofile_640_480.yuv";
+		std::string file_yuv_name = "/root/zoom_m-sdk_linux_bot/YUVFile/videofile_640_480.yuv";
 		fp = fopen(file_yuv_name.c_str(), "rb");
 		
 		if (!fp) 
@@ -198,14 +198,18 @@ CExternalVideoSource* CExternalVideoSource::GetInstance()
 
 ZOOM_SDK_NAMESPACE::SDKError CExternalVideoSource::EnableVideoSource(ZOOM_SDK_NAMESPACE::IZoomSDKVideoSource* pEvent)
 {
+
+	std::cerr << "CExternalVideoSource::EnableVideoSource" << std::endl;
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_WRONG_USAGE);
 
 	ZOOM_SDK_NAMESPACE::IZoomSDKVideoSourceHelper* pVideoSourceHelper;
 	pVideoSourceHelper = ZOOM_SDK_NAMESPACE::GetRawdataVideoSourceHelper();
 	if (!pVideoSourceHelper)
 	{
+		std::cerr << "no pVideoSourceHelper" << std::endl;
 		return err;
 	}
+	std::cerr << "pVideoSourceHelper present" << std::endl;
 	err = pVideoSourceHelper->setExternalVideoSource(this);
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
