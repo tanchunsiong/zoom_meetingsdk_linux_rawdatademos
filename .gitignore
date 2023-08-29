@@ -7,4 +7,5 @@ demo/include/h/*
 .vscode/
 demo/.vscode/
 build/
+/YUVFile/*.yuv
 

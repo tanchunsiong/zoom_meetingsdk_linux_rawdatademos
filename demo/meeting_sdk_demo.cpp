@@ -432,7 +432,7 @@ void Login(Gtk::TextView *text_view, Gtk::Entry *entryA)
     // }
 }
 
-void gen_okken()
+void gen_token()
 {
     m_AuthSDKWorkFlow.GetSSOUrl();
 }
@@ -830,8 +830,7 @@ int main(int argc, char *argv[])
 
         Gtk::Button *buttongen_token = Gtk::manage(new Gtk::Button("gen_token"));
         hbox->pack_start(*buttongen_token, Gtk::PACK_SHRINK);
-        buttongen_token->signal_clicked().connect([]()
-                                                  { gen_okken(); });
+        buttongen_token->signal_clicked().connect([]()  { gen_token(); });
 
         // 将水平布局容器添加到垂直布局容器中
         box.pack_start(*hbox, Gtk::PACK_SHRINK);
