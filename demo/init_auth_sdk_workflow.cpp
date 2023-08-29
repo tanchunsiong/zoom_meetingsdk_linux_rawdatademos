@@ -57,9 +57,9 @@ ZOOM_SDK_NAMESPACE::SDKError CAuthSDKWorkFlow::GetSSOUrl()
 	if (m_pAuthService)
 	{
 		ZOOM_SDK_NAMESPACE::SDKError err = ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS;
-		const char* success = "success";
+		const char* domainprefix = "success";
 		const char* url;
-		url = m_pAuthService->GenerateSSOLoginWebURL(success);
+		url = m_pAuthService->GenerateSSOLoginWebURL(domainprefix);
 		pid_t pid = fork();
     
         if (pid == 0) {
