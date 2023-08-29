@@ -33,8 +33,8 @@ link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs/Qt/lib)
 add_executable(meetingSDKDemo 
               ${CMAKE_SOURCE_DIR}/meeting_sdk_demo.cpp
               ${CMAKE_SOURCE_DIR}/init_auth_sdk_workflow.cpp
-              ${CMAKE_SOURCE_DIR}/meeting_sdk_util.cpp
               ${CMAKE_SOURCE_DIR}/init_auth_sdk_workflow.h
+              ${CMAKE_SOURCE_DIR}/meeting_sdk_util.cpp
               ${CMAKE_SOURCE_DIR}/meeting_sdk_util.h
               ${CMAKE_SOURCE_DIR}/RegressionTestRawdataRender.cpp
               ${CMAKE_SOURCE_DIR}/RegressionTestRawdataRender.h
@@ -42,6 +42,10 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/custom_ui_eventSink.cpp
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.h
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.cpp
+              ${CMAKE_SOURCE_DIR}/external_video_source.h
+              ${CMAKE_SOURCE_DIR}/external_video_source.cpp
+              ${CMAKE_SOURCE_DIR}/meeting_sdk_rawdata_audio.h
+              ${CMAKE_SOURCE_DIR}/meeting_sdk_rawdata_audio.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)

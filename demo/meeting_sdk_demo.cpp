@@ -312,8 +312,8 @@ void JoinMeeting(Gtk::TextView *text_view, Gtk::TextView *text_view_userid, Gtk:
         std::cerr << "Leaving recording token as NULL" << std::endl;
     }
 
-    withoutloginParam.isVideoOff = true;
-    withoutloginParam.isAudioOff = true;
+    withoutloginParam.isVideoOff = false;
+    withoutloginParam.isAudioOff = false;
     // normalParam.isDirectShareDesktop = false;
     ZOOM_SDK_NAMESPACE::IMeetingService *m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
 
@@ -586,16 +586,58 @@ void mute_unmute_audio(Gtk::TextView *text_view, Gtk::Entry *entryA)
 
 ////////////////////////////////////////////////raw_data//////////////////////////////////////////////
 
+void send_raw_video(Gtk::TextView *text_view)
+{
+
+    std::cerr << "send_raw_video" << std::endl;
+
+    CRegressionTestRawdataAudio regressionTester;
+
+    std::string err = regressionTester.DoEnableVirtualCamera();
+
+    // ZoomSDKVideoSource *virtual_camera_video_source;
+    // virtual_camera_video_source = new ZoomSDKVideoSource(video_source);
+    // IZoomSDKVideoSourceHelper*	p_videoSourceHelper = GetRawdataVideoSourceHelper();
+
+    // if (p_videoSourceHelper) {
+    // 	SDKError err = p_videoSourceHelper->setExternalVideoSource(virtual_camera_video_source);
+    // }
+
+
+     std::cerr << err << std::endl;
+        Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+        buffer->set_text("request_recording_permissions success\n");
+    
+    
+}
+void send_raw_audio(Gtk::TextView *text_view)
+{
+
+    std::cerr << "send_raw_audio" << std::endl;
+
+    ZOOM_SDK_NAMESPACE::IMeetingService *m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
+    ZOOM_SDK_NAMESPACE::IMeetingRecordingController *m_pMeetingRecorder = m_pMeetingService->GetMeetingRecordingController();
+
+    ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingRecorder->RequestLocalRecordingPrivilege();
+    if (SDKError::SDKERR_SUCCESS == err)
+    {
+        Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+        buffer->set_text("request_recording_permissions success\n");
+    }
+    else
+    {
+        Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+        buffer->set_text("request_recording_permissions error\n");
+    }
+}
+
 void request_recording_permissions(Gtk::TextView *text_view)
 {
 
     std::cerr << "request_recording_permissions: " << std::endl;
 
-  
     ZOOM_SDK_NAMESPACE::IMeetingService *m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
     ZOOM_SDK_NAMESPACE::IMeetingRecordingController *m_pMeetingRecorder = m_pMeetingService->GetMeetingRecordingController();
-
-  
 
     ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingRecorder->RequestLocalRecordingPrivilege();
     if (SDKError::SDKERR_SUCCESS == err)
@@ -615,7 +657,6 @@ void start_recording(Gtk::TextView *text_view)
 
     std::cerr << "start_recording " << std::endl;
 
-  
     ZOOM_SDK_NAMESPACE::IMeetingService *m_pMeetingService = SDKInterfaceWrap::GetInst().GetMeetingService();
     ZOOM_SDK_NAMESPACE::IMeetingRecordingController *m_pMeetingRecorder = m_pMeetingService->GetMeetingRecordingController();
 
@@ -627,7 +668,7 @@ void start_recording(Gtk::TextView *text_view)
     }
     else
     {
-        std::cerr << "CannotStartRawRecording :" << err1<<std::endl;
+        std::cerr << "CannotStartRawRecording :" << err1 << std::endl;
     }
 
     ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingRecorder->StartRawRecording();
@@ -830,7 +871,8 @@ int main(int argc, char *argv[])
 
         Gtk::Button *buttongen_token = Gtk::manage(new Gtk::Button("gen_token"));
         hbox->pack_start(*buttongen_token, Gtk::PACK_SHRINK);
-        buttongen_token->signal_clicked().connect([]()  { gen_token(); });
+        buttongen_token->signal_clicked().connect([]()
+                                                  { gen_token(); });
 
         // 将水平布局容器添加到垂直布局容器中
         box.pack_start(*hbox, Gtk::PACK_SHRINK);
@@ -896,28 +938,38 @@ int main(int argc, char *argv[])
         box.pack_start(button_v);
 
         /////////////////////////////////////////////raw_data////////////////////////////////////////////////////
-        // 创建按钮 a
+
         Gtk::Button button_r_c("request_recording_permissions (not useful for linux msdk to get raw data access)");
         button_r_c.set_size_request(100, 50);
         button_r_c.signal_clicked().connect(sigc::bind(sigc::ptr_fun(request_recording_permissions), &text_view_r));
         box.pack_start(button_r_c);
-        // 创建按钮 a
+
         Gtk::Button button_r_d("start_recording");
         button_r_d.set_size_request(100, 50);
         button_r_d.signal_clicked().connect(sigc::bind(sigc::ptr_fun(start_recording), &text_view_r));
         box.pack_start(button_r_d);
 
-        // 创建按钮 a
         Gtk::Button button_r_a("subscribe_video");
         button_r_a.set_size_request(100, 50);
         button_r_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(subscribe_video), &text_view_r, &entryA));
         box.pack_start(button_r_a);
 
-        // 创建按钮 a
         Gtk::Button button_r_b("un_subscribe_video");
         button_r_b.set_size_request(100, 50);
         button_r_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(un_subscribe_video), &text_view_r));
         box.pack_start(button_r_b);
+
+        /////////////////////////////////////////////send raw_data////////////////////////////////////////////////////
+
+        Gtk::Button button_s_a("Send Raw Video)");
+        button_s_a.set_size_request(100, 50);
+        button_s_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(send_raw_video), &text_view_r));
+        box.pack_start(button_s_a);
+
+        Gtk::Button button_s_b("Send Raw Audio");
+        button_s_b.set_size_request(100, 50);
+        button_s_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(send_raw_audio), &text_view_r));
+        box.pack_start(button_s_b);
 
         window.show_all();
 
