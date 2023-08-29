@@ -129,3 +129,7 @@ target_link_libraries(meetingSDKDemo glib-2.0)
 target_link_libraries(meetingSDKDemo ${GTKMM_LIBRARIES})
 target_link_libraries(meetingSDKDemo curl)
 target_link_libraries(meetingSDKDemo pthread)
+
+## Recording
+
+This needs recording token to work, without recording token, even when given recording permissions, you will not be able to record

@@ -50,8 +50,13 @@ ZOOM_SDK_NAMESPACE::SDKError CRegressionTestRawdataRender::subscribe(unsigned in
 	if (m_pSDKRenderer)
 	{
 		err = m_pSDKRenderer->subscribe(nUserID, type);
-		if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
-			return err;
+		if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS){
+			return err;}
+		else
+		{
+			std::cerr << "Successfully subscribed to userID: " << nUserID << std::endl;
+		}
+
 	}
 
 	return err;
@@ -64,7 +69,12 @@ ZOOM_SDK_NAMESPACE::SDKError CRegressionTestRawdataRender::unSubscribe()
 	{
 		err = m_pSDKRenderer->unSubscribe();
 		if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
-			return err;
+		{	return err;
+		}
+			else
+		{
+			std::cerr << "Successfully unsubscribed " << std::endl;
+		}
 		m_dataWidth = 0;
 		m_dataHeight = 0;
 	}
@@ -106,11 +116,43 @@ void CRegressionTestRawdataRender::onRendererBeDestroyed()
 	m_pSDKRenderer = nullptr;
 }
 
+
+
 void CRegressionTestRawdataRender::onRawDataFrameReceived(YUVRawDataI420* data)
 {
 
+	if (!data)
+		return;
+	std::cerr << "CRegressionTestRawdataRender::onRawDataFrameReceived : " << data->GetBuffer() << std::endl;
+	unsigned int width = data->GetStreamWidth();
+    unsigned int height = data->GetStreamHeight();
+	std::string filename = "/home/shawchen/release-client-5.15.x/release_demo_test/"+std::to_string(width)+"_"+std::to_string(height)+"rowdata.yuv";
+	std::ofstream outputFile(filename);
+   if (outputFile.is_open()) {
+    // 计算每个分量的数据大小和跨度
+    int Y_size = width * height;
+    int U_size = width / 2 * height / 2;
+    int V_size = width / 2 * height / 2;
+    int Y_pitch = width;
+    int U_pitch = width / 2;
+    int V_pitch = width / 2;
+
+    // 写入 Y 分量数据
+    outputFile.write(reinterpret_cast<const char*>(data->GetYBuffer()), Y_size);
+
+    // 写入 U 分量数据
+    outputFile.write(reinterpret_cast<const char*>(data->GetUBuffer()), U_size);
+
+    // 写入 V 分量数据
+    outputFile.write(reinterpret_cast<const char*>(data->GetVBuffer()), V_size);
+
+    // 关闭文件
+    outputFile.close();
+   }
 }
 
 void CRegressionTestRawdataRender::onRawDataStatusChanged(RawDataStatus status)
 {
+	std::cerr << "CRegressionTestRawdataRender::onRawDataStatusChanged : " << status << std::endl;
 }
+

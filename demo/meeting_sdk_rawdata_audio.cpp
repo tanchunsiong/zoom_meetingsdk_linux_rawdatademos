@@ -24,13 +24,13 @@ void CRegressionTestRawdataAudio::DoInit()
 void CRegressionTestRawdataAudio::DestroyRender(CRegressionTestRawdataRender& renderer)
 {
 	ZOOM_SDK_NAMESPACE::SDKError err = renderer.DestroyRender();
-	
+	  std::cerr << "CRegressionTestRawdataAudio::DestroyRender :" << err << std::endl;
 }
 
 void CRegressionTestRawdataAudio::CreateRender(CRegressionTestRawdataRender& renderer)
 {
 	ZOOM_SDK_NAMESPACE::SDKError err = renderer.CreateRender();
-	
+	  std::cerr << "CRegressionTestRawdataAudio::CreateRender :" << err << std::endl;
 }
 
 std::string CRegressionTestRawdataAudio::DoSubscribeAudio()
