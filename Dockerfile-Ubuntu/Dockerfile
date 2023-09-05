@@ -47,5 +47,6 @@ RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && 
 WORKDIR /app/demo/bin
 
 # Run the meetingSDKDemo binary when the container starts
-#CMD ["./meetingSDKDemo"]
+
 CMD ["/bin/bash"]
+#CMD ["./meetingSDKDemo"]
