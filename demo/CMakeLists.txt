@@ -12,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
-onch
+
 
 include_directories(${GTKMM_INCLUDE_DIRS})
 link_directories(${GTKMM_LIBRARY_DIRS})
@@ -31,20 +31,8 @@ link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs/Qt/lib)
 
 add_executable(meetingSDKDemo 
               ${CMAKE_SOURCE_DIR}/meeting_sdk_demo.cpp
-              ${CMAKE_SOURCE_DIR}/init_auth_sdk_workflow.cpp
-              ${CMAKE_SOURCE_DIR}/init_auth_sdk_workflow.h
-              ${CMAKE_SOURCE_DIR}/meeting_sdk_util.cpp
-              ${CMAKE_SOURCE_DIR}/meeting_sdk_util.h
-              ${CMAKE_SOURCE_DIR}/RegressionTestRawdataRender.cpp
-              ${CMAKE_SOURCE_DIR}/RegressionTestRawdataRender.h
-              ${CMAKE_SOURCE_DIR}/custom_ui_eventSink.h
-              ${CMAKE_SOURCE_DIR}/custom_ui_eventSink.cpp
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.h
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.cpp
-              ${CMAKE_SOURCE_DIR}/external_video_source.h
-              ${CMAKE_SOURCE_DIR}/external_video_source.cpp
-              ${CMAKE_SOURCE_DIR}/meeting_sdk_rawdata_audio.h
-              ${CMAKE_SOURCE_DIR}/meeting_sdk_rawdata_audio.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)
@@ -53,6 +41,11 @@ target_link_libraries(meetingSDKDemo glib-2.0)
 target_link_libraries(meetingSDKDemo ${GTKMM_LIBRARIES})
 target_link_libraries(meetingSDKDemo curl)
 target_link_libraries(meetingSDKDemo pthread)
+
+# Create a symbolic link
+execute_process(COMMAND ln -s libmeetingsdk.so libmeetingsdk.so.1
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk
+)
 
 
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.json COPYONLY)
