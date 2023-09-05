@@ -13,9 +13,9 @@
 #include <iostream>
 
 
-
-
 #include "MeetingReminderEventListener.h"
+#include "MeetingServiceEventListener.h"
+#include "AuthServiceEventListener.h"
 #include <iostream>
 #include <thread>
 #include <mutex>
@@ -49,6 +49,50 @@ ISettingService* settingservice;
 unsigned int userID;
 
 bool isHeadless = true;
+
+
+
+void onInMeeting() {
+
+
+	printf("onInMeeting Invoked\n");
+	
+
+		//double check if you are in a meeting
+		if (m_pMeetingService->GetMeetingStatus() == ZOOM_SDK_NAMESPACE::MEETING_STATUS_INMEETING) {
+			printf("In Meeting Now...\n");
+			IList<unsigned int>* participants = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
+			printf("Participants count: %d\n", participants->GetCount());
+
+			//IDirectShareServiceHelper* servicehelper = authService->GetDirectShareServiceHeler();
+
+			////DirectShareServiceHelper* servicehelper = new DirectShareServiceHelper();
+			//DirectShareServiceHelperEventListener* dsServiceEventListener = new DirectShareServiceHelperEventListener();
+			//SDKError err = servicehelper->SetEvent(dsServiceEventListener);
+			//cout << "servicehelper ->SetEvent(dsServiceEventListener);" << err << endl;
+
+			//cout << " servicehelper->CanStartDirectShare() ? : " << servicehelper->CanStartDirectShare() << endl;
+			//cout << "servicehelper->IsDirectShareInProgress() ? : " << servicehelper->IsDirectShareInProgress() << endl;
+
+			//err = servicehelper->StartDirectShare();
+
+		}
+	
+
+}
+
+void onMeetingEndsQuitApp() {
+	
+}
+
+void onMeetingJoined() {
+
+	printf("Joining Meeting...\n");
+
+	//std::thread t1(prereqCheckForRawVideoSend);
+	//t1.detach(); //run in different thread
+
+}
 
 gboolean timeout_callback(gpointer data)
 {
@@ -244,43 +288,7 @@ void CleanSDK(Gtk::TextView* text_view)
 	//m_AuthSDKWorkFlow.Cleanup();
 }
 
-void AuthMeetingSDK(Gtk::TextView* text_view)
-{
-	SDKError err(SDKError::SDKERR_SUCCESS);
 
-	if ((err = CreateAuthService(&m_pAuthService)) != SDKError::SDKERR_SUCCESS) {};
-	std::cerr << "AuthService created." << std::endl;
-	;
-	ZOOM_SDK_NAMESPACE::AuthContext param;
-
-	if (!token.size() == 0)
-	{
-
-		param.jwt_token = token.c_str();
-		std::cerr << "AuthSDK:success " << std::endl;
-	}
-
-	ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult =m_pAuthService->SDKAuth(param);
-
-	if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != sdkErrorResult)
-	{
-		if (text_view)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("AuthSDK:error\n");
-		}
-		std::cerr << "AuthSDK:error " << std::endl;
-	}
-	else
-	{
-		if (text_view)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("AuthSDK:success\n");
-			std::cerr << "AuthSDK:success " << std::endl;
-		}
-	}
-}
 
 void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk::Entry* entryA)
 {
@@ -292,10 +300,13 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	if ((err2 = CreateMeetingService(&m_pMeetingService)) != SDKError::SDKERR_SUCCESS) {};
 	std::cerr << "MeetingService created." << std::endl;
 
-
-
 	//before joining a meeting, create the setting service
 	CreateSettingService(&settingservice);
+
+	// Set the event listener
+	m_pMeetingService->SetEvent(new MeetingServiceEventListener(&onMeetingJoined, &onMeetingEndsQuitApp, &onInMeeting));
+
+
 
 	ZOOM_SDK_NAMESPACE::JoinParam joinParam;
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SERVICE_FAILED);
@@ -408,6 +419,57 @@ void LeaveMeeting(Gtk::TextView* text_view)
 		}
 	} while (false);
 }
+
+// dreamtcs
+ void OnAuthenticationComplete()
+{
+
+		JoinMeeting(nullptr, nullptr, nullptr);
+}
+
+void AuthMeetingSDK(Gtk::TextView* text_view)
+{
+	SDKError err(SDKError::SDKERR_SUCCESS);
+
+	if ((err = CreateAuthService(&m_pAuthService)) != SDKError::SDKERR_SUCCESS) {};
+	std::cerr << "AuthService created." << std::endl;
+	;
+	ZOOM_SDK_NAMESPACE::AuthContext param;
+
+	if ((err = m_pAuthService->SetEvent(new AuthServiceEventListener(&OnAuthenticationComplete))) != SDKError::SDKERR_SUCCESS) {};
+	std::cout << "AuthServiceEventListener added." << std::endl;
+
+	if (!token.size() == 0)
+	{
+
+		param.jwt_token = token.c_str();
+		std::cerr << "AuthSDK:success " << std::endl;
+	}
+
+	ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult =m_pAuthService->SDKAuth(param);
+
+	if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != sdkErrorResult)
+	{
+		if (text_view)
+		{
+			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+			buffer->set_text("AuthSDK:error\n");
+		}
+		std::cerr << "AuthSDK:error " << std::endl;
+	}
+	else
+	{
+		if (text_view)
+		{
+			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+			buffer->set_text("AuthSDK:success\n");
+			std::cerr << "AuthSDK:success " << std::endl;
+		}
+	}
+}
+
+
+
 
 void Login(Gtk::TextView* text_view, Gtk::Entry* entryA)
 {
@@ -649,23 +711,10 @@ void un_subscribe_video(Gtk::TextView* text_view)
 
 }
 
-// dreamtcs
-static void OnAuthenticationComplete(bool success)
-{
-	if (success)
-	{
-		JoinMeeting(nullptr, nullptr, nullptr);
-	}
-}
+
 
 // dreamtcs
-static void inMeetingCallback(bool success)
-{
-	if (success)
-	{
-		printf("InMeeting callback in main thread \n");
-	}
-}
+
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
@@ -914,8 +963,7 @@ int main(int argc, char* argv[])
 	else
 	{
 
-		//SDKInterfaceWrap::SetAuthCompleteCallback(OnAuthenticationComplete);
-		//SDKInterfaceWrap::SetInMeetingCallback(inMeetingCallback);
+	
 
 		std::thread tokenThread(getJWTToken, remote_url);
 		tokenThread.join();
