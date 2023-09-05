@@ -9,3 +9,7 @@ demo/.vscode/
 build/
 /YUVFile/*.yuv
 
+#files for vs 2022
+.vs
+demo/CMakeSettings.json
+

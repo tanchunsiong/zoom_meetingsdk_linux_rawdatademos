@@ -595,9 +595,10 @@ void send_raw_video(Gtk::TextView *text_view)
 
     std::string err = regressionTester.DoEnableVirtualCamera();
 
-    // ZoomSDKVideoSource *virtual_camera_video_source;
-    // virtual_camera_video_source = new ZoomSDKVideoSource(video_source);
-    // IZoomSDKVideoSourceHelper*	p_videoSourceHelper = GetRawdataVideoSourceHelper();
+    //  GetRawdataVideoSourceHelper();
+    //  ZoomSDKVideoSource *virtual_camera_video_source;
+    //  virtual_camera_video_source = new ZoomSDKVideoSource(video_source);
+    //  IZoomSDKVideoSourceHelper*	p_videoSourceHelper = GetRawdataVideoSourceHelper();
 
     // if (p_videoSourceHelper) {
     // 	SDKError err = p_videoSourceHelper->setExternalVideoSource(virtual_camera_video_source);
