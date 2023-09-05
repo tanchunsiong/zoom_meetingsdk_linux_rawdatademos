@@ -4,12 +4,22 @@ demo/lib/zoom_meeting_sdk/*.so
 demo/lib/zoom_meeting_sdk/*.1
 demo/lib/zoom_meeting_sdk/qt_libs/Qt/*
 demo/include/h/*
-.vscode/
 demo/.vscode/
+
+demo-compact/bin/
+demo-compact/build/
+demo-compact/lib/zoom_meeting_sdk/*.so
+demo-compact/lib/zoom_meeting_sdk/*.1
+demo-compact/lib/zoom_meeting_sdk/qt_libs/Qt/*
+demo-compact/include/h/*
+demo-compact/.vscode/
+
+.vscode/
 build/
 /YUVFile/*.yuv
 
 #files for vs 2022
 .vs
 demo/CMakeSettings.json
+demo-compact/CMakeSettings.json
 
