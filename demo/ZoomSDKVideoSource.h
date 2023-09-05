@@ -13,7 +13,7 @@
 #include <iosfwd>
 #include <iostream>
 #include <pthread.h>
-#include <SDL2/SDL.h>
+
 #include "rawdata/rawdata_video_source_helper_interface.h"
 #include "rawdata/rawdata_audio_helper_interface.h"
 
