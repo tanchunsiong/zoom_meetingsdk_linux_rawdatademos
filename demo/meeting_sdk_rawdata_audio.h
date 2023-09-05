@@ -12,7 +12,7 @@
 #include <fstream>
 #include <iosfwd>
 #include <iostream>
-#include <SDL2/SDL.h>
+
 #include "RegressionTestRawdataRender.h"
 #include "rawdata/rawdata_audio_helper_interface.h"
 #include "rawdata/rawdata_video_source_helper_interface.h"

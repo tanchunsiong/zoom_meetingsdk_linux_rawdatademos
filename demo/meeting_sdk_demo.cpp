@@ -11,7 +11,6 @@
 #include <fstream>
 #include <iosfwd>
 #include <iostream>
-#include <SDL2/SDL.h>
 
 #include "zoom_sdk.h"
 #include "auth_service_interface.h"
