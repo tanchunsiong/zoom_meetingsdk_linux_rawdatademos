@@ -33,6 +33,10 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/meeting_sdk_demo.cpp
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.h
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.cpp
+              ${CMAKE_SOURCE_DIR}/MeetingServiceEventListener.h
+              ${CMAKE_SOURCE_DIR}/MeetingServiceEventListener.cpp
+              ${CMAKE_SOURCE_DIR}/AuthServiceEventListener.h
+              ${CMAKE_SOURCE_DIR}/AuthServiceEventListener.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)

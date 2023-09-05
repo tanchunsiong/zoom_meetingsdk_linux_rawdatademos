@@ -4,5 +4,5 @@
     "meeting_password": "005777",
     "recording_token":"",
     "remote_url": "https://asdc.cc/meeting-csdk/",
-    "isHeadless":"true"
+    "isHeadless":"false"
 }
