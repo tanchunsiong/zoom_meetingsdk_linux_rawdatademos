@@ -39,6 +39,8 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/AuthServiceEventListener.cpp
               ${CMAKE_SOURCE_DIR}/ZoomSDKRenderer.h
               ${CMAKE_SOURCE_DIR}/ZoomSDKRenderer.cpp
+              ${CMAKE_SOURCE_DIR}/ZoomSDKAudioRawData.h
+              ${CMAKE_SOURCE_DIR}/ZoomSDKAudioRawData.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)
@@ -49,9 +51,17 @@ target_link_libraries(meetingSDKDemo curl)
 target_link_libraries(meetingSDKDemo pthread)
 
 # Create a symbolic link
-execute_process(COMMAND ln -s libmeetingsdk.so libmeetingsdk.so.1
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk
-)
+#execute_process(COMMAND ln -s libmeetingsdk.so libmeetingsdk.so.1
+#    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk
+#)
+
+set(SYMBOLIC_LINK "${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/libmeetingsdk.so.1")
+set(TARGET_FILE "${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/libmeetingsdk.so")
+
+if (NOT EXISTS ${SYMBOLIC_LINK})
+    execute_process(COMMAND ln -s ${TARGET_FILE} ${SYMBOLIC_LINK})
+endif ()
+
 
 
 configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.json COPYONLY)

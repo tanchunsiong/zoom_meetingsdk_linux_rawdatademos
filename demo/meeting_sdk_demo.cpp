@@ -36,7 +36,9 @@
 #include <rawdata/rawdata_renderer_interface.h>
 #include <rawdata/zoom_rawdata_api.h>
 
-
+//references for GetAudioRawData
+#include "ZoomSDKAudioRawData.h"
+#include "meeting_service_components/meeting_recording_interface.h"
 
 USING_ZOOM_SDK_NAMESPACE
 
@@ -61,21 +63,27 @@ IZoomSDKRenderer* videoHelper;
 IMeetingRecordingController* m_pRecordController;
 IMeetingParticipantsController* m_pParticipantsController;
 
+//references for GetAudioRawData
+ZoomSDKAudioRawData* audio_source = new ZoomSDKAudioRawData();
+IZoomSDKAudioRawDataHelper* audioHelper;
+
 unsigned int userID;
 
 //controls for demo
 bool isHeadless = true;
-
+bool GetVideoRawData = false;
+bool GetAudioRawData = true;
 
 uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int returnvalue = m_pParticipantsController->GetParticipantsList()->GetItem(0);
-	std::cout << "UserID is : "<< returnvalue << std::endl;
+	std::cout << "UserID is : " << returnvalue << std::endl;
 
 	return returnvalue;
 }
-
+//GetVideoRawData
 void attemptToStartRawRecording() {
+
 	std::cout << "attemptToStartRawRecording : GetMeetingRecordingController" << std::endl;
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
 	std::cout << "attemptToStartRawRecording : StartRawRecording" << std::endl;
@@ -97,6 +105,30 @@ void attemptToStartRawRecording() {
 
 }
 
+//GetAudioRawData
+void attemptToStartAudioRawRecording() {
+
+	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
+
+	SDKError err1 = m_pRecordController->StartRawRecording();
+	if (err1 != SDKERR_SUCCESS) {
+		std::cout << "Error occurred starting raw recording" << std::endl;
+	}
+
+	audioHelper = GetAudioRawdataHelper();
+	if (audioHelper){
+	SDKError err = audioHelper->subscribe(audio_source);
+	if (err != SDKERR_SUCCESS) {
+		std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+	}
+	}
+	else {
+		std::cout << "Error getting audioHelper" << std::endl;
+	}
+
+
+}
+
 //event callback
 void onInMeeting() {
 
@@ -110,20 +142,14 @@ void onInMeeting() {
 		IList<unsigned int>* participants = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
 		printf("Participants count: %d\n", participants->GetCount());
 
-		//IDirectShareServiceHelper* servicehelper = authService->GetDirectShareServiceHeler();
-
-		////DirectShareServiceHelper* servicehelper = new DirectShareServiceHelper();
-		//DirectShareServiceHelperEventListener* dsServiceEventListener = new DirectShareServiceHelperEventListener();
-		//SDKError err = servicehelper->SetEvent(dsServiceEventListener);
-		//cout << "servicehelper ->SetEvent(dsServiceEventListener);" << err << endl;
-
-		//cout << " servicehelper->CanStartDirectShare() ? : " << servicehelper->CanStartDirectShare() << endl;
-		//cout << "servicehelper->IsDirectShareInProgress() ? : " << servicehelper->IsDirectShareInProgress() << endl;
-
-		//err = servicehelper->StartDirectShare();
-
 	}
-	attemptToStartRawRecording();
+
+	if (GetVideoRawData) {
+		attemptToStartRawRecording();
+	}
+	if (GetAudioRawData) {
+		attemptToStartAudioRawRecording();
+	}
 
 }
 
@@ -135,8 +161,6 @@ void onMeetingJoined() {
 
 	printf("Joining Meeting...\n");
 
-	//std::thread t1(prereqCheckForRawVideoSend);
-	//t1.detach(); //run in different thread
 
 }
 
@@ -271,7 +295,7 @@ void InitMeetingSDK(Gtk::TextView* text_view)
 	err = ZOOM_SDK_NAMESPACE::InitSDK(initParam);
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
-		
+
 		if (text_view)
 		{
 			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
@@ -288,7 +312,7 @@ void InitMeetingSDK(Gtk::TextView* text_view)
 		}
 		std::cerr << "Init meetingSdk:success" << std::endl;
 
-		
+
 	}
 
 }
@@ -341,7 +365,7 @@ void CleanSDK(Gtk::TextView* text_view)
 		}
 		std::cerr << "CleanSDK meetingSdk:success" << std::endl;
 
-		
+
 	}
 
 
@@ -398,7 +422,9 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	withoutloginParam.isVideoOff = false;
 	withoutloginParam.isAudioOff = false;
 
-
+	if (GetAudioRawData) {
+	
+	}
 
 	// set prompt handler here
 	IMeetingReminderController* meetingremindercontroller = m_pMeetingService->GetMeetingReminderController();
@@ -450,8 +476,8 @@ void LeaveMeeting(Gtk::TextView* text_view)
 		if (NULL == m_pMeetingService)
 		{
 			if (text_view) {
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("leave_meeting m_pMeetingService:Null\n");
+				Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+				buffer->set_text("leave_meeting m_pMeetingService:Null\n");
 			}
 			break;
 		}
@@ -505,7 +531,7 @@ void AuthMeetingSDK(Gtk::TextView* text_view)
 	//create auth service
 	if ((err = CreateAuthService(&m_pAuthService)) != SDKError::SDKERR_SUCCESS) {};
 	std::cerr << "AuthService created." << std::endl;
-	
+
 	//Create a param to put in jwt token
 	ZOOM_SDK_NAMESPACE::AuthContext param;
 
@@ -572,7 +598,7 @@ void Login(Gtk::TextView* text_view, Gtk::Entry* entryA)
 		}
 	}
 
-	
+
 
 }
 
@@ -628,8 +654,8 @@ void StartMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid)
 	startParam.param.normaluserStart.vanityID = NULL;
 	startParam.param.normaluserStart.customer_key = NULL;
 	startParam.param.normaluserStart.isVideoOff = false;
-	startParam.param.normaluserStart.isAudioOff = true;
-	
+	startParam.param.normaluserStart.isAudioOff = false;
+
 
 	ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingService->Start(startParam);
 	if (SDKError::SDKERR_SUCCESS == err)
