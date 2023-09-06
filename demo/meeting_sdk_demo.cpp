@@ -848,11 +848,18 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
 
 	Json json_signature = responses_json["signature"];
 	Json json_sdkKey = responses_json["sdkKey"];
+	Json json_recordingtoken = responses_json["recordingtoken"];
 
 	if (!json_signature.is_null())
 	{
 		token = json_signature.get<std::string>();
 	}
+
+	if (!json_recordingtoken.is_null())
+	{
+		recording_token = json_recordingtoken.get<std::string>();
+	}
+
 
 	printf("Token in callback is: %s\n", token.c_str());
 	std::lock_guard<std::mutex> lock(mtx);
