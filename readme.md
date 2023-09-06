@@ -142,28 +142,29 @@ sudo apt-get install pulseaudio jackd2 alsa-utils dbus-x11
 
 To install PulseAudio on Ubuntu and configure it to emulate a virtual output device, you can follow these steps:
 
-Install PulseAudio:
-
-PulseAudio is usually pre-installed on Ubuntu, but you can ensure it's up-to-date by running:
 
 
-sudo apt update
-sudo apt install pulseaudio
+
 Install pavucontrol (PulseAudio Volume Control):
 
 pavucontrol is a graphical tool that makes it easier to manage PulseAudio devices. Install it using:
 
+# Cleanup to be "stateless" on startup, otherwise pulseaudio daemon can't start
+rm -rf /var/run/pulse /var/lib/pulse /root/.config/pulse
+
+# Start pulseaudio as system wide daemon; for debugging it helps to start in non-daemon mode
+pulseaudio -D --verbose --exit-idle-time=-1 --system --disallow-exit
+
+# Create a virtual audio source; fixed by adding source master and format
+echo "Creating virtual audio source: ";
+pactl load-module module-virtual-source master=auto_null.monitor format=s16le source_name=VirtualMic
+
+# Set VirtualMic as default input source;
+echo "Setting default source: ";
+pactl set-default-source VirtualMic
+
 
 sudo apt install pavucontrol
-Load the module-null-sink module:
-
-PulseAudio can create a virtual audio sink (output device) using the module-null-sink. To load this module, open a terminal and run:
-
-
-pactl load-module module-null-sink sink_name=VirtualOutput sink_properties=device.description="Virtual Output"
-This command creates a virtual output device named "Virtual Output."
-
-Set the default sink:
 
 Now, you need to set the default audio sink to the virtual output device. You can do this using pavucontrol:
 
@@ -171,6 +172,3 @@ Launch pavucontrol by running pavucontrol in the terminal or searching for it in
 
 In the "Playback" tab, you should see a list of applications that are currently producing audio. For each application, you can select the output device. Set the desired applications to use the "Virtual Output."
 
-Additionally, in the "Configuration" tab, you can set the "Virtual Output" as the default sink for all audio.
-
-Close pavucontrol after making these changes.
