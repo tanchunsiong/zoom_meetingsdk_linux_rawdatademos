@@ -271,24 +271,30 @@ void InitMeetingSDK(Gtk::TextView* text_view)
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
 	ZOOM_SDK_NAMESPACE::InitParam initParam;
-	// initParam.strWebDomain = "https://zoomdev.us";
-	// initParam.strSupportUrl = "https://zoomdev.us";
 
+	// set domain
 	initParam.strWebDomain = "https://zoom.us";
 	initParam.strSupportUrl = "https://zoom.us";
+
 	// set language id
 	initParam.emLanguageID = ZOOM_SDK_NAMESPACE::LANGUAGE_English;
+
 	// change icon
 	// initParam.uiWindowIconSmallID = IDI_ICON_LOGO;
 	// initParam.uiWindowIconBigID = IDI_ICON_LOGO;
 	// initParam.hResInstance = GetModuleHandle(NULL);
+
+	//set logging perferences
 	initParam.enableLogByDefault = true;
 	initParam.enableGenerateDump = true;
+
 	// initParam.obConfigOpts.optionalFeatures = ENABLE_CUSTOMIZED_UI_FLAG;
+
+
 	err = ZOOM_SDK_NAMESPACE::InitSDK(initParam);
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
-		// printf("Init meetingSdk:error");
+		
 		if (text_view)
 		{
 			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
@@ -305,7 +311,7 @@ void InitMeetingSDK(Gtk::TextView* text_view)
 		}
 		std::cerr << "Init meetingSdk:success" << std::endl;
 
-		// printf("Init meetingSdk:success");
+		
 	}
 
 }
