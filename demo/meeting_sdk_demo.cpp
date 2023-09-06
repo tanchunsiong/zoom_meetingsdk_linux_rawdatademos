@@ -70,7 +70,7 @@ bool isHeadless = true;
 uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int returnvalue = m_pParticipantsController->GetParticipantsList()->GetItem(0);
-
+	std::cout << "UserID is : "<< returnvalue << std::endl;
 
 	return returnvalue;
 }
@@ -140,20 +140,6 @@ void onMeetingJoined() {
 
 }
 
-gboolean timeout_callback(gpointer data)
-{
-	return TRUE;
-}
-
-void my_handler(int s)
-{
-
-	printf("\nCaught signal %d\n", s);
-
-	// LeaveMeeting();
-	printf("Leaving session.\n");
-	std::exit(0);
-}
 std::string getSelfDirPath()
 {
 	char dest[PATH_MAX];
@@ -169,16 +155,7 @@ std::string getSelfDirPath()
 	return std::string(dest);
 }
 
-void initAppSettings()
-{
 
-	struct sigaction sigIntHandler;
-
-	sigIntHandler.sa_handler = my_handler;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-	sigaction(SIGINT, &sigIntHandler, NULL);
-}
 
 void ReadJsonSettings()
 {
@@ -350,14 +327,18 @@ void CleanSDK(Gtk::TextView* text_view)
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
 		// printf("Init meetingSdk:error");
-		Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-		buffer->set_text("CleanSDK meetingSdk:error\n");
+		if (text_view) {
+			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+			buffer->set_text("CleanSDK meetingSdk:error\n");
+		}
 		std::cerr << "CleanSDK meetingSdk:error " << std::endl;
 	}
 	else
 	{
-		Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-		buffer->set_text("CleanSDK meetingSdk:success\n");
+		if (text_view) {
+			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+			buffer->set_text("CleanSDK meetingSdk:success\n");
+		}
 		std::cerr << "CleanSDK meetingSdk:success" << std::endl;
 
 		
@@ -468,8 +449,10 @@ void LeaveMeeting(Gtk::TextView* text_view)
 	{
 		if (NULL == m_pMeetingService)
 		{
+			if (text_view) {
 			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
 			buffer->set_text("leave_meeting m_pMeetingService:Null\n");
+			}
 			break;
 		}
 		else
@@ -481,21 +464,27 @@ void LeaveMeeting(Gtk::TextView* text_view)
 			status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_ENDED ||
 			status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED)
 		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("leave_meeting not in meeting\n");
+			if (text_view) {
+				Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+				buffer->set_text("leave_meeting not in meeting\n");
+			}
 			break;
 		}
 
 		if (SDKError::SDKERR_SUCCESS == m_pMeetingService->Leave(ZOOM_SDK_NAMESPACE::LEAVE_MEETING))
 		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("leave_meeting success\n");
+			if (text_view) {
+				Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+				buffer->set_text("leave_meeting success\n");
+			}
 			break;
 		}
 		else
 		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("leave_meeting error\n");
+			if (text_view) {
+				Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
+				buffer->set_text("leave_meeting error\n");
+			}
 			break;
 		}
 	} while (false);
@@ -558,7 +547,32 @@ void AuthMeetingSDK(Gtk::TextView* text_view)
 void Login(Gtk::TextView* text_view, Gtk::Entry* entryA)
 {
 
-	std::string text = "zaktokenhere";
+	std::string text = "ssologintokenhere";
+	const char* token = text.c_str();
+
+
+
+	//dreamtcs not tested yet
+	if (m_pAuthService)
+	{
+		ZOOM_SDK_NAMESPACE::SDKError err = ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS;
+		err = m_pAuthService->SSOLoginWithWebUriProtocol(token);
+
+		if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != err)
+		{
+
+			std::cerr << "Login:error " << std::endl;
+
+			return;
+		}
+		else
+		{
+
+			std::cerr << "Login:success " << std::endl;
+		}
+	}
+
+	
 
 }
 
@@ -864,6 +878,34 @@ void getJWTToken(std::string remote_url)
 	}
 }
 
+
+
+gboolean timeout_callback(gpointer data)
+{
+	return TRUE;
+}
+
+void my_handler(int s)
+{
+
+	printf("\nCaught signal %d\n", s);
+	LeaveMeeting(nullptr);
+	printf("Leaving session.\n");
+	CleanSDK(nullptr);
+	std::exit(0);
+}
+
+void initAppSettings()
+{
+
+	struct sigaction sigIntHandler;
+
+	sigIntHandler.sa_handler = my_handler;
+	sigemptyset(&sigIntHandler.sa_mask);
+	sigIntHandler.sa_flags = 0;
+	sigaction(SIGINT, &sigIntHandler, NULL);
+}
+
 int main(int argc, char* argv[])
 {
 
@@ -1034,11 +1076,7 @@ int main(int argc, char* argv[])
 			std::cout << "JWT token generation failed." << std::endl;
 		}
 
-		//     //init
-		//     InitMeetingSDK(nullptr);
 
-		//    //auth
-		//    AuthMeetingSDK(nullptr);
 
 		initAppSettings();
 

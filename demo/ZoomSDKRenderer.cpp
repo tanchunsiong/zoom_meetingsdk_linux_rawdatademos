@@ -15,6 +15,7 @@ void ZoomSDKRenderer::onRawDataFrameReceived(YUVRawDataI420* data)
 
 	std::cout << "width." << data->GetStreamWidth() << std::endl;
 	std::cout << "height." << data->GetStreamHeight() << std::endl;
+	//std::cout << "sourceID." << data->GetSourceID() << std::endl;
 	SaveToRawYUVFile(data);
 
 }
