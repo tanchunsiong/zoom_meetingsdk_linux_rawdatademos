@@ -12,14 +12,16 @@
 #include <iosfwd>
 #include <iostream>
 
-
+//used to accept prompts
 #include "MeetingReminderEventListener.h"
+//used to listen to callbacks from meeting related matters
 #include "MeetingServiceEventListener.h"
+//used to listen to callbacks from authentication related matters
 #include "AuthServiceEventListener.h"
-#include <iostream>
-#include <thread>
-#include <mutex>
 
+
+
+//These are needed to readsettingsfromJSON named config.json
 #include "json.hpp"
 #include <curl/curl.h>
 
@@ -29,29 +31,31 @@
 #include <meeting_service_components/meeting_participants_ctrl_interface.h>
 #include <meeting_service_components/meeting_video_interface.h>
 
-//references for video raw data
+//references for GetVideoRawData
 #include "ZoomSDKRenderer.h"
 #include <rawdata/rawdata_renderer_interface.h>
 #include <rawdata/zoom_rawdata_api.h>
 
-// this needs sudo apt install libcurl4-openssl-dev (ubuntu)
-// this needs yum install libcurl-devel (centos)
+
 
 USING_ZOOM_SDK_NAMESPACE
 
 std::mutex mtx;
 bool jwtTokenGenerated = false;
 
-using Json = nlohmann::json;
 GMainLoop* loop;
+
+//These are needed to readsettingsfromJSON named config.json
+using Json = nlohmann::json;
 std::string meeting_number, token, meeting_password, recording_token, remote_url;
 
+//Services which are needed to initialize, authenticate and configure settings for the SDK
 ZOOM_SDK_NAMESPACE::IAuthService* m_pAuthService;
 ZOOM_SDK_NAMESPACE::IMeetingService* m_pMeetingService;
 ISettingService* settingservice;
 
 
-//references for video raw data
+//references for GetVideoRawData
 ZoomSDKRenderer* videoSource = new ZoomSDKRenderer();
 IZoomSDKRenderer* videoHelper;
 IMeetingRecordingController* m_pRecordController;
@@ -59,7 +63,9 @@ IMeetingParticipantsController* m_pParticipantsController;
 
 unsigned int userID;
 
+//controls for demo
 bool isHeadless = true;
+
 
 uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
