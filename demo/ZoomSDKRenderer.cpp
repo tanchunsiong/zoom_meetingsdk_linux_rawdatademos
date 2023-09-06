@@ -9,7 +9,7 @@
 #include <cstdio>
 
 
-void ZoomSDKRendererDelegate::onRawDataFrameReceived(YUVRawDataI420* data)
+void ZoomSDKRenderer::onRawDataFrameReceived(YUVRawDataI420* data)
 {
 	std::cout << "onRawDataFrameReceived." << std::endl;
 
@@ -18,17 +18,17 @@ void ZoomSDKRendererDelegate::onRawDataFrameReceived(YUVRawDataI420* data)
 	SaveToRawYUVFile(data);
 
 }
-void ZoomSDKRendererDelegate::onRawDataStatusChanged(RawDataStatus status)
+void ZoomSDKRenderer::onRawDataStatusChanged(RawDataStatus status)
 {
 	std::cout << "onRawDataStatusChanged." << std::endl;
 }
 
-void ZoomSDKRendererDelegate::onRendererBeDestroyed()
+void ZoomSDKRenderer::onRendererBeDestroyed()
 {
 	std::cout << "onRendererBeDestroyed ." << std::endl;
 }
 
-//void ZoomSDKRendererDelegate::SaveToRawYUVFile(YUVRawDataI420* data) {
+//void ZoomSDKRenderer::SaveToRawYUVFile(YUVRawDataI420* data) {
 //
 //	// Open the file for writing
 //	ofstream outputFile("output.yuv", ios::out | ios::binary | ios::app);
@@ -67,7 +67,7 @@ void ZoomSDKRendererDelegate::onRendererBeDestroyed()
 //	outputFile.flush();
 //	//cout << "YUV420 buffer saved to file." << endl;
 //}
-void ZoomSDKRendererDelegate::SaveToRawYUVFile(YUVRawDataI420* data) {
+void ZoomSDKRenderer::SaveToRawYUVFile(YUVRawDataI420* data) {
 
 	// Open the file for writing
 	std::ofstream outputFile("output.yuv", std::ios::out | std::ios::binary | std::ios::app);

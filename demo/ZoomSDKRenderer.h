@@ -5,7 +5,7 @@
 
 USING_ZOOM_SDK_NAMESPACE
 
-class ZoomSDKRendererDelegate :
+class ZoomSDKRenderer :
 	public IZoomSDKRendererDelegate
 {
 public:

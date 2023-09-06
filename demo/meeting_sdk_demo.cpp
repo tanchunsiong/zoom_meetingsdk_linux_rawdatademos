@@ -29,6 +29,11 @@
 #include <meeting_service_components/meeting_participants_ctrl_interface.h>
 #include <meeting_service_components/meeting_video_interface.h>
 
+//references for video raw data
+#include "ZoomSDKRenderer.h"
+#include <rawdata/rawdata_renderer_interface.h>
+#include <rawdata/zoom_rawdata_api.h>
+
 // this needs sudo apt install libcurl4-openssl-dev (ubuntu)
 // this needs yum install libcurl-devel (centos)
 
@@ -46,43 +51,78 @@ ZOOM_SDK_NAMESPACE::IMeetingService* m_pMeetingService;
 ISettingService* settingservice;
 
 
+//references for video raw data
+ZoomSDKRenderer* videoSource = new ZoomSDKRenderer();
+IZoomSDKRenderer* videoHelper;
+IMeetingRecordingController* m_pRecordController;
+IMeetingParticipantsController* m_pParticipantsController;
+
 unsigned int userID;
 
 bool isHeadless = true;
 
+uint32_t getUserID() {
+	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
+	int returnvalue = m_pParticipantsController->GetParticipantsList()->GetItem(0);
 
 
+	return returnvalue;
+}
+
+void attemptToStartRawRecording() {
+	std::cout << "attemptToStartRawRecording : GetMeetingRecordingController" << std::endl;
+	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
+	std::cout << "attemptToStartRawRecording : StartRawRecording" << std::endl;
+	SDKError err1 = m_pRecordController->StartRawRecording();
+	if (err1 != SDKERR_SUCCESS) {
+		std::cout << "Error occurred" << std::endl;
+	}
+
+	SDKError err = createRenderer(&videoHelper, videoSource);
+	if (err != SDKERR_SUCCESS) {
+		std::cout << "Error occurred" << std::endl;
+		//handle error
+	}
+	else {
+		std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
+		videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
+		videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
+	}
+
+}
+
+//event callback
 void onInMeeting() {
 
 
 	printf("onInMeeting Invoked\n");
-	
 
-		//double check if you are in a meeting
-		if (m_pMeetingService->GetMeetingStatus() == ZOOM_SDK_NAMESPACE::MEETING_STATUS_INMEETING) {
-			printf("In Meeting Now...\n");
-			IList<unsigned int>* participants = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
-			printf("Participants count: %d\n", participants->GetCount());
 
-			//IDirectShareServiceHelper* servicehelper = authService->GetDirectShareServiceHeler();
+	//double check if you are in a meeting
+	if (m_pMeetingService->GetMeetingStatus() == ZOOM_SDK_NAMESPACE::MEETING_STATUS_INMEETING) {
+		printf("In Meeting Now...\n");
+		IList<unsigned int>* participants = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
+		printf("Participants count: %d\n", participants->GetCount());
 
-			////DirectShareServiceHelper* servicehelper = new DirectShareServiceHelper();
-			//DirectShareServiceHelperEventListener* dsServiceEventListener = new DirectShareServiceHelperEventListener();
-			//SDKError err = servicehelper->SetEvent(dsServiceEventListener);
-			//cout << "servicehelper ->SetEvent(dsServiceEventListener);" << err << endl;
+		//IDirectShareServiceHelper* servicehelper = authService->GetDirectShareServiceHeler();
 
-			//cout << " servicehelper->CanStartDirectShare() ? : " << servicehelper->CanStartDirectShare() << endl;
-			//cout << "servicehelper->IsDirectShareInProgress() ? : " << servicehelper->IsDirectShareInProgress() << endl;
+		////DirectShareServiceHelper* servicehelper = new DirectShareServiceHelper();
+		//DirectShareServiceHelperEventListener* dsServiceEventListener = new DirectShareServiceHelperEventListener();
+		//SDKError err = servicehelper->SetEvent(dsServiceEventListener);
+		//cout << "servicehelper ->SetEvent(dsServiceEventListener);" << err << endl;
 
-			//err = servicehelper->StartDirectShare();
+		//cout << " servicehelper->CanStartDirectShare() ? : " << servicehelper->CanStartDirectShare() << endl;
+		//cout << "servicehelper->IsDirectShareInProgress() ? : " << servicehelper->IsDirectShareInProgress() << endl;
 
-		}
-	
+		//err = servicehelper->StartDirectShare();
+
+	}
+	attemptToStartRawRecording();
 
 }
 
 void onMeetingEndsQuitApp() {
-	
+
 }
 
 void onMeetingJoined() {
@@ -421,10 +461,10 @@ void LeaveMeeting(Gtk::TextView* text_view)
 }
 
 // dreamtcs
- void OnAuthenticationComplete()
+void OnAuthenticationComplete()
 {
 
-		JoinMeeting(nullptr, nullptr, nullptr);
+	JoinMeeting(nullptr, nullptr, nullptr);
 }
 
 void AuthMeetingSDK(Gtk::TextView* text_view)
@@ -446,7 +486,7 @@ void AuthMeetingSDK(Gtk::TextView* text_view)
 		std::cerr << "AuthSDK:success " << std::endl;
 	}
 
-	ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult =m_pAuthService->SDKAuth(param);
+	ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult = m_pAuthService->SDKAuth(param);
 
 	if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != sdkErrorResult)
 	{
@@ -485,7 +525,7 @@ void gen_token()
 
 void getuserID(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk::Entry* entryA)
 {
-	
+
 	if (m_pMeetingService->GetMeetingStatus() == MEETING_STATUS_INMEETING)
 	{
 		Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
@@ -510,7 +550,7 @@ void getuserID(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk::E
 	for (int i = 0; i < pParticipantsList->GetCount(); i++)
 	{
 		unsigned int user_id = pParticipantsList->GetItem(i);
-		std::string sUserName =m_pMeetingService->GetMeetingParticipantsController()->GetUserByUserID(user_id)->GetUserName();
+		std::string sUserName = m_pMeetingService->GetMeetingParticipantsController()->GetUserByUserID(user_id)->GetUserName();
 		username_id += " userName: " + sUserName + "userId: " + std::to_string(user_id);
 	}
 	Glib::RefPtr<Gtk::TextBuffer> buffer_userid = text_view->get_buffer();
@@ -550,7 +590,7 @@ void mute_unmute_video(Gtk::TextView* text_view)
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
 	ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
-	
+
 	ZOOM_SDK_NAMESPACE::IMeetingVideoController* pVideoCtrl = m_pMeetingService->GetMeetingVideoController();
 	if (pVideoCtrl == NULL)
 	{
@@ -644,7 +684,7 @@ void send_raw_video(Gtk::TextView* text_view)
 void send_raw_audio(Gtk::TextView* text_view)
 {
 
-	
+
 }
 
 void request_recording_permissions(Gtk::TextView* text_view)
@@ -652,7 +692,7 @@ void request_recording_permissions(Gtk::TextView* text_view)
 
 	std::cerr << "request_recording_permissions: " << std::endl;
 
-	
+
 	ZOOM_SDK_NAMESPACE::IMeetingRecordingController* m_pMeetingRecorder = m_pMeetingService->GetMeetingRecordingController();
 
 	ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingRecorder->RequestLocalRecordingPrivilege();
@@ -673,7 +713,7 @@ void start_recording(Gtk::TextView* text_view)
 
 	std::cerr << "start_recording " << std::endl;
 
-	
+
 	ZOOM_SDK_NAMESPACE::IMeetingRecordingController* m_pMeetingRecorder = m_pMeetingService->GetMeetingRecordingController();
 
 	ZOOM_SDK_NAMESPACE::SDKError err1 = m_pMeetingRecorder->CanStartRawRecording();
@@ -963,7 +1003,7 @@ int main(int argc, char* argv[])
 	else
 	{
 
-	
+
 
 		std::thread tokenThread(getJWTToken, remote_url);
 		tokenThread.join();
