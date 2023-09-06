@@ -30,6 +30,7 @@
 #include <meeting_service_interface.h>
 #include <meeting_service_components/meeting_participants_ctrl_interface.h>
 #include <meeting_service_components/meeting_video_interface.h>
+#include <setting_service_interface.h>
 
 //references for GetVideoRawData
 #include "ZoomSDKRenderer.h"
@@ -54,7 +55,7 @@ std::string meeting_number, token, meeting_password, recording_token, remote_url
 //Services which are needed to initialize, authenticate and configure settings for the SDK
 ZOOM_SDK_NAMESPACE::IAuthService* m_pAuthService;
 ZOOM_SDK_NAMESPACE::IMeetingService* m_pMeetingService;
-ISettingService* settingservice;
+ZOOM_SDK_NAMESPACE::ISettingService* m_pSettingService;
 
 
 //references for GetVideoRawData
@@ -107,7 +108,14 @@ void attemptToStartRawRecording() {
 
 //GetAudioRawData
 void attemptToStartAudioRawRecording() {
-
+	ZOOM_SDK_NAMESPACE::IAudioSettingContext* pAudioContext = m_pSettingService->GetAudioSettings();
+	if (pAudioContext)
+	{
+		if (pAudioContext->GetSpeakerList()->GetCount() >= 1) {
+			std::cout << "Number of speakers : " << pAudioContext->GetSpeakerList()->GetCount() << std::endl;
+			std::cout << "Speaker(0) name : " << pAudioContext->GetSpeakerList()->GetItem(0)->GetDeviceName() << std::endl;
+		}
+	}
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
 
 	SDKError err1 = m_pRecordController->StartRawRecording();
@@ -116,11 +124,11 @@ void attemptToStartAudioRawRecording() {
 	}
 
 	audioHelper = GetAudioRawdataHelper();
-	if (audioHelper){
-	SDKError err = audioHelper->subscribe(audio_source);
-	if (err != SDKERR_SUCCESS) {
-		std::cout << "Error occurred subscribing to audio : " << err << std::endl;
-	}
+	if (audioHelper) {
+		SDKError err = audioHelper->subscribe(audio_source);
+		if (err != SDKERR_SUCCESS) {
+			std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+		}
 	}
 	else {
 		std::cout << "Error getting audioHelper" << std::endl;
@@ -329,10 +337,10 @@ void CleanSDK(Gtk::TextView* text_view)
 		m_pAuthService = NULL;
 	}
 
-	if (settingservice)
+	if (m_pSettingService)
 	{
-		ZOOM_SDK_NAMESPACE::DestroySettingService(settingservice);
-		settingservice = NULL;
+		ZOOM_SDK_NAMESPACE::DestroySettingService(m_pSettingService);
+		m_pSettingService = NULL;
 	}
 
 	if (m_pMeetingService)
@@ -384,8 +392,17 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	std::cerr << "MeetingService created." << std::endl;
 
 	//before joining a meeting, create the setting service
-	CreateSettingService(&settingservice);
+	CreateSettingService(&m_pSettingService);
 	std::cerr << "Settingservice created." << std::endl;
+
+	if (GetAudioRawData) {
+		//set join audio to true
+		ZOOM_SDK_NAMESPACE::IAudioSettingContext* pAudioContext = m_pSettingService->GetAudioSettings();
+		if (pAudioContext)
+		{
+			pAudioContext->EnableAutoJoinAudio(true);
+		}
+	}
 
 	// Set the event listener
 	m_pMeetingService->SetEvent(new MeetingServiceEventListener(&onMeetingJoined, &onMeetingEndsQuitApp, &onInMeeting));
@@ -423,7 +440,7 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	withoutloginParam.isAudioOff = false;
 
 	if (GetAudioRawData) {
-	
+
 	}
 
 	// set prompt handler here
