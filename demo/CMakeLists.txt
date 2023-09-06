@@ -37,6 +37,8 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/MeetingServiceEventListener.cpp
               ${CMAKE_SOURCE_DIR}/AuthServiceEventListener.h
               ${CMAKE_SOURCE_DIR}/AuthServiceEventListener.cpp
+              ${CMAKE_SOURCE_DIR}/ZoomSDKRenderer.h
+              ${CMAKE_SOURCE_DIR}/ZoomSDKRenderer.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)
