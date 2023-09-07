@@ -60,7 +60,10 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
     libxcb-randr0 \
     libxcb-image0 \
     libxcb-keysyms1 \
-    libxcb-xtest0 \
+    libxcb-xtest0 
+ 
+ # optional
+ apt-get install -y --no-install-recommends --no-install-suggests \
     libdbus-1-3 \
     libglib2.0-0 \
     libgbm1 \
@@ -68,20 +71,18 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
     libgl1 \
     libdrm2 \
     libgssapi-krb5-2 \
-    openssl \
-    ca-certificates \
-    pkg-config \
-    libegl-mesa0 \
-    libsdl2-dev \
-    g++-multilib 
+
 
 apt-get install -y gtkmm-3.0
 
-# if you are getting error about <SDL2/SDL.h>
-apt-get install libegl-mesa0 libsdl2-dev g++-multilib
+# if you are getting error about <SDL2/SDL.h>, not necessary anymore
+# apt-get install libegl-mesa0 libsdl2-dev g++-multilib
 
 # for curl related calls
-apt-get libcurl4-openssl-dev
+apt-get install libcurl4-openssl-dev \
+    openssl \
+    ca-certificates \
+    pkg-config 
 
   ======================================================================
 
@@ -172,3 +173,6 @@ Launch pavucontrol by running pavucontrol in the terminal or searching for it in
 
 In the "Playback" tab, you should see a list of applications that are currently producing audio. For each application, you can select the output device. Set the desired applications to use the "Virtual Output."
 
+#audiotype does not have aa name a type
+
+add this into the include #include "meeting_audio_interface.h"
