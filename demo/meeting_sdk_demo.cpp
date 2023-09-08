@@ -33,7 +33,9 @@
 #include <meeting_service_components/meeting_video_interface.h>
 #include <setting_service_interface.h>
 
-
+//used for event listener
+#include "MeetingParticipantsCtrlEventListener.h"
+#include "MeetingRecordingCtrlEventListener.h"
 
 //references for GetVideoRawData
 #include "ZoomSDKRenderer.h"
@@ -81,6 +83,9 @@ bool GetVideoRawData = false;
 bool GetAudioRawData = true;
 
 
+
+
+
 uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int returnvalue = m_pParticipantsController->GetParticipantsList()->GetItem(0);
@@ -94,22 +99,26 @@ void attemptToStartRawRecording() {
 	std::cout << "attemptToStartRawRecording : GetMeetingRecordingController" << std::endl;
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
 	std::cout << "attemptToStartRawRecording : StartRawRecording" << std::endl;
-	SDKError err1 = m_pRecordController->StartRawRecording();
-	if (err1 != SDKERR_SUCCESS) {
-		std::cout << "Error occurred" << std::endl;
-	}
+	if (m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording() == SDKERR_SUCCESS) {
+		SDKError err1 = m_pRecordController->StartRawRecording();
+		if (err1 != SDKERR_SUCCESS) {
+			std::cout << "Error occurred" << std::endl;
+		}
 
-	SDKError err = createRenderer(&videoHelper, videoSource);
-	if (err != SDKERR_SUCCESS) {
-		std::cout << "Error occurred" << std::endl;
-		//handle error
+		SDKError err = createRenderer(&videoHelper, videoSource);
+		if (err != SDKERR_SUCCESS) {
+			std::cout << "Error occurred" << std::endl;
+			//handle error
+		}
+		else {
+			std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
+			videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
+			videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
+		}
 	}
 	else {
-		std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
-		videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
-		videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
+		std::cout << "attemptToStartRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
 	}
-
 }
 
 //GetAudioRawData
@@ -123,23 +132,44 @@ void attemptToStartAudioRawRecording() {
 		}
 	}
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
-
-	SDKError err1 = m_pRecordController->StartRawRecording();
-	if (err1 != SDKERR_SUCCESS) {
-		std::cout << "Error occurred starting raw recording" << std::endl;
-	}
-
-	audioHelper = GetAudioRawdataHelper();
-	if (audioHelper) {
-		SDKError err = audioHelper->subscribe(audio_source);
-		if (err != SDKERR_SUCCESS) {
-			std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+	if (m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording() == SDKERR_SUCCESS) {
+		SDKError err1 = m_pRecordController->StartRawRecording();
+		if (err1 != SDKERR_SUCCESS) {
+			std::cout << "Error occurred starting raw recording" << std::endl;
 		}
-	}
-	else {
-		std::cout << "Error getting audioHelper" << std::endl;
-	}
 
+		audioHelper = GetAudioRawdataHelper();
+		if (audioHelper) {
+			SDKError err = audioHelper->subscribe(audio_source);
+			if (err != SDKERR_SUCCESS) {
+				std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+			}
+		}
+		else {
+			std::cout << "Error getting audioHelper" << std::endl;
+		}
+
+	}else {
+		std::cout << "attemptToStartAudioRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
+	}
+}
+
+void onIsHost() {
+
+	printf("Is host now...\n");
+	attemptToStartRawRecording();
+}
+
+void onIsCoHost() {
+
+	printf("Is co-host now...\n");
+	attemptToStartRawRecording();
+
+}
+void onIsGivenRecordingPermission() {
+
+	printf("Is given recording permissions now...\n");
+	attemptToStartRawRecording();
 
 }
 
@@ -164,6 +194,7 @@ void onInMeeting() {
 	if (GetAudioRawData) {
 		attemptToStartAudioRawRecording();
 	}
+
 
 }
 
@@ -413,6 +444,13 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	// Set the event listener
 	m_pMeetingService->SetEvent(new MeetingServiceEventListener(&onMeetingJoined, &onMeetingEndsQuitApp, &onInMeeting));
 
+	//dreamtcs segmentation fault
+	if (onIsHost && onIsCoHost) {
+		m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
+		m_pParticipantsController->SetEvent(new MeetingParticipantsCtrlEventListener(&onIsHost, &onIsCoHost));
+	}
+	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
+	m_pRecordController->SetEvent(new MeetingRecordingCtrlEventListener(&onIsGivenRecordingPermission));
 
 
 	ZOOM_SDK_NAMESPACE::JoinParam joinParam;
@@ -832,7 +870,7 @@ void un_subscribe_video(Gtk::TextView* text_view)
 
 
 
-// dreamtcs
+
 
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
@@ -1146,3 +1184,4 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 }
+
