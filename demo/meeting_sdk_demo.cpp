@@ -28,9 +28,12 @@
 #include <zoom_sdk.h>
 #include <auth_service_interface.h>
 #include <meeting_service_interface.h>
+#include <meeting_service_components/meeting_audio_interface.h>
 #include <meeting_service_components/meeting_participants_ctrl_interface.h>
 #include <meeting_service_components/meeting_video_interface.h>
 #include <setting_service_interface.h>
+
+
 
 //references for GetVideoRawData
 #include "ZoomSDKRenderer.h"
@@ -72,8 +75,11 @@ unsigned int userID;
 
 //controls for demo
 bool isHeadless = true;
+bool useRecordingTokenFromWebService = false;
+
 bool GetVideoRawData = false;
 bool GetAudioRawData = true;
+
 
 uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
@@ -855,11 +861,12 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
 		token = json_signature.get<std::string>();
 	}
 
-	if (!json_recordingtoken.is_null())
-	{
-		recording_token = json_recordingtoken.get<std::string>();
+	if (useRecordingTokenFromWebService) {
+		if (!json_recordingtoken.is_null())
+		{
+			recording_token = json_recordingtoken.get<std::string>();
+		}
 	}
-
 
 	printf("Token in callback is: %s\n", token.c_str());
 	std::lock_guard<std::mutex> lock(mtx);
