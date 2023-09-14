@@ -77,7 +77,8 @@ unsigned int userID;
 
 //controls for demo
 bool isHeadless = true;
-bool useRecordingTokenFromWebService = false;
+bool useJWTTokenFromWebService = true;
+bool useRecordingTokenFromWebService = true;
 
 bool GetVideoRawData = false;
 bool GetAudioRawData = true;
@@ -123,14 +124,7 @@ void attemptToStartRawRecording() {
 
 //GetAudioRawData
 void attemptToStartAudioRawRecording() {
-	ZOOM_SDK_NAMESPACE::IAudioSettingContext* pAudioContext = m_pSettingService->GetAudioSettings();
-	if (pAudioContext)
-	{
-		if (pAudioContext->GetSpeakerList()->GetCount() >= 1) {
-			std::cout << "Number of speakers : " << pAudioContext->GetSpeakerList()->GetCount() << std::endl;
-			std::cout << "Speaker(0) name : " << pAudioContext->GetSpeakerList()->GetItem(0)->GetDeviceName() << std::endl;
-		}
-	}
+
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
 	if (m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording() == SDKERR_SUCCESS) {
 		SDKError err1 = m_pRecordController->StartRawRecording();
@@ -149,7 +143,8 @@ void attemptToStartAudioRawRecording() {
 			std::cout << "Error getting audioHelper" << std::endl;
 		}
 
-	}else {
+	}
+	else {
 		std::cout << "attemptToStartAudioRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
 	}
 }
@@ -157,19 +152,24 @@ void attemptToStartAudioRawRecording() {
 void onIsHost() {
 
 	printf("Is host now...\n");
-	attemptToStartRawRecording();
+	if (GetVideoRawData) { attemptToStartRawRecording(); }
+	if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+
+
 }
 
 void onIsCoHost() {
 
 	printf("Is co-host now...\n");
-	attemptToStartRawRecording();
+	if (GetVideoRawData) { attemptToStartRawRecording(); }
+	if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
 
 }
 void onIsGivenRecordingPermission() {
 
 	printf("Is given recording permissions now...\n");
-	attemptToStartRawRecording();
+	if (GetVideoRawData) { attemptToStartRawRecording(); }
+	if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
 
 }
 
@@ -437,6 +437,52 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 		ZOOM_SDK_NAMESPACE::IAudioSettingContext* pAudioContext = m_pSettingService->GetAudioSettings();
 		if (pAudioContext)
 		{
+
+			//paranoid test
+			if (pAudioContext->GetSpeakerList()->GetCount() >= 1) {
+				std::cout << "Number of speaker(s) : " << pAudioContext->GetSpeakerList()->GetCount() << std::endl;
+				ISpeakerInfo* sInfo = pAudioContext->GetSpeakerList()->GetItem(0);
+				const zchar_t* deviceName = sInfo->GetDeviceName();
+				if (deviceName != nullptr && deviceName[0] != '\0') {
+					std::cout << "Speaker(0) name : " << sInfo->GetDeviceName() << std::endl;
+					std::cout << "Speaker(0) id : " << sInfo->GetDeviceId() << std::endl;
+
+					pAudioContext->SelectSpeaker(sInfo->GetDeviceId(), sInfo->GetDeviceName());
+					std::cout << "Is selected speaker? : " << pAudioContext->GetSpeakerList()->GetItem(0)->IsSelectedDevice() << std::endl;
+				}
+				else {
+					std::cout << "Speaker(0) name is empty or null." << std::endl;
+					std::cout << "Speaker(0) id is empty or null." << std::endl;
+				}
+
+
+
+
+				//pAudioContext->UseDefaultSystemMic();
+				//pAudioContext->UseDefaultSystemSpeaker();
+			}
+			if (pAudioContext->GetMicList()->GetCount() >= 1) {
+				IMicInfo* mInfo = pAudioContext->GetMicList()->GetItem(0);
+				std::cout << "Number of mic(s) : " << pAudioContext->GetMicList()->GetCount() << std::endl;
+				const zchar_t* deviceName = mInfo->GetDeviceName();
+				if (deviceName != nullptr && deviceName[0] != '\0') {
+					std::cout << "Mic(0) name : " << mInfo->GetDeviceName() << std::endl;
+					std::cout << "Mic(0) id : " << mInfo->GetDeviceId() << std::endl;
+
+					pAudioContext->SelectMic(mInfo->GetDeviceId(), mInfo->GetDeviceName());
+					std::cout << "Is selected Mic? : " << pAudioContext->GetMicList()->GetItem(0)->IsSelectedDevice() << std::endl;
+				}
+				else {
+					std::cout << "Mic(0) name is empty or null." << std::endl;
+					std::cout << "Mic(0) id is empty or null." << std::endl;
+				}
+
+
+				//pAudioContext->UseDefaultSystemMic();
+				//pAudioContext->UseDefaultSystemSpeaker();
+			}
+
+
 			pAudioContext->EnableAutoJoinAudio(true);
 		}
 	}
@@ -1153,13 +1199,10 @@ int main(int argc, char* argv[])
 	{
 
 
-
-		std::thread tokenThread(getJWTToken, remote_url);
-		tokenThread.join();
-
-		// getJWTToken(remote_url);
-
-
+		if (useJWTTokenFromWebService) {
+			std::thread tokenThread(getJWTToken, remote_url);
+			tokenThread.join();
+		}
 
 		if (jwtTokenGenerated)
 		{
@@ -1170,7 +1213,6 @@ int main(int argc, char* argv[])
 		{
 			std::cout << "JWT token generation failed." << std::endl;
 		}
-
 
 
 		initAppSettings();
