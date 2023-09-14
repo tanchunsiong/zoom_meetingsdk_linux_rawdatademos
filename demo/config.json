@@ -1,6 +1,8 @@
+{
  "meeting_number": "1231231234",
   "token": "xxxxxx.yyyyyyyyy.zzzzzzzz",
   "meeting_password": "000000",
   "recording_token": "",
   "remote_url": "https://yourownhosting.com/meeting-sdk-jwt/",
   "isHeadless": "true"
+}
