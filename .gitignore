@@ -19,7 +19,7 @@ build/
 /YUVFile/*.yuv
 
 #files for vs 2022
-.vs
+.vs/
 demo/CMakeSettings.json
 demo-compact/CMakeSettings.json
 
