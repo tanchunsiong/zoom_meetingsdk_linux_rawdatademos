@@ -23,3 +23,5 @@ build/
 demo/CMakeSettings.json
 demo-compact/CMakeSettings.json
 
+# Untrack the files (but keep them locally)
+git rm --cached config.json
