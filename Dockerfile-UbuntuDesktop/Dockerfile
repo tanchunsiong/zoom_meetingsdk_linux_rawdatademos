@@ -1,5 +1,8 @@
 # Use the official Ubuntu image as the base image
-FROM ubuntu:22.04
+FROM dorowu/ubuntu-desktop-lxde-vnc:focal
+
+#only for  dorowu/ubuntu-desktop-lxde-vnc:focal
+RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4EB27DB2A3B88B8B
 
 # Install necessary dependencies
 RUN apt-get update && \
