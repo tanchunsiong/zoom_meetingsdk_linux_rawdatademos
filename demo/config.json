@@ -1,6 +1,8 @@
- "meeting_number": "1231231234",
+{
+  "meeting_number": "9898533313",
   "token": "xxxxxx.yyyyyyyyy.zzzzzzzz",
-  "meeting_password": "000000",
+  "meeting_password": "005777",
   "recording_token": "",
-  "remote_url": "https://yourownhosting.com/meeting-sdk-jwt/",
+  "remote_url": "https://asdc.cc/meeting-csdk/",
   "isHeadless": "true"
+}
