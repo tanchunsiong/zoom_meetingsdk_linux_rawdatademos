@@ -64,6 +64,6 @@ RUN echo '#!/bin/bash' > /app/demo/run.sh \
 RUN chmod +x /app/demo/run.sh
 
 # Specify the run script as the CMD
-CMD ["/app/demo/run.sh"]
-#CMD ["/bin/bash"]
+#CMD ["/app/demo/run.sh"]
+CMD ["/bin/bash"]
 #CMD ["./meetingSDKDemo"]

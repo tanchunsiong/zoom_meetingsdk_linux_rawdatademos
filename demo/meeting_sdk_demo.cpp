@@ -80,7 +80,7 @@ bool isHeadless = true;
 bool useJWTTokenFromWebService = true;
 bool useRecordingTokenFromWebService = true;
 
-bool GetVideoRawData = false;
+bool GetVideoRawData = true;
 bool GetAudioRawData = true;
 
 
@@ -94,18 +94,18 @@ uint32_t getUserID() {
 
 	return returnvalue;
 }
-//GetVideoRawData
-void attemptToStartRawRecording() {
 
-	std::cout << "attemptToStartRawRecording : GetMeetingRecordingController" << std::endl;
+void attemptToStartRawRecordingBoth() {
+
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
-	std::cout << "attemptToStartRawRecording : StartRawRecording" << std::endl;
-	if (m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording() == SDKERR_SUCCESS) {
+	SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording();
+	if (err2 == SDKERR_SUCCESS) {
 		SDKError err1 = m_pRecordController->StartRawRecording();
 		if (err1 != SDKERR_SUCCESS) {
 			std::cout << "Error occurred" << std::endl;
 		}
 
+		//raw video
 		SDKError err = createRenderer(&videoHelper, videoSource);
 		if (err != SDKERR_SUCCESS) {
 			std::cout << "Error occurred" << std::endl;
@@ -115,6 +115,49 @@ void attemptToStartRawRecording() {
 			std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
 			videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
 			videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
+		}
+
+		//raw auio
+		audioHelper = GetAudioRawdataHelper();
+		if (audioHelper) {
+
+			SDKError err3 = audioHelper->subscribe(audio_source);
+			if (err3 != SDKERR_SUCCESS) {
+				std::cout << "Error occurred subscribing to audio : " << err3 << std::endl;
+			}
+		}
+		else {
+			std::cout << "Error getting audioHelper" << std::endl;
+		}
+
+	}
+	else {
+		std::cout << "attemptToStartRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
+	}
+
+}
+//GetVideoRawData
+void attemptToStartRawRecording() {
+
+
+	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
+	SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording();
+	if (err2 == SDKERR_SUCCESS) {
+		SDKError err1 = m_pRecordController->StartRawRecording();
+		if (err1 != SDKERR_SUCCESS) {
+			std::cout << "Error occurred" << std::endl;
+		}
+		else {
+			SDKError err = createRenderer(&videoHelper, videoSource);
+			if (err != SDKERR_SUCCESS) {
+				std::cout << "Error occurred" << std::endl;
+				//handle error
+			}
+			else {
+				std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
+				videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
+				videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
+			}
 		}
 	}
 	else {
@@ -126,23 +169,25 @@ void attemptToStartRawRecording() {
 void attemptToStartAudioRawRecording() {
 
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
-	if (m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording() == SDKERR_SUCCESS) {
+	SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording();
+	if (err2 == SDKERR_SUCCESS) {
 		SDKError err1 = m_pRecordController->StartRawRecording();
 		if (err1 != SDKERR_SUCCESS) {
 			std::cout << "Error occurred starting raw recording" << std::endl;
 		}
+		else {
+			audioHelper = GetAudioRawdataHelper();
+			if (audioHelper) {
 
-		audioHelper = GetAudioRawdataHelper();
-		if (audioHelper) {
-			SDKError err = audioHelper->subscribe(audio_source);
-			if (err != SDKERR_SUCCESS) {
-				std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+				SDKError err = audioHelper->subscribe(audio_source);
+				if (err != SDKERR_SUCCESS) {
+					std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+				}
+			}
+			else {
+				std::cout << "Error getting audioHelper" << std::endl;
 			}
 		}
-		else {
-			std::cout << "Error getting audioHelper" << std::endl;
-		}
-
 	}
 	else {
 		std::cout << "attemptToStartAudioRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
@@ -152,8 +197,14 @@ void attemptToStartAudioRawRecording() {
 void onIsHost() {
 
 	printf("Is host now...\n");
-	if (GetVideoRawData) { attemptToStartRawRecording(); }
-	if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+
+	if (GetAudioRawData && GetVideoRawData) {
+		attemptToStartRawRecordingBoth();
+	}
+	else {
+		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+		if (GetVideoRawData) { attemptToStartRawRecording(); }
+	}
 
 
 }
@@ -161,15 +212,29 @@ void onIsHost() {
 void onIsCoHost() {
 
 	printf("Is co-host now...\n");
-	if (GetVideoRawData) { attemptToStartRawRecording(); }
-	if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+	if (GetAudioRawData && GetVideoRawData) {
+		attemptToStartRawRecordingBoth();
+	}
+	else {
+		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+		if (GetVideoRawData) { attemptToStartRawRecording(); }
+	}
+
+
 
 }
 void onIsGivenRecordingPermission() {
 
 	printf("Is given recording permissions now...\n");
-	if (GetVideoRawData) { attemptToStartRawRecording(); }
-	if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+	if (GetAudioRawData && GetVideoRawData) {
+		attemptToStartRawRecordingBoth();
+	}
+	else {
+		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+		if (GetVideoRawData) { attemptToStartRawRecording(); }
+	}
+
+
 
 }
 
@@ -188,12 +253,14 @@ void onInMeeting() {
 
 	}
 
-	if (GetVideoRawData) {
-		attemptToStartRawRecording();
+	if (GetAudioRawData && GetVideoRawData) {
+		attemptToStartRawRecordingBoth();
 	}
-	if (GetAudioRawData) {
-		attemptToStartAudioRawRecording();
+	else {
+		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
+		if (GetVideoRawData) { attemptToStartRawRecording(); }
 	}
+
 
 
 }
@@ -385,7 +452,12 @@ void CleanSDK(Gtk::TextView* text_view)
 		ZOOM_SDK_NAMESPACE::DestroyMeetingService(m_pMeetingService);
 		m_pMeetingService = NULL;
 	}
-
+	if (videoHelper) {
+		videoHelper->unSubscribe();
+	}
+	if (audioHelper) {
+		audioHelper->unSubscribe();
+	}
 	//if (_network_connection_helper)
 	//{
 	//	ZOOM_SDK_NAMESPACE::DestroyNetworkConnectionHelper(_network_connection_helper);
@@ -529,9 +601,6 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	withoutloginParam.isVideoOff = false;
 	withoutloginParam.isAudioOff = false;
 
-	if (GetAudioRawData) {
-
-	}
 
 	// set prompt handler here
 	IMeetingReminderController* meetingremindercontroller = m_pMeetingService->GetMeetingReminderController();
@@ -1033,7 +1102,18 @@ void my_handler(int s)
 	LeaveMeeting(nullptr);
 	printf("Leaving session.\n");
 	CleanSDK(nullptr);
-	std::exit(0);
+
+	if (useJWTTokenFromWebService) {
+		std::thread tokenThread(getJWTToken, remote_url);
+		tokenThread.join();
+	}
+
+	if (jwtTokenGenerated)
+	{
+		InitMeetingSDK(nullptr);
+		AuthMeetingSDK(nullptr);
+	}
+	//std::exit(0);
 }
 
 void initAppSettings()
