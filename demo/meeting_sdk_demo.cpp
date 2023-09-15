@@ -19,8 +19,6 @@
 //used to listen to callbacks from authentication related matters
 #include "AuthServiceEventListener.h"
 
-
-
 //These are needed to readsettingsfromJSON named config.json
 #include "json.hpp"
 #include <curl/curl.h>
@@ -207,8 +205,6 @@ void onIsHost() {
 		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
 		if (GetVideoRawData) { attemptToStartRawRecording(); }
 	}
-
-
 }
 //callback when given cohost permission
 void onIsCoHost() {
@@ -221,9 +217,6 @@ void onIsCoHost() {
 		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
 		if (GetVideoRawData) { attemptToStartRawRecording(); }
 	}
-
-
-
 }
 //callback when given recording permission
 void onIsGivenRecordingPermission() {
@@ -237,16 +230,12 @@ void onIsGivenRecordingPermission() {
 		if (GetVideoRawData) { attemptToStartRawRecording(); }
 	}
 
-
-
 }
 
 //callback when the SDK is inmeeting
 void onInMeeting() {
 
-
 	printf("onInMeeting Invoked\n");
-
 
 	//double check if you are in a meeting
 	if (m_pMeetingService->GetMeetingStatus() == ZOOM_SDK_NAMESPACE::MEETING_STATUS_INMEETING) {
@@ -263,13 +252,11 @@ void onInMeeting() {
 		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
 		if (GetVideoRawData) { attemptToStartRawRecording(); }
 	}
-
-
-
 }
 
 void onMeetingEndsQuitApp() {
-
+	//CleanSDK(nullptr);
+	//std::exit(0);
 }
 
 void onMeetingJoined() {
@@ -328,6 +315,10 @@ void ReadJsonSettings()
 		Json json_recording_token = config_json["recording_token"];
 		Json json_remote_url = config_json["remote_url"];
 		Json json_isHeadless = config_json["isHeadless"];
+		Json json_useJWTTokenFromWebService = config_json["useJWTTokenFromWebService"];
+		Json json_useRecordingTokenFromWebService = config_json["useRecordingTokenFromWebService"];
+		Json json_GetVideoRawData = config_json["GetVideoRawData"];
+		Json json_GetAudioRawData = config_json["GetAudioRawData"];
 
 		if (!json_meeting_number.is_null())
 		{
@@ -359,18 +350,46 @@ void ReadJsonSettings()
 			std::string stringValue = json_isHeadless.get<std::string>();
 			// Convert the input string to lowercase for case-insensitive comparison
 			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
-
-			if (stringValue == "true")
-			{
-				std::cout << "isHeadless value is true" << std::endl;
-				isHeadless = true;
-			}
-			else if (stringValue == "false")
-			{
-				std::cout << "isHeadless value is false" << std::endl;
-				isHeadless = false;
-			}
+			isHeadless = (stringValue == "true");
+			std::cout << "isHeadless value is " << (isHeadless ? "true" : "false") << std::endl;
 		}
+
+		if (!json_useJWTTokenFromWebService.is_null())
+		{
+			std::string stringValue = json_useJWTTokenFromWebService.get<std::string>();
+			// Convert the input string to lowercase for case-insensitive comparison
+			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
+			useJWTTokenFromWebService = (stringValue == "true");
+			std::cout << "useJWTTokenFromWebService value is " << (useJWTTokenFromWebService ? "true" : "false") << std::endl; 
+			
+		}
+		if (!json_useRecordingTokenFromWebService.is_null())
+		{
+			std::string stringValue = json_useRecordingTokenFromWebService.get<std::string>();
+			// Convert the input string to lowercase for case-insensitive comparison
+			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
+			useRecordingTokenFromWebService = (stringValue == "true");
+			std::cout << "useRecordingTokenFromWebService value is " << (useRecordingTokenFromWebService ? "true" : "false") << std::endl;
+		}
+		if (!json_GetVideoRawData.is_null())
+		{
+			std::string stringValue = json_GetVideoRawData.get<std::string>();
+			// Convert the input string to lowercase for case-insensitive comparison
+			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
+			GetVideoRawData = (stringValue == "true");
+			std::cout << "GetVideoRawData value is " << (GetVideoRawData ? "true" : "false") << std::endl;
+		}
+		if (!json_GetAudioRawData.is_null())
+		{
+			std::string stringValue = json_GetAudioRawData.get<std::string>();
+			// Convert the input string to lowercase for case-insensitive comparison
+			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
+			GetAudioRawData = (stringValue == "true");
+			std::cout << "GetAudioRawData value is " << (GetAudioRawData ? "true" : "false") << std::endl;
+		}
+
+	
+
 	} while (false);
 
 	printf("directory of config file: %s\n", self_dir.c_str());
@@ -1034,8 +1053,8 @@ void getJWTToken(std::string remote_url)
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
-		curl_easy_setopt(curl, CURLOPT_CAINFO, "/root/release_demo/demo/bin/cacert.pem");
-		curl_easy_setopt(curl, CURLOPT_CAPATH, "/root/release_demo/demo/bin/cacert.pem");
+		//curl_easy_setopt(curl, CURLOPT_CAINFO, "/root/release_demo/demo/bin/cacert.pem");
+		//curl_easy_setopt(curl, CURLOPT_CAPATH, "/root/release_demo/demo/bin/cacert.pem");
 
 		// headers
 		printf("setting headers \n");
@@ -1100,7 +1119,6 @@ void initAppSettings()
 {
 
 	struct sigaction sigIntHandler;
-
 	sigIntHandler.sa_handler = my_handler;
 	sigemptyset(&sigIntHandler.sa_mask);
 	sigIntHandler.sa_flags = 0;
@@ -1258,7 +1276,6 @@ int main(int argc, char* argv[])
 	else
 	{
 
-
 		if (useJWTTokenFromWebService) {
 			std::thread tokenThread(getJWTToken, remote_url);
 			tokenThread.join();
@@ -1274,15 +1291,12 @@ int main(int argc, char* argv[])
 			std::cout << "JWT token generation failed." << std::endl;
 		}
 
-
 		initAppSettings();
 
 		loop = g_main_loop_new(NULL, FALSE);
-
 		// add source to default context
 		g_timeout_add(100, timeout_callback, loop);
 		g_main_loop_run(loop);
-
 		return 0;
 	}
 }
