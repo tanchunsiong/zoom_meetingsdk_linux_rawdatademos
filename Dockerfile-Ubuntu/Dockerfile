@@ -51,6 +51,12 @@ COPY demo/ /app/demo/
 # Execute additional commands
 RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
 
+# Set the working directory to the source folder
+WORKDIR /app/demo
+
+# Make the run script executable
+RUN chmod +x /app/demo/setup-pulseaudio.sh
+
 # Set the working directory to the binary folder
 WORKDIR /app/demo/bin
 
@@ -64,6 +70,6 @@ RUN echo '#!/bin/bash' > /app/demo/run.sh \
 RUN chmod +x /app/demo/run.sh
 
 # Specify the run script as the CMD
-#CMD ["/app/demo/run.sh"]
-CMD ["/bin/bash"]
+CMD ["/app/demo/run.sh"]
+#CMD ["/bin/bash"]
 #CMD ["./meetingSDKDemo"]
