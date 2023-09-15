@@ -13,7 +13,7 @@ docker run -it --rm msdk-5.15.12-on-centos9-compact
 # build Ubuntu
 
 
-docker docker build -t msdk-5.15.12-on-ubuntu-compact -f Dockerfile-Ubuntu/Dockerfile .
+docker build -t msdk-5.15.12-on-ubuntu-compact -f Dockerfile-Ubuntu/Dockerfile .
 docker run -it --rm msdk-5.15.12-on-ubuntu-compact
 
 # build UbuntuDesktop
