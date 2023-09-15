@@ -48,6 +48,7 @@
 
 USING_ZOOM_SDK_NAMESPACE
 
+//these are controlled by code logic, not meant to be used by user/developer
 std::mutex mtx;
 bool jwtTokenGenerated = false;
 
@@ -73,25 +74,26 @@ IMeetingParticipantsController* m_pParticipantsController;
 ZoomSDKAudioRawData* audio_source = new ZoomSDKAudioRawData();
 IZoomSDKAudioRawDataHelper* audioHelper;
 
+//this is used to get a userID, there is no specific proper logic here. It just gets the first userID.
+//userID is needed for video subscription.
 unsigned int userID;
 
-//controls for demo
+//controls for demo, these are used by developers to test out different scenarios
 bool isHeadless = true;
+//this will fetch the JWT Token from a web service
 bool useJWTTokenFromWebService = true;
+//this will fetch the RecordingToken from a web service. 
 bool useRecordingTokenFromWebService = true;
 
+//this will enable or disable logic to get raw video and raw audio
 bool GetVideoRawData = true;
 bool GetAudioRawData = true;
-
-
-
 
 
 uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int returnvalue = m_pParticipantsController->GetParticipantsList()->GetItem(0);
 	std::cout << "UserID is : " << returnvalue << std::endl;
-
 	return returnvalue;
 }
 
@@ -117,7 +119,7 @@ void attemptToStartRawRecordingBoth() {
 			videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
 		}
 
-		//raw auio
+		//raw audio
 		audioHelper = GetAudioRawdataHelper();
 		if (audioHelper) {
 
@@ -129,7 +131,6 @@ void attemptToStartRawRecordingBoth() {
 		else {
 			std::cout << "Error getting audioHelper" << std::endl;
 		}
-
 	}
 	else {
 		std::cout << "attemptToStartRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
@@ -194,6 +195,7 @@ void attemptToStartAudioRawRecording() {
 	}
 }
 
+//callback when given host permission
 void onIsHost() {
 
 	printf("Is host now...\n");
@@ -208,7 +210,7 @@ void onIsHost() {
 
 
 }
-
+//callback when given cohost permission
 void onIsCoHost() {
 
 	printf("Is co-host now...\n");
@@ -223,6 +225,7 @@ void onIsCoHost() {
 
 
 }
+//callback when given recording permission
 void onIsGivenRecordingPermission() {
 
 	printf("Is given recording permissions now...\n");
@@ -238,7 +241,7 @@ void onIsGivenRecordingPermission() {
 
 }
 
-//event callback
+//callback when the SDK is inmeeting
 void onInMeeting() {
 
 
@@ -272,10 +275,9 @@ void onMeetingEndsQuitApp() {
 void onMeetingJoined() {
 
 	printf("Joining Meeting...\n");
-
-
 }
 
+//get path, used to read json file
 std::string getSelfDirPath()
 {
 	char dest[PATH_MAX];
@@ -283,14 +285,12 @@ std::string getSelfDirPath()
 	if (readlink("/proc/self/exe", dest, PATH_MAX) == -1)
 	{
 	}
-
 	char* tmp = strrchr(dest, '/');
 	if (tmp)
 		*tmp = 0;
 	printf("getpath\n");
 	return std::string(dest);
 }
-
 
 
 void ReadJsonSettings()
@@ -318,12 +318,10 @@ void ReadJsonSettings()
 		{
 			break;
 		}
-
 		if (config_json.is_null())
 		{
 			break;
 		}
-
 		Json json_meeting_number = config_json["meeting_number"];
 		Json json_token = config_json["token"];
 		Json json_meeting_password = config_json["meeting_password"];
@@ -358,7 +356,6 @@ void ReadJsonSettings()
 		}
 		if (!json_isHeadless.is_null())
 		{
-
 			std::string stringValue = json_isHeadless.get<std::string>();
 			// Convert the input string to lowercase for case-insensitive comparison
 			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
@@ -380,7 +377,6 @@ void ReadJsonSettings()
 }
 
 void InitMeetingSDK(Gtk::TextView* text_view)
-
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
 	ZOOM_SDK_NAMESPACE::InitParam initParam;
@@ -392,22 +388,14 @@ void InitMeetingSDK(Gtk::TextView* text_view)
 	// set language id
 	initParam.emLanguageID = ZOOM_SDK_NAMESPACE::LANGUAGE_English;
 
-	// change icon
-	// initParam.uiWindowIconSmallID = IDI_ICON_LOGO;
-	// initParam.uiWindowIconBigID = IDI_ICON_LOGO;
-	// initParam.hResInstance = GetModuleHandle(NULL);
-
 	//set logging perferences
 	initParam.enableLogByDefault = true;
 	initParam.enableGenerateDump = true;
 
-	// initParam.obConfigOpts.optionalFeatures = ENABLE_CUSTOMIZED_UI_FLAG;
-
-
+	// attempt to initialize
 	err = ZOOM_SDK_NAMESPACE::InitSDK(initParam);
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
-
 		if (text_view)
 		{
 			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
@@ -423,8 +411,6 @@ void InitMeetingSDK(Gtk::TextView* text_view)
 			buffer->set_text("Init meetingSdk:success\n");
 		}
 		std::cerr << "Init meetingSdk:success" << std::endl;
-
-
 	}
 
 }
@@ -433,20 +419,16 @@ void CleanSDK(Gtk::TextView* text_view)
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
 
-
-
 	if (m_pAuthService)
 	{
 		ZOOM_SDK_NAMESPACE::DestroyAuthService(m_pAuthService);
 		m_pAuthService = NULL;
 	}
-
 	if (m_pSettingService)
 	{
 		ZOOM_SDK_NAMESPACE::DestroySettingService(m_pSettingService);
 		m_pSettingService = NULL;
 	}
-
 	if (m_pMeetingService)
 	{
 		ZOOM_SDK_NAMESPACE::DestroyMeetingService(m_pMeetingService);
@@ -464,6 +446,7 @@ void CleanSDK(Gtk::TextView* text_view)
 	//	_network_connection_helper = NULL;
 	//}
 
+	//attempt to clean up SDK
 	err = ZOOM_SDK_NAMESPACE::CleanUPSDK();
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
@@ -481,11 +464,7 @@ void CleanSDK(Gtk::TextView* text_view)
 			buffer->set_text("CleanSDK meetingSdk:success\n");
 		}
 		std::cerr << "CleanSDK meetingSdk:success" << std::endl;
-
-
 	}
-
-
 }
 
 
@@ -496,11 +475,13 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	SDKError err2(SDKError::SDKERR_SUCCESS);
 
 
-	//try to create the meetingservice object, this object will be used to join the meeting
+	//try to create the meetingservice object, 
+	//this object will be used to join the meeting
 	if ((err2 = CreateMeetingService(&m_pMeetingService)) != SDKError::SDKERR_SUCCESS) {};
 	std::cerr << "MeetingService created." << std::endl;
 
 	//before joining a meeting, create the setting service
+	//this object is used to for settings
 	CreateSettingService(&m_pSettingService);
 	std::cerr << "Settingservice created." << std::endl;
 
@@ -509,16 +490,20 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 		ZOOM_SDK_NAMESPACE::IAudioSettingContext* pAudioContext = m_pSettingService->GetAudioSettings();
 		if (pAudioContext)
 		{
+			//ensure auto join audio
+			pAudioContext->EnableAutoJoinAudio(true);
 
-			//paranoid test
+			//setting speaker
+			//if there are speakers detected
 			if (pAudioContext->GetSpeakerList()->GetCount() >= 1) {
 				std::cout << "Number of speaker(s) : " << pAudioContext->GetSpeakerList()->GetCount() << std::endl;
 				ISpeakerInfo* sInfo = pAudioContext->GetSpeakerList()->GetItem(0);
 				const zchar_t* deviceName = sInfo->GetDeviceName();
+
+				//set speaker
 				if (deviceName != nullptr && deviceName[0] != '\0') {
 					std::cout << "Speaker(0) name : " << sInfo->GetDeviceName() << std::endl;
 					std::cout << "Speaker(0) id : " << sInfo->GetDeviceId() << std::endl;
-
 					pAudioContext->SelectSpeaker(sInfo->GetDeviceId(), sInfo->GetDeviceName());
 					std::cout << "Is selected speaker? : " << pAudioContext->GetSpeakerList()->GetItem(0)->IsSelectedDevice() << std::endl;
 				}
@@ -526,21 +511,19 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 					std::cout << "Speaker(0) name is empty or null." << std::endl;
 					std::cout << "Speaker(0) id is empty or null." << std::endl;
 				}
-
-
-
-
-				//pAudioContext->UseDefaultSystemMic();
-				//pAudioContext->UseDefaultSystemSpeaker();
 			}
+
+			//setting microphone
+			//if there are microphone detected
 			if (pAudioContext->GetMicList()->GetCount() >= 1) {
 				IMicInfo* mInfo = pAudioContext->GetMicList()->GetItem(0);
 				std::cout << "Number of mic(s) : " << pAudioContext->GetMicList()->GetCount() << std::endl;
 				const zchar_t* deviceName = mInfo->GetDeviceName();
+
+				//set microphone
 				if (deviceName != nullptr && deviceName[0] != '\0') {
 					std::cout << "Mic(0) name : " << mInfo->GetDeviceName() << std::endl;
 					std::cout << "Mic(0) id : " << mInfo->GetDeviceId() << std::endl;
-
 					pAudioContext->SelectMic(mInfo->GetDeviceId(), mInfo->GetDeviceName());
 					std::cout << "Is selected Mic? : " << pAudioContext->GetMicList()->GetItem(0)->IsSelectedDevice() << std::endl;
 				}
@@ -548,29 +531,28 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 					std::cout << "Mic(0) name is empty or null." << std::endl;
 					std::cout << "Mic(0) id is empty or null." << std::endl;
 				}
-
-
-				//pAudioContext->UseDefaultSystemMic();
-				//pAudioContext->UseDefaultSystemSpeaker();
 			}
-
-
-			pAudioContext->EnableAutoJoinAudio(true);
 		}
 	}
 
-	// Set the event listener
+	// Set the event listener for meeting status
 	m_pMeetingService->SetEvent(new MeetingServiceEventListener(&onMeetingJoined, &onMeetingEndsQuitApp, &onInMeeting));
 
-	//dreamtcs segmentation fault
-	if (onIsHost && onIsCoHost) {
-		m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
-		m_pParticipantsController->SetEvent(new MeetingParticipantsCtrlEventListener(&onIsHost, &onIsCoHost));
-	}
+	// Set the event listener for host, co-host 
+	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
+	m_pParticipantsController->SetEvent(new MeetingParticipantsCtrlEventListener(&onIsHost, &onIsCoHost));
+
+	// Set the event listener for recording privilege status
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
 	m_pRecordController->SetEvent(new MeetingRecordingCtrlEventListener(&onIsGivenRecordingPermission));
 
 
+	// set event listnener for prompt handler 
+	IMeetingReminderController* meetingremindercontroller = m_pMeetingService->GetMeetingReminderController();
+	MeetingReminderEventListener* meetingremindereventlistener = new MeetingReminderEventListener();
+	meetingremindercontroller->SetEvent(meetingremindereventlistener);
+
+	//prepare params used for joining meeting
 	ZOOM_SDK_NAMESPACE::JoinParam joinParam;
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SERVICE_FAILED);
 	joinParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_WITHOUT_LOGIN;
@@ -583,10 +565,13 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 	withoutloginParam.psw = meeting_password.c_str();
 	withoutloginParam.customer_key = NULL;
 	withoutloginParam.webinarToken = NULL;
+	withoutloginParam.isVideoOff = false;
+	withoutloginParam.isAudioOff = false;
 
 	std::cerr << "JWT token is " << token << std::endl;
 	std::cerr << "Recording token is " << recording_token << std::endl;
 
+	//automatically set app_privilege token if it is present in config.json, or retrieved from web service
 	withoutloginParam.app_privilege_token = NULL;
 	if (!recording_token.size() == 0)
 	{
@@ -598,14 +583,6 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 		std::cerr << "Leaving recording token as NULL" << std::endl;
 	}
 
-	withoutloginParam.isVideoOff = false;
-	withoutloginParam.isAudioOff = false;
-
-
-	// set prompt handler here
-	IMeetingReminderController* meetingremindercontroller = m_pMeetingService->GetMeetingReminderController();
-	MeetingReminderEventListener* meetingremindereventlistener = new MeetingReminderEventListener();
-	meetingremindercontroller->SetEvent(meetingremindereventlistener);
 
 	//attempt to join meeting
 	do
@@ -692,9 +669,11 @@ void LeaveMeeting(Gtk::TextView* text_view)
 	} while (false);
 }
 
-// dreamtcs
+//callback when authentication is compeleted
 void OnAuthenticationComplete()
 {
+	//if this is a headless app, automatically join meeting.
+	//if this is not headless app, we are expecting user to click on a button to join meeting.
 	if (isHeadless) {
 		JoinMeeting(nullptr, nullptr, nullptr);
 	}
@@ -708,7 +687,7 @@ void AuthMeetingSDK(Gtk::TextView* text_view)
 	if ((err = CreateAuthService(&m_pAuthService)) != SDKError::SDKERR_SUCCESS) {};
 	std::cerr << "AuthService created." << std::endl;
 
-	//Create a param to put in jwt token
+	//Create a param to insert jwt token
 	ZOOM_SDK_NAMESPACE::AuthContext param;
 
 	//set the event listener for onauthenticationcompleted
@@ -745,16 +724,13 @@ void AuthMeetingSDK(Gtk::TextView* text_view)
 	}
 }
 
-//Logging in  might be irrelavanet for a headless app
+//Logging in might be irrelevant for a headless app
 void Login(Gtk::TextView* text_view, Gtk::Entry* entryA)
 {
 
 	std::string text = "ssologintokenhere";
 	const char* token = text.c_str();
 
-
-
-	//dreamtcs not tested yet
 	if (m_pAuthService)
 	{
 		ZOOM_SDK_NAMESPACE::SDKError err = ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS;
@@ -774,15 +750,16 @@ void Login(Gtk::TextView* text_view, Gtk::Entry* entryA)
 		}
 	}
 
-
-
 }
 
+// Generating token might be irrelevant for a headless app
 void gen_token()
 {
 	//m_AuthSDKWorkFlow.GetSSOUrl();
 }
 
+//used for non headless app 
+//list all user IDs
 void getuserID(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk::Entry* entryA)
 {
 
@@ -846,6 +823,7 @@ void StartMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid)
 	}
 }
 
+//used for non headless app
 void mute_unmute_video(Gtk::TextView* text_view)
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
@@ -889,6 +867,7 @@ void mute_unmute_video(Gtk::TextView* text_view)
 	}
 }
 
+//used for non headless app
 void mute_unmute_audio(Gtk::TextView* text_view, Gtk::Entry* entryA)
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
@@ -937,6 +916,7 @@ void mute_unmute_audio(Gtk::TextView* text_view, Gtk::Entry* entryA)
 
 ////////////////////////////////////////////////raw_data//////////////////////////////////////////////
 
+//used for non headless app
 void send_raw_video(Gtk::TextView* text_view)
 {
 
@@ -944,12 +924,13 @@ void send_raw_video(Gtk::TextView* text_view)
 
 
 }
+//used for non headless app
 void send_raw_audio(Gtk::TextView* text_view)
 {
 
-
 }
 
+//used for non headless app
 void request_recording_permissions(Gtk::TextView* text_view)
 {
 
@@ -971,13 +952,12 @@ void request_recording_permissions(Gtk::TextView* text_view)
 	}
 }
 
-
-
+//used for non headless app
 void subscribe_video(Gtk::TextView* text_view, Gtk::Entry* entryA)
 {
 
 }
-
+//used for non headless app
 void un_subscribe_video(Gtk::TextView* text_view)
 {
 
