@@ -14,18 +14,48 @@ void MeetingServiceEventListener::onMeetingStatusChanged(MeetingStatus status, i
 	std::cout << "onMeetingStatusChanged: " << status << ", iResult: " << iResult << std::endl;
 	switch (status)
 	{
-	case MEETING_FAIL_MEETING_NOT_EXIST:
-		printf("Meeting doesn't exitst, check your Meeting Number.\n");
+	case MEETING_STATUS_IDLE:
+		printf("No meeting is running.\n");
 		break;
-
+	case MEETING_STATUS_CONNECTING:
+		printf("Connect to the meeting server status.\n");
+		break;
+	case MEETING_STATUS_WAITINGFORHOST:
+		printf("Waiting for the host to start the meeting.\n");
+		break;
 	case MEETING_STATUS_INMEETING:
 		printf("onMeetingStatusChanged() In Meeting.\n");
 		if (onInMeeting_) onInMeeting_();
-
 		break;
+	case MEETING_STATUS_DISCONNECTING:
+		printf("Disconnect the meeting server, leave meeting status.\n");
+		break;
+	case MEETING_STATUS_RECONNECTING:
+		printf("Reconnecting meeting server status\n");
+		break;
+	case MEETING_STATUS_FAILED:
+		printf("Failed to connect the meeting server.\n");
+		break;
+	case MEETING_STATUS_ENDED:
+		printf("Meeting ends.\n");
+		if (onMeetingEnds_) onMeetingEnds_();
+		break;
+	case MEETING_STATUS_UNKNOW:
+		printf("Unknown status.\n");
+		break;
+	case MEETING_STATUS_LOCKED:
+		printf("Meeting is locked to prevent the further participants to join the meeting.\n");
+		break;
+	case MEETING_STATUS_UNLOCKED:
+		printf("Meeting is open and participants can join the meeting.\n");
+		break;
+	case MEETING_STATUS_IN_WAITING_ROOM:
+		printf("Participants who join the meeting before the start are in the waiting room.\n");
+		break;
+
+
 	}
 
-	if (status == MEETING_STATUS_ENDED && onMeetingEnds_) onMeetingEnds_();
 }
 
 void MeetingServiceEventListener::onMeetingStatisticsWarningNotification(StatisticsWarningType type)
