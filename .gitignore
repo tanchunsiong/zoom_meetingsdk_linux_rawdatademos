@@ -5,7 +5,9 @@ demo/lib/zoom_meeting_sdk/*.so
 demo/lib/zoom_meeting_sdk/*.1
 demo/lib/zoom_meeting_sdk/qt_libs/Qt/*
 demo/include/h/*
+demo/include/ffmpeg/
 demo/.vscode/
+demo/out
 
 demo-compact/bin/
 demo-compact/build/
@@ -15,8 +17,8 @@ demo-compact/lib/zoom_meeting_sdk/qt_libs/Qt/*
 demo-compact/include/h/*
 demo-compact/.vscode/
 
-.vscode/
-build/
+/.vscode/
+/build/
 /YUVFile/*.yuv
 
 #files for vs 2022
@@ -26,4 +28,4 @@ demo-compact/CMakeSettings.json
 
 # Untrack the files (but keep them locally)
 git rm --cached config.json
-/.vscode/settings.json
+

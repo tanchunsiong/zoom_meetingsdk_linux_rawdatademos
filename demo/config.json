@@ -8,5 +8,5 @@
   "useJWTTokenFromWebService": "true",
   "useRecordingTokenFromWebService": "true",
   "GetVideoRawData": "true",
-  "GetAudioRawData": "true"
+  "GetAudioRawData": "false"
 }

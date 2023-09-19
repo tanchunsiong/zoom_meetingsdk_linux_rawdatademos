@@ -1,5 +1,5 @@
 # Use the official Ubuntu image as the base image
-FROM ubuntu:22.04
+FROM ubuntu:23.10
 
 # Install necessary dependencies
 RUN apt-get update && \
@@ -8,8 +8,6 @@ RUN apt-get update && \
 RUN apt-get install -y pkgconf
 
 RUN apt-get install -y gtkmm-3.0
-
-
 
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     libx11-xcb1 \
@@ -33,7 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     libegl-mesa0 \
     libsdl2-dev \
     g++-multilib 
-
+# Install CURL related libs
 RUN apt-get install -y libcurl4-openssl-dev
 
 # Install ALSA

@@ -43,6 +43,7 @@
 //references for GetAudioRawData
 #include "ZoomSDKAudioRawData.h"
 #include "meeting_service_components/meeting_recording_interface.h"
+#include "ZoomSDKRawDataPipeDelegate.h"
 
 USING_ZOOM_SDK_NAMESPACE
 
@@ -68,6 +69,9 @@ IZoomSDKRenderer* videoHelper;
 IMeetingRecordingController* m_pRecordController;
 IMeetingParticipantsController* m_pParticipantsController;
 
+//new renderer
+ZoomSDKRawDataPipeDelegate* rawdatapipedelegate = new ZoomSDKRawDataPipeDelegate();
+
 //references for GetAudioRawData
 ZoomSDKAudioRawData* audio_source = new ZoomSDKAudioRawData();
 IZoomSDKAudioRawDataHelper* audioHelper;
@@ -75,6 +79,7 @@ IZoomSDKAudioRawDataHelper* audioHelper;
 //this is used to get a userID, there is no specific proper logic here. It just gets the first userID.
 //userID is needed for video subscription.
 unsigned int userID;
+
 
 //controls for demo, these are used by developers to test out different scenarios
 bool isHeadless = true;
@@ -85,7 +90,7 @@ bool useRecordingTokenFromWebService = true;
 
 //this will enable or disable logic to get raw video and raw audio
 bool GetVideoRawData = true;
-bool GetAudioRawData = true;
+bool GetAudioRawData = false;
 
 
 uint32_t getUserID() {
@@ -95,141 +100,86 @@ uint32_t getUserID() {
 	return returnvalue;
 }
 
-void attemptToStartRawRecordingBoth() {
-
-	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
-	SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording();
-	if (err2 == SDKERR_SUCCESS) {
-		SDKError err1 = m_pRecordController->StartRawRecording();
-		if (err1 != SDKERR_SUCCESS) {
-			std::cout << "Error occurred" << std::endl;
-		}
-
-		//raw video
-		SDKError err = createRenderer(&videoHelper, videoSource);
-		if (err != SDKERR_SUCCESS) {
-			std::cout << "Error occurred" << std::endl;
-			//handle error
-		}
-		else {
-			std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
-			videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
-			videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
-		}
-
-		//raw audio
-		audioHelper = GetAudioRawdataHelper();
-		if (audioHelper) {
-
-			SDKError err3 = audioHelper->subscribe(audio_source);
-			if (err3 != SDKERR_SUCCESS) {
-				std::cout << "Error occurred subscribing to audio : " << err3 << std::endl;
-			}
-		}
-		else {
-			std::cout << "Error getting audioHelper" << std::endl;
-		}
-	}
-	else {
-		std::cout << "attemptToStartRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
-	}
-
-}
-//GetVideoRawData
-void attemptToStartRawRecording() {
-
-
-	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
-	SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording();
-	if (err2 == SDKERR_SUCCESS) {
-		SDKError err1 = m_pRecordController->StartRawRecording();
-		if (err1 != SDKERR_SUCCESS) {
-			std::cout << "Error occurred" << std::endl;
-		}
-		else {
-			SDKError err = createRenderer(&videoHelper, videoSource);
-			if (err != SDKERR_SUCCESS) {
-				std::cout << "Error occurred" << std::endl;
-				//handle error
-			}
-			else {
-				std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
-				videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
-				videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
-			}
-		}
-	}
-	else {
-		std::cout << "attemptToStartRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
-	}
+IUserInfo* getUserObj() {
+	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
+	int userID = m_pParticipantsController->GetParticipantsList()->GetItem(0);
+	IUserInfo* returnvalue = m_pParticipantsController->GetUserByUserID(userID);
+	std::cout << "UserID is : " << returnvalue << std::endl;
+	return returnvalue;
 }
 
-//GetAudioRawData
-void attemptToStartAudioRawRecording() {
-
+void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 	m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
 	SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRawRecording();
+
 	if (err2 == SDKERR_SUCCESS) {
 		SDKError err1 = m_pRecordController->StartRawRecording();
 		if (err1 != SDKERR_SUCCESS) {
 			std::cout << "Error occurred starting raw recording" << std::endl;
 		}
 		else {
-			audioHelper = GetAudioRawdataHelper();
-			if (audioHelper) {
+			//GetVideoRawData
+			//if (isVideo) {
+			//	SDKError err = createRenderer(&videoHelper, videoSource);
+			//	if (err != SDKERR_SUCCESS) {
+			//		std::cout << "Error occurred" << std::endl;
+			//		// Handle error
+			//	}
+			//	else {
+			//		std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
+			//		videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
+			//		videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
+			//	}
+			//}
 
-				SDKError err = audioHelper->subscribe(audio_source);
-				if (err != SDKERR_SUCCESS) {
-					std::cout << "Error occurred subscribing to audio : " << err << std::endl;
-				}
+
+			//new renderer
+			if (isVideo) {
+				//get all users, for each user
+				IUserInfo* p = getUserObj();
+
+				createRenderer(&videoHelper, rawdatapipedelegate);
+				rawdatapipedelegate->SubScribeUser(p,videoHelper);
+
 			}
-			else {
-				std::cout << "Error getting audioHelper" << std::endl;
+			//GetAudioRawData
+			if (isAudio) {
+				audioHelper = GetAudioRawdataHelper();
+				if (audioHelper) {
+					SDKError err = audioHelper->subscribe(audio_source);
+					if (err != SDKERR_SUCCESS) {
+						std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+					}
+				}
+				else {
+					std::cout << "Error getting audioHelper" << std::endl;
+				}
 			}
 		}
 	}
 	else {
-		std::cout << "attemptToStartAudioRawRecording : no permissions yet, need host, co-host or recording privilege" << std::endl;
+		std::cout << "Cannot start raw recording: no permissions yet, need host, co-host, or recording privilege" << std::endl;
 	}
 }
+
 
 //callback when given host permission
 void onIsHost() {
 
 	printf("Is host now...\n");
-
-	if (GetAudioRawData && GetVideoRawData) {
-		attemptToStartRawRecordingBoth();
-	}
-	else {
-		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
-		if (GetVideoRawData) { attemptToStartRawRecording(); }
-	}
+	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 }
 //callback when given cohost permission
 void onIsCoHost() {
 
 	printf("Is co-host now...\n");
-	if (GetAudioRawData && GetVideoRawData) {
-		attemptToStartRawRecordingBoth();
-	}
-	else {
-		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
-		if (GetVideoRawData) { attemptToStartRawRecording(); }
-	}
+	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 }
 //callback when given recording permission
 void onIsGivenRecordingPermission() {
 
 	printf("Is given recording permissions now...\n");
-	if (GetAudioRawData && GetVideoRawData) {
-		attemptToStartRawRecordingBoth();
-	}
-	else {
-		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
-		if (GetVideoRawData) { attemptToStartRawRecording(); }
-	}
-
+	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 }
 
 //callback when the SDK is inmeeting
@@ -245,13 +195,7 @@ void onInMeeting() {
 
 	}
 
-	if (GetAudioRawData && GetVideoRawData) {
-		attemptToStartRawRecordingBoth();
-	}
-	else {
-		if (GetAudioRawData) { attemptToStartAudioRawRecording(); }
-		if (GetVideoRawData) { attemptToStartRawRecording(); }
-	}
+	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 }
 
 void onMeetingEndsQuitApp() {
@@ -360,8 +304,8 @@ void ReadJsonSettings()
 			// Convert the input string to lowercase for case-insensitive comparison
 			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
 			useJWTTokenFromWebService = (stringValue == "true");
-			std::cout << "useJWTTokenFromWebService value is " << (useJWTTokenFromWebService ? "true" : "false") << std::endl; 
-			
+			std::cout << "useJWTTokenFromWebService value is " << (useJWTTokenFromWebService ? "true" : "false") << std::endl;
+
 		}
 		if (!json_useRecordingTokenFromWebService.is_null())
 		{
@@ -388,7 +332,7 @@ void ReadJsonSettings()
 			std::cout << "GetAudioRawData value is " << (GetAudioRawData ? "true" : "false") << std::endl;
 		}
 
-	
+
 
 	} while (false);
 

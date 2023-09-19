@@ -21,6 +21,7 @@ add_definitions(${GTKMM_CFLAGS_OTHER})
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/h)
+include_directories(${CMAKE_SOURCE_DIR}/include/ffmpeg)
 include_directories(/usr/include/glib-2.0/)
 include_directories(/usr/include/glib-2.0/glib)
 include_directories(/usr/lib/x86_64-linux-gnu/glib-2.0/include/)
@@ -28,6 +29,7 @@ include_directories(/usr/lib/x86_64-linux-gnu/glib-2.0/include/)
 link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk)
 link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs)
 link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs/Qt/lib)
+link_directories(${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 
 add_executable(meetingSDKDemo 
               ${CMAKE_SOURCE_DIR}/meeting_sdk_demo.cpp
@@ -45,6 +47,8 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/ZoomSDKRenderer.cpp
               ${CMAKE_SOURCE_DIR}/ZoomSDKAudioRawData.h
               ${CMAKE_SOURCE_DIR}/ZoomSDKAudioRawData.cpp
+              ${CMAKE_SOURCE_DIR}/ZoomSDKRawDataPipeDelegate.h
+              ${CMAKE_SOURCE_DIR}/ZoomSDKRawDataPipeDelegate.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)
@@ -53,6 +57,8 @@ target_link_libraries(meetingSDKDemo glib-2.0)
 target_link_libraries(meetingSDKDemo ${GTKMM_LIBRARIES})
 target_link_libraries(meetingSDKDemo curl)
 target_link_libraries(meetingSDKDemo pthread)
+target_link_libraries(meetingSDKDemo z avcodec avformat avutil)
+target_link_libraries(meetingSDKDemo lzma swresample swscale avfilter)
 
 # Create a symbolic link
 execute_process(COMMAND ln -s libmeetingsdk.so libmeetingsdk.so.1
