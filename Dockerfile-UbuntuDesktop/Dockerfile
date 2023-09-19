@@ -7,12 +7,8 @@ RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4EB27DB2A3B88B
 # Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y build-essential cmake
-
-RUN apt-get install -y pkgconf
-
+#RUN apt-get install -y pkgcon
 RUN apt-get install -y gtkmm-3.0
-
-
 
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     libx11-xcb1 \
@@ -36,7 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     libegl-mesa0 \
     libsdl2-dev \
     g++-multilib 
-
+# Install CURL related libs
 RUN apt-get install -y libcurl4-openssl-dev
 
 # Install ALSA

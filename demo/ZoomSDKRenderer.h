@@ -15,5 +15,5 @@ public:
 	virtual void onRendererBeDestroyed();
 
 	virtual void SaveToRawYUVFile(YUVRawDataI420* data);
-
+	virtual void SaveYUVRawDataToMP4(YUVRawDataI420* data);
 };

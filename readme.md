@@ -60,6 +60,7 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
     libxcb-shape0 \
     libxcb-shm0 \
     libxcb-randr0 \
+    libxcb-randr0 \
     libxcb-image0 \
     libxcb-keysyms1 \
     libxcb-xtest0 
@@ -77,14 +78,17 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
 
 apt-get install -y gtkmm-3.0
 
-## if you are getting error about <SDL2/SDL.h>, not necessary anymore
-### apt-get install libegl-mesa0 libsdl2-dev g++-multilib
+## if you are getting error about <SDL2/SDL.h>
+ apt-get install libegl-mesa0 libsdl2-dev g++-multilib
 
 ## for curl related calls
 apt-get install libcurl4-openssl-dev \
     openssl \
     ca-certificates \
     pkg-config 
+
+    ## for pulseaudio related
+    libpulse
 
   ======================================================================
 
@@ -161,3 +165,34 @@ dorowu/ubuntu-desktop-lxde-vnc:focal
 The setup is done via setup-pulseaudio.sh, this need to be run prior to running this project in a docker environment.
 The script starts the pulseaudio service, creates a virtual speaker, a virtual microphone, and a zoomus.conf file in the docker environment.
 
+## Additional libraries references
+
+dbus (dbus-git, dbus-selinux, dbus-xdg-docs)
+fontconfig (fontconfig-git, fontconfig-ubuntu)
+glib2 (glib2-selinux, glib2-git, glib2-patched-thumbnailer)
+libdrm (libdrm-git)
+libpulse (pulseaudio-dummy, pulseaudio-git)
+libsm
+libx11 (libx11-git)
+libxcb (libxcb-git)
+libxcomposite
+libxcursor (libxcursor-git)
+libxfixes
+libxi (libxi-git)
+libxkbcommon-x11 (libxkbcommon-x11-git)
+libxrandr (libxrandr-git)
+libxrender
+libxshmfence
+libxslt (libxslt-git)
+libxtst
+mesa (mesa-d3d12, mesa-panfork-git, mesa-steamos, mesa-amdonly-gaming-git, mesa-nightly-nvk-rusticl-intelrt-git, mesa-git, mesa-pvr-vf2, mesa-minimal-git, mesa-rusticl-git, mesa-amber)
+nss (nss-hg)
+ttf-font (neuropol-ttf, ttf-win7-fonts, ttf-ms-win8, ttf-ms-win8-arabic, ttf-ms-win8-hebrew, ttf-ms-win8-sea, ttf-ms-win8-indic, ttf-ms-win8-japanese, ttf-ms-win8-korean, ttf-ms-win8-zh_cn, ttf-ms-win8-zh_tw, ttf-ms-win8-thai, ttf-ms-win8-other, ttf-noto-fonts-simple, ttf-kids, ttf-gabriola, ttf-liberation-sans-narrow, ttf-cavafy-script, ttf-ms-fonts, ttf-dejavu-ib, ttf-zelda, ttf-oxygen, ttf-oxygen-gf, ttf-share-gf, ttf-gost, otf-inconsolata-dz, ttf-d2coding, ttf-ibm-plex-mono-git, ttf-dejavu-emojiless, ttf-agave, ttf-caracteres, ttf-cuprum, ttf-autour-one, ttf-impallari-milonga, ttf-impallari-miltonian, ttf-clarity-city, ttf-paratype, ttf-segoewp, ttf-karla, ttf-ms-win10, ttf-ms-win10-japanese, ttf-ms-win10-korean, ttf-ms-win10-sea, ttf-ms-win10-thai, ttf-ms-win10-zh_cn, ttf-ms-win10-zh_tw, ttf-ms-win10-other, ttf-win10, ttf-droid-simple, ttf-ms-win10-auto, ttf-ms-win10-cdn, noto-fonts-variable-lite, ttf-bmono, noto-fonts-lite, ttf-pt-astra-fact, ttf-weblysleekui, ttf-pt-astra-sans, ttf-pt-astra-serif, ttf-pt-sans, ttf-pt-serif, ttf-pt-mono, ttf-pt-root_ui, ttf-ms-win11-auto, ttf-xo-fonts, ttf-plemoljp, ttf-juisee, ttf-ms-win11, ttf-ms-win11-japanese, ttf-ms-win11-korean, ttf-ms-win11-sea, ttf-ms-win11-thai, ttf-ms-win11-zh_cn, ttf-ms-win11-zh_tw, ttf-ms-win11-other, gnu-free-fonts, noto-fonts, ttf-bitstream-vera, ttf-croscore, ttf-dejavu, ttf-droid, ttf-ibm-plex, ttf-liberation)
+xcb-util-image
+xcb-util-keysyms
+
+ibus (ibus-git) (optional) – remote control
+picom (picom-git, picom-arian8j2-git, picom-9-bin, picom-ftlabs-git, picom-simpleanims-git, picom-simpleanims-next-git, picom-allusive) (optional) – extra compositor needed by some window managers for screen sharing
+pulseaudio-alsa (pulseaudio-dummy, pulseaudio-alsa-git, pipewire-full-alsa-git, pipewire-common-alsa-git, pipewire-alsa-git, pipewire-alsa) (optional) – audio via PulseAudio
+qt5-webengine (optional) – SSO login support
+xcompmgr (xcompmgr-git) (optional) – extra compositor needed by some window managers for screen sharing
