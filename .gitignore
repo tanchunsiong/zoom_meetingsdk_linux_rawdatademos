@@ -1,5 +1,6 @@
 demo/bin/
 demo/build/
+demo/lib/ffmpeg/
 demo/lib/zoom_meeting_sdk/*.so
 demo/lib/zoom_meeting_sdk/*.1
 demo/lib/zoom_meeting_sdk/qt_libs/Qt/*
@@ -25,3 +26,4 @@ demo-compact/CMakeSettings.json
 
 # Untrack the files (but keep them locally)
 git rm --cached config.json
+/.vscode/settings.json
