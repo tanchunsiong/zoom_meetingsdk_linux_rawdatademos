@@ -7,6 +7,6 @@
   "isHeadless": "true",
   "useJWTTokenFromWebService": "true",
   "useRecordingTokenFromWebService": "true",
-  "GetVideoRawData": "true",
+  "GetVideoRawData": "false",
   "GetAudioRawData": "false"
 }
