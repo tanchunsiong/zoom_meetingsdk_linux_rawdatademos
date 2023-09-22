@@ -1,6 +1,8 @@
+# Preparing development / docker environment on differen distributions
+
 ==============================================================
 
-# Centos
+## Centos
 
 This is tested on WSL centos 9 (works better on centos 8 or ubuntu)
 
@@ -8,24 +10,24 @@ In case you wish to run this on Windows Subsystem for Linux, here are some addit
 on centos 9 for WSL2. Some of these commands / packages might be redundant, and has not been optimized.
 
 
-## install files for compiling
+### install files for compiling
 sudo yum install cmake
 sudo yum install gcc gcc-c++
 
-## First, enable the CodeReady Linux Builder repository. You already have access to it; you just need to enable it.
+### First, enable the CodeReady Linux Builder repository. You already have access to it; you just need to enable it.
 sudo dnf config-manager --set-enabled crb
 #Next, install the EPEL RPM.
 sudo dnf install epel-release epel-next-release
 
-## install GTK related packages
+### install GTK related packages
 sudo yum install gtk3-devel 
 sudo yum install gtkmm30
 sudo yum install gtkmm30-devel
 
-## If you encounter: Fatal error: SDL2/SDL.h: No such file or directory. This is no longer in used at code level, but leaving this here for legacy support purposes
+### If you encounter: Fatal error: SDL2/SDL.h: No such file or directory. This is no longer in used at code level, but leaving this here for legacy support purposes
 sudo yum -y install SDL2-devel
 
-## If you encounter these error Messages
+### If you encounter these error Messages
 #/usr/bin/ld: warning: libxcb-image.so.0, needed by /root/release_demo/demo/libmeetingsdk.so, not found (try using -rpath or -rpath-link)
 #/usr/bin/ld: warning: libxcb-keysyms.so.1, needed by /root/release_demo/demo/libmeetingsdk.so, not found (try using -rpath or -rpath-link)
 
@@ -35,22 +37,26 @@ sudo yum install xcb-util-image
 sudo yum install xcb-util-keysyms
 
 
-## If you encounter these runtime runtime error
+### If you encounter these runtime runtime error
 #libGL error: MESA-LOADER: failed to open swrast: /usr/lib64/dri/swrast_dri.so: cannot open shared object file: No such file or directory (search paths /usr/lib64/dri, suffix _dri)
 sudo yum install mesa-libGL
 sudo yum install mesa-libGL-devel
 sudo yum install mesa-dri-drivers
 
-## for curl related calls (this does not work at runtime for centos 9 due to dependencies on openssl 1.1.1)
+### for curl related calls (this does not work at runtime for centos 9 due to dependencies on openssl 1.1.1)
   yum install -y openssl-devel 
   yum install -y libcurl-devel 
 
+### libraries for opencv, used for converting mp4 into raw sendable video format.
+  sudo yum install opencv-devel
+
+
 ==============================================================
 
-# Ubuntu 22
+## Ubuntu 22
 
 
-## Install necessary dependencies
+### Install necessary dependencies
 apt-get update && \
     apt-get install -y build-essential cmake
 
@@ -65,7 +71,7 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
     libxcb-keysyms1 \
     libxcb-xtest0 
  
- ## optional libraries
+ ### optional libraries
  apt-get install -y --no-install-recommends --no-install-suggests \
     libdbus-1-3 \
     libglib2.0-0 \
@@ -78,20 +84,29 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
 
 apt-get install -y gtkmm-3.0
 
-## if you are getting error about <SDL2/SDL.h>
+### if you are getting error about <SDL2/SDL.h>
  apt-get install libegl-mesa0 libsdl2-dev g++-multilib
 
-## for curl related calls
+### for curl related calls
 apt-get install libcurl4-openssl-dev \
     openssl \
     ca-certificates \
     pkg-config 
 
-    ## for pulseaudio related
-    libpulse
+### for pulseaudio related
+# Install ALSA
+apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
+
+# Install Pulseaudio
+apt-get install -y  pulseaudio pulseaudio-utils ffmpeg
+
+### libraries for opencv, used for converting mp4 into raw sendable video format.
+sudo apt install libopencv-dev
+
 
   ======================================================================
 
+# Getting Started
 ## Steps to start running
 
 1 Please decompress the compressed package of zoom-meeting-sdk-linux_x86_64-5.xx.x.xxxx.tar and copy the files in the decompressed folder to these folders
@@ -144,7 +159,23 @@ target_link_libraries(meetingSDKDemo pthread)
 
 # Get Raw Audio Data
 
-## need to have a file in ~/.config/zoomus.conf
+# Send Raw Video Data
+
+Send Raw Video data sample breaks down an mp4 file using ffmpeg, and sends them to the meeting as a webcam stream.
+You will need ffmpeg installed for this. We have included a creative commons video Big_Buck_Bunny_720_10s_1MB.mp4 for this purpose
+
+Ensure cmake is refering this ffmpeg too
+
+It uses the file ZoomSDKVideoSource.cpp and h
+
+# Send Audio Video Data
+
+this reads from whitenoise.wav 
+
+It uses the file ZoomSDKVirtualAudioMicEvent.cpp and h
+
+## addition requirement for raw audio data in docker
+need to have a file in ~/.config/zoomus.conf
 
 [General]
 system.audio.type=default
@@ -155,17 +186,18 @@ system.audio.type=default
 
 There is a seperate `readme for docker.md`
 Dockerfile targetting different distros are found in their own folder (Dockerfile-centos, Dockerfile-Ubuntu .....)
-Currently this is tested on Centos 9 (limited functionality where getting JWT Token from Web Service does not work)
-Centos 8
-Ubuntu 22
-dorowu/ubuntu-desktop-lxde-vnc:focal
+Currently this is tested on 
+- Centos 9 (functionality where custom function of fetching JWT Token from Web Service does not work, main SDK function works fully)
+- Centos 8
+- Ubuntu 22
+- dorowu/ubuntu-desktop-lxde-vnc:focal
 
-## pulse audio is configured using setup-pulseaudio.sh
+## pulse audio is configured using scripts
 
-The setup is done via setup-pulseaudio.sh, this need to be run prior to running this project in a docker environment.
+The setup is done via `setup-pulseaudio.sh` and `setup-pulssaudio-centos.sh`, this need to be run prior to running this project in a docker environment.
 The script starts the pulseaudio service, creates a virtual speaker, a virtual microphone, and a zoomus.conf file in the docker environment.
 
-## Additional libraries references
+## References : Additional libraries which might be used
 
 dbus (dbus-git, dbus-selinux, dbus-xdg-docs)
 fontconfig (fontconfig-git, fontconfig-ubuntu)
@@ -196,3 +228,10 @@ picom (picom-git, picom-arian8j2-git, picom-9-bin, picom-ftlabs-git, picom-simpl
 pulseaudio-alsa (pulseaudio-dummy, pulseaudio-alsa-git, pipewire-full-alsa-git, pipewire-common-alsa-git, pipewire-alsa-git, pipewire-alsa) (optional) – audio via PulseAudio
 qt5-webengine (optional) – SSO login support
 xcompmgr (xcompmgr-git) (optional) – extra compositor needed by some window managers for screen sharing
+
+
+WIP
+
+do i need gstreamer?
+sudo apt update
+sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly

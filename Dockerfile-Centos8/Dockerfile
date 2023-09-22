@@ -19,14 +19,18 @@ RUN yum install -y dnf-plugins-core \
     && yum install -y libcurl-devel \
     && yum clean all
 
-
- RUN yum install -y alsa-utils
+# install pulse audio related
+ #RUN yum install -y alsa-utils
 
  #RUN yum install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
 
  RUN yum install -y  pulseaudio pulseaudio-utils
 
- #RUN yum install -y #ffmpeg
+# install ffmpeg related
+RUN yum install -y ffmpeg
+
+# install opencv
+RUN yum install -y opencv-devel
 
 # Set the working directory
 WORKDIR /app
