@@ -104,6 +104,7 @@ bool SendVideoRawData = false;
 bool SendAudioRawData = true; //WIP
 
 
+//this is a helper method to get the first User ID, it is just an arbitary UserID
 uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int returnvalue = m_pParticipantsController->GetParticipantsList()->GetItem(0);
@@ -111,6 +112,7 @@ uint32_t getUserID() {
 	return returnvalue;
 }
 
+//this is a helper method to get the first User Object, it is just an arbitary User Object
 IUserInfo* getUserObj() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int userID = m_pParticipantsController->GetParticipantsList()->GetItem(0);
@@ -119,6 +121,7 @@ IUserInfo* getUserObj() {
 	return returnvalue;
 }
 
+//check if you have permission to start raw recording
 void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 
 	if (isVideo || isAudio) {
@@ -180,6 +183,7 @@ void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 	}
 }
 
+//check if you meet the requirements to send raw data
 void CheckAndStartRawSending(bool isVideo, bool isAudio) {
 
 
@@ -225,30 +229,28 @@ void CheckAndStartRawSending(bool isVideo, bool isAudio) {
 
 //callback when given host permission
 void onIsHost() {
-
 	printf("Is host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 
-	//testing
+	//testing WIP
 	if (SendVideoRawData) {
 		IMeetingVideoController* meetingVidController = m_pMeetingService->GetMeetingVideoController();
 		meetingVidController->UnmuteVideo();
 	}
-
+	//testing WIP
 	if (SendAudioRawData) {
 		IMeetingAudioController* meetingAudController = m_pMeetingService->GetMeetingAudioController();
 		meetingAudController->UnMuteAudio(0);
 	}
 }
+
 //callback when given cohost permission
 void onIsCoHost() {
-
 	printf("Is co-host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 }
 //callback when given recording permission
 void onIsGivenRecordingPermission() {
-
 	printf("Is given recording permissions now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 }
@@ -261,13 +263,15 @@ void onInMeeting() {
 	//double check if you are in a meeting
 	if (m_pMeetingService->GetMeetingStatus() == ZOOM_SDK_NAMESPACE::MEETING_STATUS_INMEETING) {
 		printf("In Meeting Now...\n");
+
+		//print all list of participants
 		IList<unsigned int>* participants = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
 		printf("Participants count: %d\n", participants->GetCount());
 
 	}
 
+	//first attempt to start raw recording  / sending, upon successfully joined and achieved "in-meeting" state.
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
-
 	CheckAndStartRawSending(SendVideoRawData, SendAudioRawData);
 }
 
@@ -281,7 +285,7 @@ void onMeetingJoined() {
 	printf("Joining Meeting...\n");
 }
 
-//get path, used to read json file
+//get path, helper method used to read json config file
 std::string getSelfDirPath()
 {
 	char dest[PATH_MAX];
@@ -404,15 +408,11 @@ void ReadJsonSettings()
 			GetAudioRawData = (stringValue == "true");
 			std::cout << "GetAudioRawData value is " << (GetAudioRawData ? "true" : "false") << std::endl;
 		}
-
-
-
 	} while (false);
-
 	printf("directory of config file: %s\n", self_dir.c_str());
 }
 
-void InitMeetingSDK(Gtk::TextView* text_view)
+void InitMeetingSDK()
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
 	ZOOM_SDK_NAMESPACE::InitParam initParam;
@@ -432,26 +432,18 @@ void InitMeetingSDK(Gtk::TextView* text_view)
 	err = ZOOM_SDK_NAMESPACE::InitSDK(initParam);
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
-		if (text_view)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("Init meetingSdk:error\n");
-		}
+	
 		std::cerr << "Init meetingSdk:error " << std::endl;
 	}
 	else
 	{
-		if (text_view)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("Init meetingSdk:success\n");
-		}
+	
 		std::cerr << "Init meetingSdk:success" << std::endl;
 	}
 
 }
 
-void CleanSDK(Gtk::TextView* text_view)
+void CleanSDK()
 {
 	ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
 
@@ -486,26 +478,20 @@ void CleanSDK(Gtk::TextView* text_view)
 	err = ZOOM_SDK_NAMESPACE::CleanUPSDK();
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
-		// printf("Init meetingSdk:error");
-		if (text_view) {
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("CleanSDK meetingSdk:error\n");
-		}
+	
+	
 		std::cerr << "CleanSDK meetingSdk:error " << std::endl;
 	}
 	else
 	{
-		if (text_view) {
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("CleanSDK meetingSdk:success\n");
-		}
+
 		std::cerr << "CleanSDK meetingSdk:success" << std::endl;
 	}
 }
 
 
 
-void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk::Entry* entryA)
+void JoinMeeting()
 {
 	std::cerr << "Joining Meeting" << std::endl;
 	SDKError err2(SDKError::SDKERR_SUCCESS);
@@ -652,34 +638,22 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 			}
 			else
 			{
-				if (text_view)
-				{
-					Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-					buffer->set_text("join_meeting m_pMeetingService:Null\n");
-				}
+				std::cout << "join_meeting m_pMeetingService:Null" << std::endl;
 				break;
 			}
 
 			if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS == err)
 			{
-				if (text_view)
-				{
-					Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-					buffer->set_text("joinmeeting:success\n");
-				}
+				std::cout << "join_meeting:success" << std::endl;
 			}
 			else
 			{
-				if (text_view)
-				{
-					Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-					buffer->set_text("joinmeeting:errors\n");
-				}
+				std::cout << "join_meeting:error" << std::endl;
 			}
 		} while (false);
 	}
 
-	void LeaveMeeting(Gtk::TextView * text_view)
+	void LeaveMeeting()
 	{
 		ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
 
@@ -687,10 +661,8 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 		{
 			if (NULL == m_pMeetingService)
 			{
-				if (text_view) {
-					Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-					buffer->set_text("leave_meeting m_pMeetingService:Null\n");
-				}
+			
+				std::cout << "leave_meeting m_pMeetingService:Null" << std::endl;
 				break;
 			}
 			else
@@ -702,27 +674,19 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 				status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_ENDED ||
 				status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED)
 			{
-				if (text_view) {
-					Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-					buffer->set_text("leave_meeting not in meeting\n");
-				}
+			
+				std::cout << "LeaveMeeting() not in meeting " << std::endl;
 				break;
 			}
 
 			if (SDKError::SDKERR_SUCCESS == m_pMeetingService->Leave(ZOOM_SDK_NAMESPACE::LEAVE_MEETING))
 			{
-				if (text_view) {
-					Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-					buffer->set_text("leave_meeting success\n");
-				}
+				std::cout << "LeaveMeeting() success " << std::endl;
 				break;
 			}
 			else
 			{
-				if (text_view) {
-					Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-					buffer->set_text("leave_meeting error\n");
-				}
+				std::cout << "LeaveMeeting() error" << std::endl;
 				break;
 			}
 		} while (false);
@@ -734,11 +698,11 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 		//if this is a headless app, automatically join meeting.
 		//if this is not headless app, we are expecting user to click on a button to join meeting.
 		if (isHeadless) {
-			JoinMeeting(nullptr, nullptr, nullptr);
+			JoinMeeting();
 		}
 	}
 
-	void AuthMeetingSDK(Gtk::TextView * text_view)
+	void AuthMeetingSDK()
 	{
 		SDKError err(SDKError::SDKERR_SUCCESS);
 
@@ -765,101 +729,20 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 
 		if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != sdkErrorResult)
 		{
-			if (text_view)
-			{
-				Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-				buffer->set_text("AuthSDK:error\n");
-			}
 			std::cerr << "AuthSDK:error " << std::endl;
 		}
 		else
 		{
-			if (text_view)
-			{
-				Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-				buffer->set_text("AuthSDK:success\n");
-				std::cerr << "AuthSDK:success " << std::endl;
-			}
+			std::cerr << "AuthSDK:success " << std::endl;
 		}
 	}
 
-	//Logging in might be irrelevant for a headless app
-	void Login(Gtk::TextView * text_view, Gtk::Entry * entryA)
-	{
-
-		std::string text = "ssologintokenhere";
-		const char* token = text.c_str();
-
-		if (m_pAuthService)
-		{
-			ZOOM_SDK_NAMESPACE::SDKError err = ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS;
-			err = m_pAuthService->SSOLoginWithWebUriProtocol(token);
-
-			if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != err)
-			{
-
-				std::cerr << "Login:error " << std::endl;
-
-				return;
-			}
-			else
-			{
-
-				std::cerr << "Login:success " << std::endl;
-			}
-		}
-
-	}
-
-	// Generating token might be irrelevant for a headless app
-	void gen_token()
-	{
-		//m_AuthSDKWorkFlow.GetSSOUrl();
-	}
+	
 
 	//used for non headless app 
-	//list all user IDs
-	void getuserID(Gtk::TextView * text_view, Gtk::TextView * text_view_userid, Gtk::Entry * entryA)
+
+	void StartMeeting()
 	{
-
-		if (m_pMeetingService->GetMeetingStatus() == MEETING_STATUS_INMEETING)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("getuserID is not inMeeting ,please wait\n");
-			return;
-		}
-		ZOOM_SDK_NAMESPACE::IList<unsigned int>* pParticipantsList = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
-		unsigned int myUserID = 0;
-		if (pParticipantsList == NULL || (pParticipantsList && pParticipantsList->GetCount() == 0))
-		{
-
-			ZOOM_SDK_NAMESPACE::IUserInfo* pMyInfo = m_pMeetingService->GetMeetingParticipantsController()->GetMySelfUser();
-			if (pMyInfo)
-			{
-				myUserID = pMyInfo->GetUserID();
-				userID = myUserID;
-			}
-			return;
-		}
-
-		std::string username_id = "";
-		for (int i = 0; i < pParticipantsList->GetCount(); i++)
-		{
-			unsigned int user_id = pParticipantsList->GetItem(i);
-			std::string sUserName = m_pMeetingService->GetMeetingParticipantsController()->GetUserByUserID(user_id)->GetUserName();
-			username_id += " userName: " + sUserName + "userId: " + std::to_string(user_id);
-		}
-		Glib::RefPtr<Gtk::TextBuffer> buffer_userid = text_view->get_buffer();
-		buffer_userid->set_text(username_id);
-	}
-	void StartMeeting(Gtk::TextView * text_view, Gtk::TextView * text_view_userid)
-	{
-		//if (!SDKInterfaceWrap::GetInst().login)
-		//{
-		//	Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-		//	buffer->set_text("login is not reading ,please wait\n");
-		//	return;
-		//}
 
 		ZOOM_SDK_NAMESPACE::StartParam startParam;
 		startParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_NORMALUSER;
@@ -872,159 +755,14 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 		ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingService->Start(startParam);
 		if (SDKError::SDKERR_SUCCESS == err)
 		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("StartMeeting success\n");
+			std::cerr << "StartMeeting:success " << std::endl;
 		}
 		else
 		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("StartMeeting error\n");
+	
+			std::cerr << "StartMeeting:error " << std::endl;
 		}
 	}
-
-	//used for non headless app
-	void mute_unmute_video(Gtk::TextView * text_view)
-	{
-		ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
-		ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
-
-		ZOOM_SDK_NAMESPACE::IMeetingVideoController* pVideoCtrl = m_pMeetingService->GetMeetingVideoController();
-		if (pVideoCtrl == NULL)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("pVideoCtrl is null\n");
-			return;
-		}
-
-		ZOOM_SDK_NAMESPACE::IMeetingParticipantsController* pUserCtrl = m_pMeetingService->GetMeetingParticipantsController();
-		if (!pUserCtrl)
-			return;
-
-		ZOOM_SDK_NAMESPACE::IUserInfo* pUserMe = pUserCtrl->GetMySelfUser();
-		if (!pUserMe)
-			return;
-
-		//toggle between video on and off
-		if (pUserMe->IsVideoOn())
-		{
-			err = pVideoCtrl->MuteVideo();
-		}
-		else
-		{
-			err = pVideoCtrl->UnmuteVideo();
-		}
-
-		if (SDKError::SDKERR_SUCCESS == err)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("mute_unmute_video success\n");
-		}
-		else
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("mute_unmute_video error\n");
-		}
-	}
-
-	//used for non headless app
-	void mute_unmute_audio(Gtk::TextView * text_view, Gtk::Entry * entryA)
-	{
-		ZOOM_SDK_NAMESPACE::SDKError err(ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS);
-		ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
-
-		ZOOM_SDK_NAMESPACE::IMeetingAudioController* pAudioCtrl = m_pMeetingService->GetMeetingAudioController();
-		if (pAudioCtrl == NULL)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("pVideoCtrl is null\n");
-			return;
-		}
-
-		ZOOM_SDK_NAMESPACE::IMeetingParticipantsController* pUserCtrl = m_pMeetingService->GetMeetingParticipantsController();
-		if (!pUserCtrl)
-			return;
-
-		ZOOM_SDK_NAMESPACE::IUserInfo* pUserMe = pUserCtrl->GetMySelfUser();
-		if (!pUserMe)
-			return;
-		std::string text = entryA->get_text();
-		const char* userid = text.c_str();
-		int num = std::atoi(userid);
-
-		//toggle between audio on and audio off
-		if (!pUserMe->IsAudioMuted())
-		{
-			err = pAudioCtrl->MuteAudio(num);
-		}
-		else
-		{
-			err = pAudioCtrl->UnMuteAudio(num);
-		}
-
-		if (SDKError::SDKERR_SUCCESS == err)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("mute_unmute_video success\n");
-		}
-		else
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("mute_unmute_video error\n");
-		}
-	}
-
-	////////////////////////////////////////////////raw_data//////////////////////////////////////////////
-
-	//used for non headless app
-	void send_raw_video(Gtk::TextView * text_view)
-	{
-
-
-
-
-	}
-	//used for non headless app
-	void send_raw_audio(Gtk::TextView * text_view)
-	{
-
-	}
-
-	//used for non headless app
-	void request_recording_permissions(Gtk::TextView * text_view)
-	{
-
-		std::cerr << "request_recording_permissions: " << std::endl;
-
-
-		ZOOM_SDK_NAMESPACE::IMeetingRecordingController* m_pMeetingRecorder = m_pMeetingService->GetMeetingRecordingController();
-
-		ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingRecorder->RequestLocalRecordingPrivilege();
-		if (SDKError::SDKERR_SUCCESS == err)
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("request_recording_permissions success\n");
-		}
-		else
-		{
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view->get_buffer();
-			buffer->set_text("request_recording_permissions error\n");
-		}
-	}
-
-	//used for non headless app
-	void subscribe_video(Gtk::TextView * text_view, Gtk::Entry * entryA)
-	{
-
-	}
-	//used for non headless app
-	void un_subscribe_video(Gtk::TextView * text_view)
-	{
-
-	}
-
-
-
-
 
 
 	static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
@@ -1093,8 +831,6 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
-			//curl_easy_setopt(curl, CURLOPT_CAINFO, "/root/release_demo/demo/bin/cacert.pem");
-			//curl_easy_setopt(curl, CURLOPT_CAPATH, "/root/release_demo/demo/bin/cacert.pem");
 
 			// headers
 			printf("setting headers \n");
@@ -1127,20 +863,18 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 		}
 	}
 
-
-
 	gboolean timeout_callback(gpointer data)
 	{
 		return TRUE;
 	}
 
+	//this catches a break signal, such as Ctrl + C
 	void my_handler(int s)
 	{
-
 		printf("\nCaught signal %d\n", s);
-		LeaveMeeting(nullptr);
+		LeaveMeeting();
 		printf("Leaving session.\n");
-		CleanSDK(nullptr);
+		CleanSDK();
 
 		if (useJWTTokenFromWebService) {
 			std::thread tokenThread(getJWTToken, remote_url);
@@ -1149,15 +883,14 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 
 		if (jwtTokenGenerated)
 		{
-			InitMeetingSDK(nullptr);
-			AuthMeetingSDK(nullptr);
+			InitMeetingSDK();
+			AuthMeetingSDK();
 		}
 		//std::exit(0);
 	}
 
 	void initAppSettings()
 	{
-
 		struct sigaction sigIntHandler;
 		sigIntHandler.sa_handler = my_handler;
 		sigemptyset(&sigIntHandler.sa_mask);
@@ -1170,151 +903,7 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 
 		ReadJsonSettings();
 
-		if (!isHeadless)
-		{
-
-			// 初始化GTKmm应用程序
-			auto app = Gtk::Application::create(argc, argv);
-
-			Gtk::Window window;
-			window.set_default_size(600, 500);
-			window.set_title("meetingsdk Demo");
-			Gtk::Paned paned;
-			window.add(paned);
-			// 创建垂直布局容器
-			Gtk::Box box(Gtk::ORIENTATION_VERTICAL);
-			paned.add(box);
-
-			// 水平容器
-			Gtk::Box* hbox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL));
-
-			// 创建文本框
-			Gtk::ScrolledWindow scrolled_window;
-			Gtk::TextView text_view;
-			Gtk::TextView text_view_userid;
-			scrolled_window.add(text_view);
-			scrolled_window.add(text_view_userid);
-			box.pack_start(scrolled_window);
-
-			// 创建文本框
-			Gtk::ScrolledWindow scrolled_window_r;
-			Gtk::TextView text_view_r;
-			Gtk::TextView text_view_userid_r;
-			scrolled_window.add(text_view_r);
-			scrolled_window.add(text_view_userid_r);
-			// 创建输入框
-			Gtk::Entry entryA;
-			hbox->pack_start(entryA);
-
-			Gtk::Button* buttongen_token = Gtk::manage(new Gtk::Button("gen_token"));
-			hbox->pack_start(*buttongen_token, Gtk::PACK_SHRINK);
-			buttongen_token->signal_clicked().connect([]()
-				{ gen_token(); });
-
-			// 将水平布局容器添加到垂直布局容器中
-			box.pack_start(*hbox, Gtk::PACK_SHRINK);
-
-			// 创建按钮 a
-			Gtk::Button button_a("Init sdk");
-			button_a.set_size_request(100, 50);
-			button_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(InitMeetingSDK), &text_view));
-			box.pack_start(button_a);
-
-			// 创建按钮 b
-			Gtk::Button button_b("auth sdk");
-			button_b.set_size_request(100, 50);
-			button_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(AuthMeetingSDK), &text_view));
-			box.pack_start(button_b);
-
-			// 创建按钮 c
-			Gtk::Button button_c("join meeting");
-			button_c.set_size_request(100, 50);
-			button_c.signal_clicked().connect(sigc::bind(sigc::ptr_fun(JoinMeeting), &text_view, &text_view_userid, &entryA));
-			box.pack_start(button_c);
-
-			// 创建按钮 d
-			Gtk::Button button_d("leave meeting");
-			button_d.set_size_request(100, 50);
-			button_d.signal_clicked().connect(sigc::bind(sigc::ptr_fun(LeaveMeeting), &text_view));
-			box.pack_start(button_d);
-
-			// 创建按钮 e
-			Gtk::Button button_e("start meeting");
-			button_e.set_size_request(100, 50);
-			button_e.signal_clicked().connect(sigc::bind(sigc::ptr_fun(StartMeeting), &text_view, &text_view_userid));
-			box.pack_start(button_e);
-
-			// 创建按钮 f
-			Gtk::Button button_f("login");
-			button_f.set_size_request(100, 50);
-			button_f.signal_clicked().connect(sigc::bind(sigc::ptr_fun(Login), &text_view, &entryA));
-			box.pack_start(button_f);
-
-			// 创建按钮 h
-			Gtk::Button button_h("getuser_ID");
-			button_h.set_size_request(100, 50);
-			button_h.signal_clicked().connect(sigc::bind(sigc::ptr_fun(getuserID), &text_view, &text_view_userid, &entryA));
-			box.pack_start(button_h);
-
-			// 创建按钮 i
-			Gtk::Button button_i("mute_unmute_video");
-			button_i.set_size_request(100, 50);
-			button_i.signal_clicked().connect(sigc::bind(sigc::ptr_fun(mute_unmute_video), &text_view));
-			box.pack_start(button_i);
-
-			// 创建按钮 j
-			Gtk::Button button_j("clean_sdk");
-			button_j.set_size_request(100, 50);
-			button_j.signal_clicked().connect(sigc::bind(sigc::ptr_fun(CleanSDK), &text_view));
-			box.pack_start(button_j);
-
-			// 创建按钮 v
-			Gtk::Button button_v("mute_unmute_audio");
-			button_v.set_size_request(100, 50);
-			button_v.signal_clicked().connect(sigc::bind(sigc::ptr_fun(mute_unmute_audio), &text_view, &entryA));
-			box.pack_start(button_v);
-
-			/////////////////////////////////////////////raw_data////////////////////////////////////////////////////
-
-			Gtk::Button button_r_c("request_recording_permissions (not useful for linux msdk to get raw data access)");
-			button_r_c.set_size_request(100, 50);
-			button_r_c.signal_clicked().connect(sigc::bind(sigc::ptr_fun(request_recording_permissions), &text_view_r));
-			box.pack_start(button_r_c);
-
-
-			Gtk::Button button_r_a("subscribe_video");
-			button_r_a.set_size_request(100, 50);
-			button_r_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(subscribe_video), &text_view_r, &entryA));
-			box.pack_start(button_r_a);
-
-			Gtk::Button button_r_b("un_subscribe_video");
-			button_r_b.set_size_request(100, 50);
-			button_r_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(un_subscribe_video), &text_view_r));
-			box.pack_start(button_r_b);
-
-			/////////////////////////////////////////////send raw_data////////////////////////////////////////////////////
-
-			Gtk::Button button_s_a("Send Raw Video)");
-			button_s_a.set_size_request(100, 50);
-			button_s_a.signal_clicked().connect(sigc::bind(sigc::ptr_fun(send_raw_video), &text_view_r));
-			box.pack_start(button_s_a);
-
-			Gtk::Button button_s_b("Send Raw Audio");
-			button_s_b.set_size_request(100, 50);
-			button_s_b.signal_clicked().connect(sigc::bind(sigc::ptr_fun(send_raw_audio), &text_view_r));
-			box.pack_start(button_s_b);
-
-			window.show_all();
-
-			// 获取并打印线程ID
-			std::ostringstream oss;
-			oss << "Thread ID: " << syscall(SYS_gettid) << std::endl;
-			Glib::RefPtr<Gtk::TextBuffer> buffer = text_view.get_buffer();
-			buffer->insert(buffer->end(), oss.str());
-			return app->run(window);
-		}
-		else
-		{
+	
 
 			if (useJWTTokenFromWebService) {
 				std::thread tokenThread(getJWTToken, remote_url);
@@ -1323,8 +912,8 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 
 			if (jwtTokenGenerated)
 			{
-				InitMeetingSDK(nullptr);
-				AuthMeetingSDK(nullptr);
+				InitMeetingSDK();
+				AuthMeetingSDK();
 			}
 			else
 			{
@@ -1338,6 +927,6 @@ void JoinMeeting(Gtk::TextView* text_view, Gtk::TextView* text_view_userid, Gtk:
 			g_timeout_add(100, timeout_callback, loop);
 			g_main_loop_run(loop);
 			return 0;
-		}
+		
 	}
 
