@@ -90,8 +90,7 @@ IZoomSDKAudioRawDataHelper* audioHelper;
 unsigned int userID;
 
 
-//controls for demo, these are used by developers to test out different scenarios
-bool isHeadless = true;
+
 //this will fetch the JWT Token from a web service
 bool useJWTTokenFromWebService = true;
 //this will fetch the RecordingToken from a web service. 
@@ -100,7 +99,7 @@ bool useRecordingTokenFromWebService = true;
 //this will enable or disable logic to get raw video and raw audio
 bool GetVideoRawData = false;
 bool GetAudioRawData = false;
-bool SendVideoRawData = false; 
+bool SendVideoRawData = false;
 bool SendAudioRawData = true; //WIP
 
 
@@ -275,8 +274,9 @@ void onInMeeting() {
 	CheckAndStartRawSending(SendVideoRawData, SendAudioRawData);
 }
 
+//on meeting ended, typically by host, do something here. it is possible to reuse this SDK instance
 void onMeetingEndsQuitApp() {
-	//CleanSDK(nullptr);
+	// CleanSDK();
 	//std::exit(0);
 }
 
@@ -300,6 +300,29 @@ std::string getSelfDirPath()
 	return std::string(dest);
 }
 
+// Function to parse and process JSON value as a string
+template<typename T>
+bool processJsonValue(const Json& json, const std::string& key, T& value, const std::string& description) {
+	if (!json[key].is_null()) {
+		value = json[key].get<std::string>();
+		printf("config %s: %s\n", description.c_str(), value.c_str());
+		return true;
+	}
+	return false;
+}
+
+// Function to parse and process JSON value as a boolean
+bool processJsonBoolean(const Json& json, const std::string& key, bool& value, const std::string& description) {
+	if (!json[key].is_null()) {
+		std::string stringValue = json[key].get<std::string>();
+		std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
+		value = (stringValue == "true");
+		printf("%s value is %s\n", description.c_str(), (value ? "true" : "false"));
+		return true;
+	}
+	return false;
+}
+
 
 void ReadJsonSettings()
 {
@@ -314,101 +337,35 @@ void ReadJsonSettings()
 	t.seekg(0);
 	t.read(&buffer[0], size);
 
-	do
-	{
-		Json config_json;
-		try
-		{
-			config_json = Json::parse(buffer);
-			printf("config all_content: %s\n", buffer.c_str());
-		}
-		catch (Json::parse_error& ex)
-		{
-			break;
-		}
-		if (config_json.is_null())
-		{
-			break;
-		}
-		Json json_meeting_number = config_json["meeting_number"];
-		Json json_token = config_json["token"];
-		Json json_meeting_password = config_json["meeting_password"];
-		Json json_recording_token = config_json["recording_token"];
-		Json json_remote_url = config_json["remote_url"];
-		Json json_isHeadless = config_json["isHeadless"];
-		Json json_useJWTTokenFromWebService = config_json["useJWTTokenFromWebService"];
-		Json json_useRecordingTokenFromWebService = config_json["useRecordingTokenFromWebService"];
-		Json json_GetVideoRawData = config_json["GetVideoRawData"];
-		Json json_GetAudioRawData = config_json["GetAudioRawData"];
+	Json config_json;
+	try {
+		config_json = Json::parse(buffer);
+		printf("config all_content: %s\n", buffer.c_str());
+	}
+	catch (Json::parse_error& ex) {
+		// Handle JSON parse error
+	}
 
-		if (!json_meeting_number.is_null())
-		{
-			meeting_number = json_meeting_number.get<std::string>();
-			printf("config meeting_number: %s\n", meeting_number.c_str());
-		}
-		if (!json_token.is_null())
-		{
-			token = json_token.get<std::string>();
-			printf("config token: %s\n", token.c_str());
-		}
-		if (!json_meeting_password.is_null())
-		{
-			meeting_password = json_meeting_password.get<std::string>();
-			printf("config meeting_password: %s\n", meeting_password.c_str());
-		}
-		if (!json_recording_token.is_null())
-		{
-			recording_token = json_recording_token.get<std::string>();
-			printf("config json_recording_token: %s\n", recording_token.c_str());
-		}
-		if (!json_remote_url.is_null())
-		{
-			remote_url = json_remote_url.get<std::string>();
-			printf("config json_remote_url: %s\n", remote_url.c_str());
-		}
-		if (!json_isHeadless.is_null())
-		{
-			std::string stringValue = json_isHeadless.get<std::string>();
-			// Convert the input string to lowercase for case-insensitive comparison
-			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
-			isHeadless = (stringValue == "true");
-			std::cout << "isHeadless value is " << (isHeadless ? "true" : "false") << std::endl;
-		}
+	if (!config_json.is_null()) {
 
-		if (!json_useJWTTokenFromWebService.is_null())
-		{
-			std::string stringValue = json_useJWTTokenFromWebService.get<std::string>();
-			// Convert the input string to lowercase for case-insensitive comparison
-			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
-			useJWTTokenFromWebService = (stringValue == "true");
-			std::cout << "useJWTTokenFromWebService value is " << (useJWTTokenFromWebService ? "true" : "false") << std::endl;
 
-		}
-		if (!json_useRecordingTokenFromWebService.is_null())
-		{
-			std::string stringValue = json_useRecordingTokenFromWebService.get<std::string>();
-			// Convert the input string to lowercase for case-insensitive comparison
-			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
-			useRecordingTokenFromWebService = (stringValue == "true");
-			std::cout << "useRecordingTokenFromWebService value is " << (useRecordingTokenFromWebService ? "true" : "false") << std::endl;
-		}
-		if (!json_GetVideoRawData.is_null())
-		{
-			std::string stringValue = json_GetVideoRawData.get<std::string>();
-			// Convert the input string to lowercase for case-insensitive comparison
-			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
-			GetVideoRawData = (stringValue == "true");
-			std::cout << "GetVideoRawData value is " << (GetVideoRawData ? "true" : "false") << std::endl;
-		}
-		if (!json_GetAudioRawData.is_null())
-		{
-			std::string stringValue = json_GetAudioRawData.get<std::string>();
-			// Convert the input string to lowercase for case-insensitive comparison
-			std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
-			GetAudioRawData = (stringValue == "true");
-			std::cout << "GetAudioRawData value is " << (GetAudioRawData ? "true" : "false") << std::endl;
-		}
-	} while (false);
+		processJsonValue(config_json, "meeting_number", meeting_number, "meeting_number");
+		processJsonValue(config_json, "token", token, "token");
+		processJsonValue(config_json, "meeting_password", meeting_password, "meeting_password");
+		processJsonValue(config_json, "recording_token", recording_token, "recording_token");
+		processJsonValue(config_json, "remote_url", remote_url, "remote_url");
+
+
+		processJsonBoolean(config_json, "useJWTTokenFromWebService", useJWTTokenFromWebService, "useJWTTokenFromWebService");
+		processJsonBoolean(config_json, "useRecordingTokenFromWebService", useRecordingTokenFromWebService, "useRecordingTokenFromWebService");
+		processJsonBoolean(config_json, "GetVideoRawData", GetVideoRawData, "GetVideoRawData");
+		processJsonBoolean(config_json, "GetAudioRawData", GetAudioRawData, "GetAudioRawData");
+
+		// Additional processing or handling of parsed values can be done here
+	}
+
+
+
 	printf("directory of config file: %s\n", self_dir.c_str());
 }
 
@@ -432,12 +389,10 @@ void InitMeetingSDK()
 	err = ZOOM_SDK_NAMESPACE::InitSDK(initParam);
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
-	
 		std::cerr << "Init meetingSdk:error " << std::endl;
 	}
 	else
 	{
-	
 		std::cerr << "Init meetingSdk:success" << std::endl;
 	}
 
@@ -478,8 +433,8 @@ void CleanSDK()
 	err = ZOOM_SDK_NAMESPACE::CleanUPSDK();
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
-	
-	
+
+
 		std::cerr << "CleanSDK meetingSdk:error " << std::endl;
 	}
 	else
@@ -629,304 +584,296 @@ void JoinMeeting()
 		}
 	}
 
-		//attempt to join meeting
-		do
-		{
-			if (m_pMeetingService)
-			{
-				err = m_pMeetingService->Join(joinParam);
-			}
-			else
-			{
-				std::cout << "join_meeting m_pMeetingService:Null" << std::endl;
-				break;
-			}
-
-			if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS == err)
-			{
-				std::cout << "join_meeting:success" << std::endl;
-			}
-			else
-			{
-				std::cout << "join_meeting:error" << std::endl;
-			}
-		} while (false);
-	}
-
-	void LeaveMeeting()
+	//attempt to join meeting
+	do
 	{
-		ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
-
-		do
+		if (m_pMeetingService)
 		{
-			if (NULL == m_pMeetingService)
-			{
-			
-				std::cout << "leave_meeting m_pMeetingService:Null" << std::endl;
-				break;
-			}
-			else
-			{
-				status = m_pMeetingService->GetMeetingStatus();
-			}
-
-			if (status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_IDLE ||
-				status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_ENDED ||
-				status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED)
-			{
-			
-				std::cout << "LeaveMeeting() not in meeting " << std::endl;
-				break;
-			}
-
-			if (SDKError::SDKERR_SUCCESS == m_pMeetingService->Leave(ZOOM_SDK_NAMESPACE::LEAVE_MEETING))
-			{
-				std::cout << "LeaveMeeting() success " << std::endl;
-				break;
-			}
-			else
-			{
-				std::cout << "LeaveMeeting() error" << std::endl;
-				break;
-			}
-		} while (false);
-	}
-
-	//callback when authentication is compeleted
-	void OnAuthenticationComplete()
-	{
-		//if this is a headless app, automatically join meeting.
-		//if this is not headless app, we are expecting user to click on a button to join meeting.
-		if (isHeadless) {
-			JoinMeeting();
-		}
-	}
-
-	void AuthMeetingSDK()
-	{
-		SDKError err(SDKError::SDKERR_SUCCESS);
-
-		//create auth service
-		if ((err = CreateAuthService(&m_pAuthService)) != SDKError::SDKERR_SUCCESS) {};
-		std::cerr << "AuthService created." << std::endl;
-
-		//Create a param to insert jwt token
-		ZOOM_SDK_NAMESPACE::AuthContext param;
-
-		//set the event listener for onauthenticationcompleted
-		if ((err = m_pAuthService->SetEvent(new AuthServiceEventListener(&OnAuthenticationComplete))) != SDKError::SDKERR_SUCCESS) {};
-		std::cout << "AuthServiceEventListener added." << std::endl;
-
-
-		if (!token.size() == 0)
-		{
-			param.jwt_token = token.c_str();
-			std::cerr << "AuthSDK:success " << std::endl;
-		}
-
-		//attempt to authenticate
-		ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult = m_pAuthService->SDKAuth(param);
-
-		if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != sdkErrorResult)
-		{
-			std::cerr << "AuthSDK:error " << std::endl;
+			err = m_pMeetingService->Join(joinParam);
 		}
 		else
 		{
-			std::cerr << "AuthSDK:success " << std::endl;
+			std::cout << "join_meeting m_pMeetingService:Null" << std::endl;
+			break;
 		}
-	}
 
-	
-
-	//used for non headless app 
-
-	void StartMeeting()
-	{
-
-		ZOOM_SDK_NAMESPACE::StartParam startParam;
-		startParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_NORMALUSER;
-		startParam.param.normaluserStart.vanityID = NULL;
-		startParam.param.normaluserStart.customer_key = NULL;
-		startParam.param.normaluserStart.isVideoOff = false;
-		startParam.param.normaluserStart.isAudioOff = false;
-
-
-		ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingService->Start(startParam);
-		if (SDKError::SDKERR_SUCCESS == err)
+		if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS == err)
 		{
-			std::cerr << "StartMeeting:success " << std::endl;
+			std::cout << "join_meeting:success" << std::endl;
 		}
 		else
 		{
-	
-			std::cerr << "StartMeeting:error " << std::endl;
+			std::cout << "join_meeting:error" << std::endl;
 		}
-	}
+	} while (false);
+}
 
+void LeaveMeeting()
+{
+	ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
 
-	static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
+	do
 	{
-		printf("WriteCallback \n");
-
-		((std::string*)userp)->append((char*)contents, size * nmemb);
-		std::string response = (char*)contents;
-
-		Json responses_json;
-		try
-		{
-			responses_json = Json::parse(response);
-			printf("config all_content: %s\n", response.c_str());
-		}
-		catch (Json::parse_error& ex)
-		{
-		}
-
-		Json json_signature = responses_json["signature"];
-		Json json_sdkKey = responses_json["sdkKey"];
-		Json json_recordingtoken = responses_json["recordingtoken"];
-
-		if (!json_signature.is_null())
-		{
-			token = json_signature.get<std::string>();
-		}
-
-		if (useRecordingTokenFromWebService) {
-			if (!json_recordingtoken.is_null())
-			{
-				recording_token = json_recordingtoken.get<std::string>();
-			}
-		}
-
-		printf("Token in callback is: %s\n", token.c_str());
-		std::lock_guard<std::mutex> lock(mtx);
-		jwtTokenGenerated = true;
-
-		return size * nmemb;
-	}
-
-	void getJWTToken(std::string remote_url)
-	{
-		printf("declaring curl \n");
-		CURL* curl;
-		CURLcode res;
-		std::string readBuffer;
-
-		char* json = NULL;
-		struct curl_slist* headers = NULL;
-		printf("initing curl \n");
-		curl = curl_easy_init();
-		if (curl)
+		if (NULL == m_pMeetingService)
 		{
 
-			printf("setting remote url: %s\n", remote_url.c_str());
-
-			curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
-
-			// buffer size
-			printf("setting buffer \n");
-			curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
-
-			// temp workaround to enable SSL / HTTPS
-			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
-
-			// headers
-			printf("setting headers \n");
-			headers = curl_slist_append(headers, "Expect:");
-			headers = curl_slist_append(headers, "Content-Type: application/json");
-			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-			std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
-			printf("setting payload: %s\n", json.c_str());
-			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
-
-			// callback
-			printf("preparing callback \n");
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-			// perform
-			printf("calling remote URL \n");
-			res = curl_easy_perform(curl);
-			std::cout << readBuffer << std::endl;
-
-			/* Check for errors */
-			if (res != CURLE_OK)
-				fprintf(stderr, "curl_easy_perform() failed: %s\n",
-					curl_easy_strerror(res));
-
-			/* always cleanup */
-			curl_slist_free_all(headers);
-			curl_easy_cleanup(curl);
+			std::cout << "leave_meeting m_pMeetingService:Null" << std::endl;
+			break;
 		}
-	}
-
-	gboolean timeout_callback(gpointer data)
-	{
-		return TRUE;
-	}
-
-	//this catches a break signal, such as Ctrl + C
-	void my_handler(int s)
-	{
-		printf("\nCaught signal %d\n", s);
-		LeaveMeeting();
-		printf("Leaving session.\n");
-		CleanSDK();
-
-		if (useJWTTokenFromWebService) {
-			std::thread tokenThread(getJWTToken, remote_url);
-			tokenThread.join();
-		}
-
-		if (jwtTokenGenerated)
+		else
 		{
-			InitMeetingSDK();
-			AuthMeetingSDK();
+			status = m_pMeetingService->GetMeetingStatus();
 		}
-		//std::exit(0);
-	}
 
-	void initAppSettings()
+		if (status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_IDLE ||
+			status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_ENDED ||
+			status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED)
+		{
+
+			std::cout << "LeaveMeeting() not in meeting " << std::endl;
+			break;
+		}
+
+		if (SDKError::SDKERR_SUCCESS == m_pMeetingService->Leave(ZOOM_SDK_NAMESPACE::LEAVE_MEETING))
+		{
+			std::cout << "LeaveMeeting() success " << std::endl;
+			break;
+		}
+		else
+		{
+			std::cout << "LeaveMeeting() error" << std::endl;
+			break;
+		}
+	} while (false);
+}
+
+//callback when authentication is compeleted
+void OnAuthenticationComplete()
+{
+	JoinMeeting();
+}
+
+void AuthMeetingSDK()
+{
+	SDKError err(SDKError::SDKERR_SUCCESS);
+
+	//create auth service
+	if ((err = CreateAuthService(&m_pAuthService)) != SDKError::SDKERR_SUCCESS) {};
+	std::cerr << "AuthService created." << std::endl;
+
+	//Create a param to insert jwt token
+	ZOOM_SDK_NAMESPACE::AuthContext param;
+
+	//set the event listener for onauthenticationcompleted
+	if ((err = m_pAuthService->SetEvent(new AuthServiceEventListener(&OnAuthenticationComplete))) != SDKError::SDKERR_SUCCESS) {};
+	std::cout << "AuthServiceEventListener added." << std::endl;
+
+
+	if (!token.size() == 0)
 	{
-		struct sigaction sigIntHandler;
-		sigIntHandler.sa_handler = my_handler;
-		sigemptyset(&sigIntHandler.sa_mask);
-		sigIntHandler.sa_flags = 0;
-		sigaction(SIGINT, &sigIntHandler, NULL);
+		param.jwt_token = token.c_str();
+		std::cerr << "AuthSDK:success " << std::endl;
 	}
 
-	int main(int argc, char* argv[])
+	//attempt to authenticate
+	ZOOM_SDK_NAMESPACE::SDKError sdkErrorResult = m_pAuthService->SDKAuth(param);
+
+	if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS != sdkErrorResult)
+	{
+		std::cerr << "AuthSDK:error " << std::endl;
+	}
+	else
+	{
+		std::cerr << "AuthSDK:success " << std::endl;
+	}
+}
+
+
+
+//used for non headless app 
+
+void StartMeeting()
+{
+
+	ZOOM_SDK_NAMESPACE::StartParam startParam;
+	startParam.userType = ZOOM_SDK_NAMESPACE::SDK_UT_NORMALUSER;
+	startParam.param.normaluserStart.vanityID = NULL;
+	startParam.param.normaluserStart.customer_key = NULL;
+	startParam.param.normaluserStart.isVideoOff = false;
+	startParam.param.normaluserStart.isAudioOff = false;
+
+
+	ZOOM_SDK_NAMESPACE::SDKError err = m_pMeetingService->Start(startParam);
+	if (SDKError::SDKERR_SUCCESS == err)
+	{
+		std::cerr << "StartMeeting:success " << std::endl;
+	}
+	else
 	{
 
-		ReadJsonSettings();
-
-	
-
-			if (useJWTTokenFromWebService) {
-				std::thread tokenThread(getJWTToken, remote_url);
-				tokenThread.join();
-			}
-
-			if (jwtTokenGenerated)
-			{
-				InitMeetingSDK();
-				AuthMeetingSDK();
-			}
-			else
-			{
-				std::cout << "JWT token generation failed." << std::endl;
-			}
-
-			initAppSettings();
-
-			loop = g_main_loop_new(NULL, FALSE);
-			// add source to default context
-			g_timeout_add(100, timeout_callback, loop);
-			g_main_loop_run(loop);
-			return 0;
-		
+		std::cerr << "StartMeeting:error " << std::endl;
 	}
+}
+
+
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
+{
+	printf("WriteCallback \n");
+
+	((std::string*)userp)->append((char*)contents, size * nmemb);
+	std::string response = (char*)contents;
+
+	Json responses_json;
+	try
+	{
+		responses_json = Json::parse(response);
+		printf("config all_content: %s\n", response.c_str());
+	}
+	catch (Json::parse_error& ex)
+	{
+	}
+
+	Json json_signature = responses_json["signature"];
+	Json json_sdkKey = responses_json["sdkKey"];
+	Json json_recordingtoken = responses_json["recordingtoken"];
+
+	if (!json_signature.is_null())
+	{
+		token = json_signature.get<std::string>();
+	}
+
+	if (useRecordingTokenFromWebService) {
+		if (!json_recordingtoken.is_null())
+		{
+			recording_token = json_recordingtoken.get<std::string>();
+		}
+	}
+
+	printf("Token in callback is: %s\n", token.c_str());
+	std::lock_guard<std::mutex> lock(mtx);
+	jwtTokenGenerated = true;
+
+	return size * nmemb;
+}
+
+void getJWTToken(std::string remote_url)
+{
+	printf("declaring curl \n");
+	CURL* curl;
+	CURLcode res;
+	std::string readBuffer;
+
+	char* json = NULL;
+	struct curl_slist* headers = NULL;
+	printf("initing curl \n");
+	curl = curl_easy_init();
+	if (curl)
+	{
+
+		printf("setting remote url: %s\n", remote_url.c_str());
+		curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+
+		// buffer size
+		printf("setting buffer \n");
+		curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+
+		// temp workaround to enable SSL / HTTPS
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+
+		// headers
+		printf("setting headers \n");
+		headers = curl_slist_append(headers, "Expect:");
+		headers = curl_slist_append(headers, "Content-Type: application/json");
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+		std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
+		printf("setting payload: %s\n", json.c_str());
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+
+		// callback
+		printf("preparing callback \n");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+		// perform
+		printf("calling remote URL \n");
+		res = curl_easy_perform(curl);
+		std::cout << readBuffer << std::endl;
+
+		/* Check for errors */
+		if (res != CURLE_OK)
+			fprintf(stderr, "curl_easy_perform() failed: %s\n",
+				curl_easy_strerror(res));
+
+		/* always cleanup */
+		curl_slist_free_all(headers);
+		curl_easy_cleanup(curl);
+	}
+}
+
+gboolean timeout_callback(gpointer data)
+{
+	return TRUE;
+}
+
+//this catches a break signal, such as Ctrl + C
+void my_handler(int s)
+{
+	printf("\nCaught signal %d\n", s);
+	LeaveMeeting();
+	printf("Leaving session.\n");
+	CleanSDK();
+
+	if (useJWTTokenFromWebService) {
+		std::thread tokenThread(getJWTToken, remote_url);
+		tokenThread.join();
+	}
+
+	//if (jwtTokenGenerated)
+	//{
+	//	InitMeetingSDK();
+	//	AuthMeetingSDK();
+	//}
+	std::exit(0);
+}
+
+void initAppSettings()
+{
+	struct sigaction sigIntHandler;
+	sigIntHandler.sa_handler = my_handler;
+	sigemptyset(&sigIntHandler.sa_mask);
+	sigIntHandler.sa_flags = 0;
+	sigaction(SIGINT, &sigIntHandler, NULL);
+}
+
+int main(int argc, char* argv[])
+{
+
+	ReadJsonSettings();
+
+	if (useJWTTokenFromWebService) {
+		std::thread tokenThread(getJWTToken, remote_url);
+		tokenThread.join();
+	}
+
+	if (jwtTokenGenerated)
+	{
+		InitMeetingSDK();
+		AuthMeetingSDK();
+	}
+	else
+	{
+		std::cout << "JWT token generation failed." << std::endl;
+	}
+
+	initAppSettings();
+
+	loop = g_main_loop_new(NULL, FALSE);
+	// add source to default context
+	g_timeout_add(100, timeout_callback, loop);
+	g_main_loop_run(loop);
+	return 0;
+}
 
