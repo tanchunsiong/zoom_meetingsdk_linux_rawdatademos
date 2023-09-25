@@ -758,59 +758,111 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
 
 void getJWTToken(std::string remote_url)
 {
+	//printf("declaring curl \n");
+	//CURL* curl;
+	//CURLcode res;
+	//std::string readBuffer;
+
+	//char* json = NULL;
+	//struct curl_slist* headers = NULL;
+	//printf("initing curl \n");
+	//curl = curl_easy_init();
+	//if (curl)
+	//{
+
+	//	printf("setting remote url: %s\n", remote_url.c_str());
+	//	curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+
+	//	// buffer size
+	//	printf("setting buffer \n");
+	//	curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+
+	//	// temp workaround to enable SSL / HTTPS
+	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+
+	//	// headers
+	//	printf("setting headers \n");
+	//	headers = curl_slist_append(headers, "Expect:");
+	//	headers = curl_slist_append(headers, "Content-Type: application/json");
+	//	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+	//	std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
+	//	printf("setting payload: %s\n", json.c_str());
+	//	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+
+	//	// callback
+	//	printf("preparing callback \n");
+	//	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+	//	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+	//	// perform
+	//	printf("calling remote URL \n");
+	//	res = curl_easy_perform(curl);
+	//	std::cout << readBuffer << std::endl;
+
+	//	/* Check for errors */
+	//	if (res != CURLE_OK)
+	//		fprintf(stderr, "curl_easy_perform() failed: %s\n",
+	//			curl_easy_strerror(res));
+
+	//	/* always cleanup */
+	//	curl_slist_free_all(headers);
+	//	curl_easy_cleanup(curl);
+	//}
+
 	printf("declaring curl \n");
-	CURL* curl;
-	CURLcode res;
-	std::string readBuffer;
+
+
 
 	char* json = NULL;
 	struct curl_slist* headers = NULL;
 	printf("initing curl \n");
-	curl = curl_easy_init();
+	CURL* curl = curl_easy_init();
 	if (curl)
 	{
+		CURLcode res;
+		std::string readBuffer;
 
-		printf("setting remote url: %s\n", remote_url.c_str());
-		curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+		try
+		{
+			curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+			curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
 
-		// buffer size
-		printf("setting buffer \n");
-		curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
 
-		// temp workaround to enable SSL / HTTPS
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+			struct curl_slist* headers = NULL;
+			headers = curl_slist_append(headers, "Expect:");
+			headers = curl_slist_append(headers, "Content-Type: application/json");
+			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-		// headers
-		printf("setting headers \n");
-		headers = curl_slist_append(headers, "Expect:");
-		headers = curl_slist_append(headers, "Content-Type: application/json");
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+			std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
 
-		std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
-		printf("setting payload: %s\n", json.c_str());
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
-		// callback
-		printf("preparing callback \n");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+			res = curl_easy_perform(curl);
 
-		// perform
-		printf("calling remote URL \n");
-		res = curl_easy_perform(curl);
-		std::cout << readBuffer << std::endl;
+			if (res != CURLE_OK)
+			{
+				throw std::runtime_error(std::string("curl_easy_perform() failed: ") + curl_easy_strerror(res));
+			}
 
-		/* Check for errors */
-		if (res != CURLE_OK)
-			fprintf(stderr, "curl_easy_perform() failed: %s\n",
-				curl_easy_strerror(res));
+			std::cout << readBuffer << std::endl;
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "Error: " << e.what() << std::endl;
+		}
 
-		/* always cleanup */
 		curl_slist_free_all(headers);
 		curl_easy_cleanup(curl);
 	}
+
 }
 
 gboolean timeout_callback(gpointer data)
