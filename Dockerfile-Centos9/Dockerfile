@@ -22,8 +22,6 @@ RUN yum install -y dnf-plugins-core \
 # install ffmpeg related
 RUN yum install -y ffmpeg
 
-# install opencv
-RUN yum install -y opencv-devel
 
 # Set the working directory
 WORKDIR /app
