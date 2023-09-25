@@ -40,8 +40,6 @@ RUN apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
 # Install Pulseaudio
 RUN apt-get install -y  pulseaudio pulseaudio-utils ffmpeg
 
-# libraries for opencv, used for converting mp4 into raw sendable video format.
-RUN apt install -y libopencv-dev
 
 # Set the working directory
 WORKDIR /app

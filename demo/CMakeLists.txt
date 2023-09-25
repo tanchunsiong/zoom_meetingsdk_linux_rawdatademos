@@ -17,6 +17,7 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 include_directories(${GTKMM_INCLUDE_DIRS})
 link_directories(${GTKMM_LIBRARY_DIRS})
 add_definitions(${GTKMM_CFLAGS_OTHER})
+find_package(ZLIB REQUIRED)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -64,7 +65,7 @@ target_link_libraries(meetingSDKDemo ${GTKMM_LIBRARIES})
 target_link_libraries(meetingSDKDemo curl)
 target_link_libraries(meetingSDKDemo pthread)
 target_link_libraries(meetingSDKDemo z avcodec avformat avutil)
-target_link_libraries(meetingSDKDemo lzma swresample swscale avfilter)
+target_link_libraries(meetingSDKDemo ZLIB::ZLIB lzma swresample swscale avfilter)
 
 
 
