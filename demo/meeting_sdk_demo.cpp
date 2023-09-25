@@ -99,7 +99,7 @@ bool useRecordingTokenFromWebService = true;
 //this will enable or disable logic to get raw video and raw audio
 bool GetVideoRawData = false;
 bool GetAudioRawData = false;
-bool SendVideoRawData = false;
+bool SendVideoRawData = true;
 bool SendAudioRawData = true; //WIP
 
 
@@ -108,6 +108,13 @@ uint32_t getUserID() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int returnvalue = m_pParticipantsController->GetParticipantsList()->GetItem(0);
 	std::cout << "UserID is : " << returnvalue << std::endl;
+	return returnvalue;
+}
+
+IUserInfo* getMyself() {
+	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
+	IUserInfo* returnvalue = m_pParticipantsController->GetMySelfUser();
+	//std::cout << "UserID is : " << returnvalue << std::endl;
 	return returnvalue;
 }
 
@@ -231,16 +238,7 @@ void onIsHost() {
 	printf("Is host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 
-	//testing WIP
-	if (SendVideoRawData) {
-		IMeetingVideoController* meetingVidController = m_pMeetingService->GetMeetingVideoController();
-		meetingVidController->UnmuteVideo();
-	}
-	//testing WIP
-	if (SendAudioRawData) {
-		IMeetingAudioController* meetingAudController = m_pMeetingService->GetMeetingAudioController();
-		meetingAudController->UnMuteAudio(0);
-	}
+	
 }
 
 //callback when given cohost permission
@@ -252,6 +250,23 @@ void onIsCoHost() {
 void onIsGivenRecordingPermission() {
 	printf("Is given recording permissions now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
+
+	//testing WIP
+	if (SendVideoRawData) {
+		IMeetingVideoController* meetingVidController = m_pMeetingService->GetMeetingVideoController();
+		meetingVidController->UnmuteVideo();
+	}
+	//testing WIP
+	if (SendAudioRawData) {
+		IMeetingAudioController* meetingAudController = m_pMeetingService->GetMeetingAudioController();
+		meetingAudController->JoinVoip();
+		printf("Is my audio muted: %d\n", getMyself()->IsAudioMuted());
+		//meetingAudController->MuteAudio(getMyself()->GetUserID(),true);
+		meetingAudController->UnMuteAudio(getMyself()->GetUserID());
+	
+		m_pSettingService->GetAudioSettings()->GetMicList();
+		m_pSettingService->GetAudioSettings()->UseDefaultSystemMic();
+	}
 }
 
 //callback when the SDK is inmeeting
@@ -581,6 +596,9 @@ void JoinMeeting()
 		{
 			//ensure auto join audio
 			pAudioContext->EnableAutoJoinAudio(true);
+			pAudioContext->EnableAlwaysMuteMicWhenJoinVoip(true);
+			pAudioContext->SetSuppressBackgroundNoiseLevel(Suppress_BGNoise_Level_None);
+			
 		}
 	}
 

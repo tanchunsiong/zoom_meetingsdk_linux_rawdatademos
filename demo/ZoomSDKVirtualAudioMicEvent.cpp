@@ -11,6 +11,7 @@
 #include "zoom_sdk_def.h" 
 
 #include <thread>
+#include <chrono>  // for sleep
 
 using namespace std;
 using namespace ZOOM_SDK_NAMESPACE;
@@ -44,12 +45,17 @@ void PlayAudioFileToVirtualMic(IZoomSDKAudioRawDataSender* audio_sender, string 
 		// Send the audio data to the virtual camera
 		SDKError err = audio_sender->send(buffer.data(), buffer.size(), 44100);
 		if (err != SDKERR_SUCCESS) {
-			std::cout << "Error: Failed to send audio data to virtual camera. Error code: " << err << std::endl;
+			std::cout << "Error: Failed to send audio data to virtual mic. Error code: " << err << std::endl;
 			return;
 		}
 		file.close();
-		audio_play_flag = -1;
+		// Sleep for a while before replaying (adjust the delay as needed)
+		std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // 10 second delay, this is a 10 second long wave file
+		
+		//audio_play_flag = -1;
 	}
+
+
 
 }
 
