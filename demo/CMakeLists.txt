@@ -12,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
-find_package(OpenCV REQUIRED)
+
 
 include_directories(${GTKMM_INCLUDE_DIRS})
 link_directories(${GTKMM_LIBRARY_DIRS})
@@ -26,7 +26,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/ffmpeg)
 include_directories(/usr/include/glib-2.0/)
 include_directories(/usr/include/glib-2.0/glib)
 include_directories(/usr/lib/x86_64-linux-gnu/glib-2.0/include/)
-include_directories(${OpenCV_INCLUDE_DIRS})
+
 
 link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk)
 link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs)
@@ -65,7 +65,7 @@ target_link_libraries(meetingSDKDemo curl)
 target_link_libraries(meetingSDKDemo pthread)
 target_link_libraries(meetingSDKDemo z avcodec avformat avutil)
 target_link_libraries(meetingSDKDemo lzma swresample swscale avfilter)
-target_link_libraries(meetingSDKDemo ${OpenCV_LIBS})
+
 
 
 # Create a symbolic link
