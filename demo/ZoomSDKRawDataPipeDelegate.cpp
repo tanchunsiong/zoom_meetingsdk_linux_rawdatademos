@@ -164,122 +164,213 @@ void ZoomSDKRawDataPipeDelegate::log(const wchar_t* format, ...)
 	wprintf(format, args);
 	va_end(args);
 }
+/*
+int ZoomSDKRawDataPipeDelegate::ffmpeg_start(const char* userName, uint userID, int sourceID)
+{
+    int ret = 0;
+
+    // Timestamp
+    start_time = steady_clock::now();
+
+    // Init files
+    if (userID == 0)
+        userID = 0;
+    char fileName[100];
+    sprintf(fileName, "%d_%d_%s_%dx%d_to_%dx%d", userID, sourceID, userName, in_width, in_height, out_width, out_height);
+    char yuvFileName[110];
+    sprintf(yuvFileName, "../%s.yuv", fileName);
+    if (isOutputYUV)
+    {
+        fp_yuv = fopen(yuvFileName, "wb+");
+        if (fp_yuv == NULL)
+        {
+            printf("Error opening output file.\n");
+            return -1;
+        }
+    }
+
+    char outFileName[110];
+    sprintf(outFileName, "%s.avi", fileName);
+    sprintf(fn_out, "../%s", outFileName);
+
+    // FFmpeg init
+    // Init filters
+    avfilter_register_all();
+
+    ffmpeg_filter_init();
+
+    // Init encoder
+    av_register_all();
+    pFormatCtx = avformat_alloc_context();
+
+    // Method 1: Guess Format
+    fmt = av_guess_format("avi", fn_out, NULL);
+    if (!fmt)
+    {
+        printf("AVI format not available.\n");
+        return -1;
+    }
+    pFormatCtx->oformat = fmt;
+
+    // Open output file
+    if (avio_open(&pFormatCtx->pb, fn_out, AVIO_FLAG_WRITE) < 0)
+    {
+        printf("Failed to open output file!\n");
+        return -1;
+    }
+
+    // Init streams & codec
+    video_st = avformat_new_stream(pFormatCtx, 0);
+    if (video_st == NULL)
+    {
+        return -1;
+    }
+
+    // Param that must be set
+    pCodecCtx = video_st->codec;
+    pCodecCtx->codec_id = AV_CODEC_ID_MPEG4;
+    pCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
+    pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
+    pCodecCtx->width = out_width;
+    pCodecCtx->height = out_height;
+
+    // Set your desired bitrate and other codec parameters here
+    pCodecCtx->bit_rate = 400000;
+    pCodecCtx->gop_size = 10; // Set your desired GOP size
+    pCodecCtx->time_base.num = 1;
+    pCodecCtx->time_base.den = 25;
+    pCodecCtx->qmin = 10;
+    pCodecCtx->qmax = 51;
+    pCodecCtx->max_b_frames = 3;
+
+    // Specify MPEG-4 codec explicitly
+    pCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
+    if (!pCodec)
+    {
+        printf("MPEG-4 codec not found!\n");
+        return -1;
+    }
+
+    // Open MPEG-4 encoder
+    if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+    {
+        printf("Failed to open MPEG-4 encoder!\n");
+        return -1;
+    }
+
+    // Write File Header
+    if ((ret = avformat_write_header(pFormatCtx, NULL)) < 0)
+    {
+        printf("Failed to write header!\n");
+        return ret;
+    }
+    return ret;
+}
+
+*/
 
 int ZoomSDKRawDataPipeDelegate::ffmpeg_start(const char* userName, uint userID, int sourceID)
 {
-	int ret = 0;
+    int ret = 0;
 
-	// timestamp
-	start_time = steady_clock::now();
+    // Timestamp
+    start_time = steady_clock::now();
 
-	// init files
-	if (userID == 0)
-		userID = 0;
-	char fileName[100];
-	sprintf(fileName, "%d_%d_%s_%dx%d_to_%dx%d", userID, sourceID, userName, in_width, in_height, out_width, out_height);
-	char yuvFileName[110];
-	sprintf(yuvFileName, "../%s.yuv", fileName);
-	if (isOutputYUV)
-	{
-		fp_yuv = fopen(yuvFileName, "wb + ");
-		if (fp_yuv == NULL)
-		{
-			printf("Error open output file.\n");
-			return -1;
-		}
-	}
+    // Init files
+    if (userID == 0)
+        userID = 0;
+    char fileName[100];
+    sprintf(fileName, "%d_%d_%s_%dx%d_to_%dx%d", userID, sourceID, userName, in_width, in_height, out_width, out_height);
+    char yuvFileName[110];
+    sprintf(yuvFileName, "../%s.yuv", fileName);
+    if (isOutputYUV)
+    {
+        fp_yuv = fopen(yuvFileName, "wb+");
+        if (fp_yuv == NULL)
+        {
+            printf("Error opening output file.\n");
+            return -1;
+        }
+    }
 
-	char outFileName[110];
-	sprintf(outFileName, "%s.mkv", fileName);
-	sprintf(fn_out, "../%s", outFileName);
+    char outFileName[110];
+    sprintf(outFileName, "%s.avi", fileName);
+    sprintf(fn_out, "../%s", outFileName);
 
-	// ffmpeg init
-	// init filters
-	avfilter_register_all();
+    // FFmpeg init
+    // Init filters
+    avfilter_register_all();
 
-	ffmpeg_filter_init();
+    ffmpeg_filter_init();
 
-	// init encoder
-	av_register_all();
-	pFormatCtx = avformat_alloc_context();
+    // Init encoder
+    av_register_all();
+    pFormatCtx = avformat_alloc_context();
 
-	// Method1: Guess Format
-	fmt = av_guess_format(NULL, fn_out, NULL);
-	pFormatCtx->oformat = fmt;
-	// Method 2.
-	// avformat_alloc_output_context2(&pFormatCtx, NULL, NULL, out_file);
-	// fmt = pFormatCtx->oformat;
+    // Method 1: Guess Format
+    fmt = av_guess_format("avi", fn_out, NULL);
+    if (!fmt)
+    {
+        printf("AVI format not available.\n");
+        return -1;
+    }
+    pFormatCtx->oformat = fmt;
 
-	// Open output file
-	if (avio_open(&pFormatCtx->pb, fn_out, AVIO_FLAG_READ_WRITE) < 0)
-	{
-		printf("Failed to open output file! \n");
-		return -1;
-	}
+    // Open output file
+    if (avio_open(&pFormatCtx->pb, fn_out, AVIO_FLAG_WRITE) < 0)
+    {
+        printf("Failed to open output file!\n");
+        return -1;
+    }
 
-	// init streams & codec
-	video_st = avformat_new_stream(pFormatCtx, 0);
-	// video_st->time_base.num = 1;
-	// video_st->time_base.den = 25;
-	if (video_st == NULL)
-	{
-		return -1;
-	}
-	// Param that must set
-	pCodecCtx = video_st->codec;
-	// pCodecCtx->codec_id =AV_CODEC_ID_HEVC;
-	pCodecCtx->codec_id = fmt->video_codec;
-	pCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
-	pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
-	pCodecCtx->bit_rate = 400000;
-	pCodecCtx->gop_size = 250;
-	pCodecCtx->time_base.num = 1;
-	pCodecCtx->time_base.den = 25;
-	// H264
-	// pCodecCtx->me_range = 16;
-	// pCodecCtx->max_qdiff = 4;
-	// pCodecCtx->qcompress = 0.6;
-	pCodecCtx->qmin = 10;
-	pCodecCtx->qmax = 51;
-	// Optional Param
-	pCodecCtx->max_b_frames = 3;
+    // Init streams & codec
+    video_st = avformat_new_stream(pFormatCtx, 0);
+    if (video_st == NULL)
+    {
+        return -1;
+    }
 
-	// Show some Information
-	av_dump_format(pFormatCtx, 0, fn_out, 1);
+    // Param that must be set
+    pCodecCtx = video_st->codec;
+    pCodecCtx->codec_id = AV_CODEC_ID_MPEG4;
+    pCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
+    pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
+    pCodecCtx->width = out_width;
+    pCodecCtx->height = out_height;
 
-	// prepare encoder
-	pCodec = avcodec_find_encoder(pCodecCtx->codec_id);
-	if (!pCodec)
-	{
-		printf("Can not find encoder! \n");
-		return -1;
-	}
+    // Set your desired bitrate and other codec parameters here
+    pCodecCtx->bit_rate = 400000;
+    pCodecCtx->gop_size = 10; // Set your desired GOP size
+    pCodecCtx->time_base.num = 1;
+    pCodecCtx->time_base.den = 25;
+    pCodecCtx->qmin = 10;
+    pCodecCtx->qmax = 51;
+    pCodecCtx->max_b_frames = 3;
 
-	pCodecCtx->width = out_width;
-	pCodecCtx->height = out_height;
+    // Specify MPEG-4 codec explicitly
+    pCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
+    if (!pCodec)
+    {
+        printf("MPEG-4 codec not found!\n");
+        return -1;
+    }
 
-	AVDictionary* param = 0;
-	// H.264
-	if (pCodecCtx->codec_id == AV_CODEC_ID_H264)
-	{
-		av_dict_set(&param, "preset", "slow", 0);
-		av_dict_set(&param, "tune", "zerolatency", 0);
-		// av_dict_set(&param, "profile", "main", 0);
-	}
-	if (avcodec_open2(pCodecCtx, pCodec, &param) < 0)
-	{
-		printf("Failed to open encoder! \n");
-		return -1;
-	}
+    // Open MPEG-4 encoder
+    if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
+    {
+        printf("Failed to open MPEG-4 encoder!\n");
+        return -1;
+    }
 
-	// Write File Header
-	if ((ret = avformat_write_header(pFormatCtx, NULL)) < 0)
-	{
-		printf("Failed to write header! \n");
-		return ret;
-	}
-	return ret;
+    // Write File Header
+    if ((ret = avformat_write_header(pFormatCtx, NULL)) < 0)
+    {
+        printf("Failed to write header!\n");
+        return ret;
+    }
+    return ret;
 }
+
 
 int ZoomSDKRawDataPipeDelegate::ffmpeg_filter_init()
 {
@@ -467,7 +558,7 @@ int ZoomSDKRawDataPipeDelegate::ffmpeg_flush(AVFormatContext* fmt_ctx, unsigned 
 	int got_frame;
 	AVPacket enc_pkt;
 	if (!(fmt_ctx->streams[stream_index]->codec->codec->capabilities &
-		CODEC_CAP_DELAY))
+		AV_CODEC_CAP_DELAY))
 		return 0;
 	while (1)
 	{

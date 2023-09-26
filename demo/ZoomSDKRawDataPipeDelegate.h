@@ -1,23 +1,24 @@
 //GetVideoRawData
 // ffmpeg
-#define __STDC_CONSTANT_MACROS
-extern "C"
-{
-#include "libavfilter/avfiltergraph.h"
-#include "libavfilter/buffersink.h"
-#include "libavfilter/buffersrc.h"
-#include "libavutil/avutil.h"
-#include "libavutil/imgutils.h"
-#include "libavutil/pixfmt.h"
-#include "libavformat/avformat.h"
-#include "libavformat/avio.h"
-#include "libavcodec/avcodec.h"
-}
+
 #include <vector>
 #include <chrono>
 using namespace std::chrono;
 
 // Zoom Video SDK
+#define __STDC_CONSTANT_MACROS
+extern "C"
+{
+#include <libavfilter/avfilter.h>
+#include <libavfilter/buffersink.h>
+#include <libavfilter/buffersrc.h>
+#include <libavutil/avutil.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/pixfmt.h>
+#include <libavformat/avformat.h>
+#include <libavformat/avio.h>
+#include <libavcodec/avcodec.h>
+}
 
 #include "zoom_sdk.h"
 #include "zoom_sdk_raw_data_def.h"
@@ -66,8 +67,8 @@ class ZoomSDKRawDataPipeDelegate :
 	AVFilterContext* buffersrc_ctx;
 	AVFilterGraph* filter_graph;
 	//static int video_stream_index = -1;
-	AVFilter* buffersrc;
-	AVFilter* buffersink;
+	const AVFilter* buffersrc;
+	const AVFilter* buffersink;
 	AVFilterInOut* outputs;
 	AVFilterInOut* inputs;
 	AVBufferSinkParams* buffersink_params;

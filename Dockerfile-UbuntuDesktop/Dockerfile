@@ -8,7 +8,9 @@ RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4EB27DB2A3B88B
 RUN apt-get update && \
     apt-get install -y build-essential cmake
 #RUN apt-get install -y pkgcon
-RUN apt-get install -y gtkmm-3.0
+
+#no longer needed for headless demo
+#RUN apt-get install -y gtkmm-3.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     libx11-xcb1 \
@@ -39,8 +41,10 @@ RUN apt-get install -y libcurl4-openssl-dev
 RUN apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
 
 # Install Pulseaudio
-RUN apt-get install -y  pulseaudio pulseaudio-utils ffmpeg
+RUN apt-get install -y  pulseaudio pulseaudio-utils 
 
+# Install ffmpeg
+RUN apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 
 # Set the working directory
 WORKDIR /app

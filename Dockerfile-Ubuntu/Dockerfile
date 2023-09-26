@@ -1,5 +1,5 @@
 # Use the official Ubuntu image as the base image
-FROM ubuntu:23.10
+FROM ubuntu:22.04
 
 # Install necessary dependencies
 RUN apt-get update && \
@@ -7,7 +7,8 @@ RUN apt-get update && \
 
 RUN apt-get install -y pkgconf
 
-RUN apt-get install -y gtkmm-3.0
+#no longer needed for headless demo
+#RUN apt-get install -y gtkmm-3.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     libx11-xcb1 \
@@ -38,7 +39,11 @@ RUN apt-get install -y libcurl4-openssl-dev
 RUN apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
 
 # Install Pulseaudio
-RUN apt-get install -y  pulseaudio pulseaudio-utils ffmpeg
+RUN apt-get install -y  pulseaudio pulseaudio-utils
+
+# INSTALL FFMPEG
+RUN apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
+
 
 
 # Set the working directory

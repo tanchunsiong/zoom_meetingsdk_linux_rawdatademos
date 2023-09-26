@@ -19,10 +19,10 @@ sudo dnf config-manager --set-enabled crb
 #Next, install the EPEL RPM.
 sudo dnf install epel-release epel-next-release
 
-### install GTK related packages
-sudo yum install gtk3-devel 
-sudo yum install gtkmm30
-sudo yum install gtkmm30-devel
+### install GTK related packages (no longer needed for headless demo)
+#sudo yum install gtk3-devel 
+#sudo yum install gtkmm30
+#sudo yum install gtkmm30-devel
 
 ### If you encounter: Fatal error: SDL2/SDL.h: No such file or directory. This is no longer in used at code level, but leaving this here for legacy support purposes
 sudo yum -y install SDL2-devel
@@ -46,6 +46,12 @@ sudo yum install mesa-dri-drivers
 ### for curl related calls (this does not work at runtime for centos 9 due to dependencies on openssl 1.1.1)
   yum install -y openssl-devel 
   yum install -y libcurl-devel 
+
+# Install Pulseaudio
+yum install -y  pulseaudio pulseaudio-utils 
+
+# Install ffmpeg
+yum install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 
 ### libraries for opencv, used for converting mp4 into raw sendable video format.
   sudo yum install opencv-devel
@@ -82,7 +88,8 @@ apt-get update && apt-get install -y --no-install-recommends --no-install-sugges
     libgssapi-krb5-2 \
 
 
-apt-get install -y gtkmm-3.0
+# No longer needed for headless demo
+#apt-get install -y gtkmm-3.0
 
 ### if you are getting error about <SDL2/SDL.h>
  apt-get install libegl-mesa0 libsdl2-dev g++-multilib
@@ -95,10 +102,13 @@ apt-get install libcurl4-openssl-dev \
 
 ### for pulseaudio related
 # Install ALSA
-apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
+# apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
 
 # Install Pulseaudio
-apt-get install -y  pulseaudio pulseaudio-utils ffmpeg
+apt-get install -y  pulseaudio pulseaudio-utils 
+
+# Install ffmpeg
+apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 
 ### libraries for opencv, used for converting mp4 into raw sendable video format.
 sudo apt install libopencv-dev
@@ -223,15 +233,15 @@ ttf-font (neuropol-ttf, ttf-win7-fonts, ttf-ms-win8, ttf-ms-win8-arabic, ttf-ms-
 xcb-util-image
 xcb-util-keysyms
 
-ibus (ibus-git) (optional) – remote control
-picom (picom-git, picom-arian8j2-git, picom-9-bin, picom-ftlabs-git, picom-simpleanims-git, picom-simpleanims-next-git, picom-allusive) (optional) – extra compositor needed by some window managers for screen sharing
-pulseaudio-alsa (pulseaudio-dummy, pulseaudio-alsa-git, pipewire-full-alsa-git, pipewire-common-alsa-git, pipewire-alsa-git, pipewire-alsa) (optional) – audio via PulseAudio
-qt5-webengine (optional) – SSO login support
-xcompmgr (xcompmgr-git) (optional) – extra compositor needed by some window managers for screen sharing
+ibus (ibus-git) (optional) ï¿½ remote control
+picom (picom-git, picom-arian8j2-git, picom-9-bin, picom-ftlabs-git, picom-simpleanims-git, picom-simpleanims-next-git, picom-allusive) (optional) ï¿½ extra compositor needed by some window managers for screen sharing
+pulseaudio-alsa (pulseaudio-dummy, pulseaudio-alsa-git, pipewire-full-alsa-git, pipewire-common-alsa-git, pipewire-alsa-git, pipewire-alsa) (optional) ï¿½ audio via PulseAudio
+qt5-webengine (optional) ï¿½ SSO login support
+xcompmgr (xcompmgr-git) (optional) ï¿½ extra compositor needed by some window managers for screen sharing
 
 
 WIP
 
-do i need gstreamer?
+do i need libav series??
 sudo apt update
-sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
+sudo apt-get install libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
