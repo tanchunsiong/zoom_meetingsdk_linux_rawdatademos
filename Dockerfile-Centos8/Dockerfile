@@ -11,48 +11,58 @@ RUN yum update -y
 # Install required packages
 RUN yum install -y dnf-plugins-core \
     && dnf install -y cmake gcc gcc-c++ \
-    && dnf install -y epel-release epel-next-release \
     && dnf config-manager --set-enabled powertools \
-    && yum install -y gtk3-devel gtkmm30 gtkmm30-devel SDL2-devel mesa-libGL mesa-libGL-devel mesa-dri-drivers \
+    && dnf install -y epel-release epel-next-release \
+    && yum install -y SDL2-devel mesa-libGL mesa-libGL-devel mesa-dri-drivers \
     && yum install -y libxcb-devel xcb-util-image xcb-util-keysyms \
     && yum install -y openssl-devel \
     && yum install -y libcurl-devel \
     && yum clean all
+
+RUN yum install -y glib2-devel
+
+#no longer needed for headless demo
+#RUN yum install -y gtk3-devel gtkmm30 gtkmm30-devel 
 
 # install pulse audio related
  #RUN yum install -y alsa-utils
 
  #RUN yum install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
 
- RUN yum install -y  pulseaudio pulseaudio-utils
 
-# install ffmpeg related
-RUN yum install -y ffmpeg
+RUN yum install -y pulseaudio pulseaudio-utils
 
 
+ # install ffmpeg related
+RUN dnf install -y --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+RUN dnf update -y
+RUN dnf install -y ffmpeg ffmpeg-devel
 
-# Set the working directory
+
+
+
+
+ # Set the working directory
 WORKDIR /app
 
-# Copy your application files to the container
+ # Copy your application files to the container
 COPY demo/ /app/demo/
 
 # Execute additional commands
-RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
+ RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
 
-# Set the working directory to the binary folder
-WORKDIR /app/demo/bin
+ # Set the working directory to the binary folder
+ WORKDIR /app/demo/bin
 
+# # Define a shell script to run multiple commands
+ RUN echo '#!/bin/bash' > /app/demo/run.sh \
+     && echo '/app/demo/setup-pulseaudio-centos.sh' >> /app/demo/run.sh \
+     && echo './meetingSDKDemo' >> /app/demo/run.sh
 
-# Define a shell script to run multiple commands
-RUN echo '#!/bin/bash' > /app/demo/run.sh \
-    && echo '/app/demo/setup-pulseaudio-centos.sh' >> /app/demo/run.sh \
-    && echo './meetingSDKDemo' >> /app/demo/run.sh
+ # Make the run script executable
+ RUN chmod +x /app/demo/run.sh
 
-# Make the run script executable
-RUN chmod +x /app/demo/run.sh
-
-# Run the meetingSDKDemo binary when the container starts
-CMD ["/app/demo/run.sh"]
-#CMD ["/bin/bash"]
-#CMD ["./meetingSDKDemo"]
+ # Run the meetingSDKDemo binary when the container starts
+ CMD ["/app/demo/run.sh"]
+ #CMD ["/bin/bash"]
+ #CMD ["./meetingSDKDemo"]

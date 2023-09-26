@@ -8,6 +8,9 @@ demo/include/h/*
 demo/include/ffmpeg/
 demo/.vscode/
 demo/out
+demo/*.avi
+demo/*.mkv
+
 
 demo-compact/bin/
 demo-compact/build/

@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <glib.h>
-#include <gtkmm.h>
+// no longer needed for headless demo
+//#include <gtkmm.h>
 #include <sstream>
 #include <thread>
 #include <sys/syscall.h>
@@ -50,12 +51,12 @@
 
 //references for SendAudioRawData
 #include "ZoomSDKVirtualAudioMicEvent.h"
+#include <mutex>
 
 USING_ZOOM_SDK_NAMESPACE
 
-//these are controlled by code logic, not meant to be used by user/developer
-std::mutex mtx;
-bool jwtTokenGenerated = false;
+
+
 
 GMainLoop* loop;
 
@@ -237,8 +238,6 @@ void CheckAndStartRawSending(bool isVideo, bool isAudio) {
 void onIsHost() {
 	printf("Is host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
-
-	
 }
 
 //callback when given cohost permission
@@ -449,7 +448,6 @@ void CleanSDK()
 	if (err != ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS)
 	{
 
-
 		std::cerr << "CleanSDK meetingSdk:error " << std::endl;
 	}
 	else
@@ -459,7 +457,51 @@ void CleanSDK()
 	}
 }
 
+void changeMicrophoneAndSpeaker() {
+	ZOOM_SDK_NAMESPACE::IAudioSettingContext* pAudioContext = m_pSettingService->GetAudioSettings();
+	if (pAudioContext)
+	{
+		//setting speaker
+		//if there are speakers detected
+		if (pAudioContext->GetSpeakerList()->GetCount() >= 1) {
+			std::cout << "Number of speaker(s) : " << pAudioContext->GetSpeakerList()->GetCount() << std::endl;
+			ISpeakerInfo* sInfo = pAudioContext->GetSpeakerList()->GetItem(0);
+			const zchar_t* deviceName = sInfo->GetDeviceName();
 
+			//set speaker
+			if (deviceName != nullptr && deviceName[0] != '\0') {
+				std::cout << "Speaker(0) name : " << sInfo->GetDeviceName() << std::endl;
+				std::cout << "Speaker(0) id : " << sInfo->GetDeviceId() << std::endl;
+				pAudioContext->SelectSpeaker(sInfo->GetDeviceId(), sInfo->GetDeviceName());
+				std::cout << "Is selected speaker? : " << pAudioContext->GetSpeakerList()->GetItem(0)->IsSelectedDevice() << std::endl;
+			}
+			else {
+				std::cout << "Speaker(0) name is empty or null." << std::endl;
+				std::cout << "Speaker(0) id is empty or null." << std::endl;
+			}
+		}
+
+		//setting microphone
+		//if there are microphone detected
+		if (pAudioContext->GetMicList()->GetCount() >= 1) {
+			IMicInfo* mInfo = pAudioContext->GetMicList()->GetItem(0);
+			std::cout << "Number of mic(s) : " << pAudioContext->GetMicList()->GetCount() << std::endl;
+			const zchar_t* deviceName = mInfo->GetDeviceName();
+
+			//set microphone
+			if (deviceName != nullptr && deviceName[0] != '\0') {
+				std::cout << "Mic(0) name : " << mInfo->GetDeviceName() << std::endl;
+				std::cout << "Mic(0) id : " << mInfo->GetDeviceId() << std::endl;
+				pAudioContext->SelectMic(mInfo->GetDeviceId(), mInfo->GetDeviceName());
+				std::cout << "Is selected Mic? : " << pAudioContext->GetMicList()->GetItem(0)->IsSelectedDevice() << std::endl;
+			}
+			else {
+				std::cout << "Mic(0) name is empty or null." << std::endl;
+				std::cout << "Mic(0) id is empty or null." << std::endl;
+			}
+		}
+	}
+}
 
 void JoinMeeting()
 {
@@ -484,49 +526,7 @@ void JoinMeeting()
 		{
 			//ensure auto join audio
 			pAudioContext->EnableAutoJoinAudio(true);
-
-			//setting speaker
-			//if there are speakers detected
-			if (pAudioContext->GetSpeakerList()->GetCount() >= 1) {
-				std::cout << "Number of speaker(s) : " << pAudioContext->GetSpeakerList()->GetCount() << std::endl;
-				ISpeakerInfo* sInfo = pAudioContext->GetSpeakerList()->GetItem(0);
-				const zchar_t* deviceName = sInfo->GetDeviceName();
-
-				//set speaker
-				if (deviceName != nullptr && deviceName[0] != '\0') {
-					std::cout << "Speaker(0) name : " << sInfo->GetDeviceName() << std::endl;
-					std::cout << "Speaker(0) id : " << sInfo->GetDeviceId() << std::endl;
-					pAudioContext->SelectSpeaker(sInfo->GetDeviceId(), sInfo->GetDeviceName());
-					std::cout << "Is selected speaker? : " << pAudioContext->GetSpeakerList()->GetItem(0)->IsSelectedDevice() << std::endl;
-				}
-				else {
-					std::cout << "Speaker(0) name is empty or null." << std::endl;
-					std::cout << "Speaker(0) id is empty or null." << std::endl;
-				}
-			}
-
-			//setting microphone
-			//if there are microphone detected
-			if (pAudioContext->GetMicList()->GetCount() >= 1) {
-				IMicInfo* mInfo = pAudioContext->GetMicList()->GetItem(0);
-				std::cout << "Number of mic(s) : " << pAudioContext->GetMicList()->GetCount() << std::endl;
-				const zchar_t* deviceName = mInfo->GetDeviceName();
-
-				//set microphone
-				if (deviceName != nullptr && deviceName[0] != '\0') {
-					std::cout << "Mic(0) name : " << mInfo->GetDeviceName() << std::endl;
-					std::cout << "Mic(0) id : " << mInfo->GetDeviceId() << std::endl;
-					pAudioContext->SelectMic(mInfo->GetDeviceId(), mInfo->GetDeviceName());
-					std::cout << "Is selected Mic? : " << pAudioContext->GetMicList()->GetItem(0)->IsSelectedDevice() << std::endl;
-				}
-				else {
-					std::cout << "Mic(0) name is empty or null." << std::endl;
-					std::cout << "Mic(0) id is empty or null." << std::endl;
-				}
-			}
 		}
-
-
 	}
 
 	// Set the event listener for meeting status
@@ -728,24 +728,217 @@ void StartMeeting()
 	}
 	else
 	{
-
 		std::cerr << "StartMeeting:error " << std::endl;
 	}
 }
 
 
-static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
-{
-	printf("WriteCallback \n");
+// static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
+// {
+// 	printf("WriteCallback \n");
 
-	((std::string*)userp)->append((char*)contents, size * nmemb);
-	std::string response = (char*)contents;
+// 	((std::string*)userp)->append((char*)contents, size * nmemb);
+// 	std::string response = (char*)contents;
+
+// 	Json responses_json;
+// 	try
+// 	{
+// 		responses_json = Json::parse(response);
+// 		printf("config all_content: %s\n", response.c_str());
+// 	}
+// 	catch (Json::parse_error& ex)
+// 	{
+// 	}
+
+// 	Json json_signature = responses_json["signature"];
+// 	Json json_sdkKey = responses_json["sdkKey"];
+// 	Json json_recordingtoken = responses_json["recordingtoken"];
+
+// 	if (!json_signature.is_null())
+// 	{
+// 		token = json_signature.get<std::string>();
+// 	}
+
+// 	if (useRecordingTokenFromWebService) {
+// 		if (!json_recordingtoken.is_null())
+// 		{
+// 			recording_token = json_recordingtoken.get<std::string>();
+// 		}
+// 	}
+
+// 	printf("Token in callback is: %s\n", token.c_str());
+
+
+// 	return size * nmemb;
+// }
+
+// void getJWTToken(std::string remote_url)
+// {
+// 	//printf("declaring curl \n");
+// 	//CURL* curl;
+// 	//CURLcode res;
+// 	//std::string readBuffer;
+
+// 	//char* json = NULL;
+// 	//struct curl_slist* headers = NULL;
+// 	//printf("initing curl \n");
+// 	//curl = curl_easy_init();
+// 	//if (curl)
+// 	//{
+
+// 	//	printf("setting remote url: %s\n", remote_url.c_str());
+// 	//	curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+
+// 	//	// buffer size
+// 	//	printf("setting buffer \n");
+// 	//	curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+
+// 	//	// temp workaround to enable SSL / HTTPS
+// 	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+// 	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+// 	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+
+// 	//	// headers
+// 	//	printf("setting headers \n");
+// 	//	headers = curl_slist_append(headers, "Expect:");
+// 	//	headers = curl_slist_append(headers, "Content-Type: application/json");
+// 	//	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+// 	//	std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
+// 	//	printf("setting payload: %s\n", json.c_str());
+// 	//	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+
+// 	//	// callback
+// 	//	printf("preparing callback \n");
+// 	//	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+// 	//	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+// 	//	// perform
+// 	//	printf("calling remote URL \n");
+// 	//	res = curl_easy_perform(curl);
+// 	//	std::cout << readBuffer << std::endl;
+
+// 	//	/* Check for errors */
+// 	//	if (res != CURLE_OK)
+// 	//		fprintf(stderr, "curl_easy_perform() failed: %s\n",
+// 	//			curl_easy_strerror(res));
+
+// 	//	/* always cleanup */
+// 	//	curl_slist_free_all(headers);
+// 	//	curl_easy_cleanup(curl);
+// 	//}
+
+// 	printf("declaring curl \n");
+// 	char* json = NULL;
+// 	struct curl_slist* headers = NULL;
+// 	printf("initing curl \n");
+// 	CURL* curl = curl_easy_init();
+// 	if (curl)
+// 	{
+// 		CURLcode res;
+// 		std::string readBuffer;
+
+// 		try
+// 		{
+// 			curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
+// 			curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
+
+// 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+// 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+// 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+
+// 			struct curl_slist* headers = NULL;
+// 			headers = curl_slist_append(headers, "Expect:");
+// 			headers = curl_slist_append(headers, "Content-Type: application/json");
+// 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+// 			std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
+// 			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+
+// 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+// 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+// 			res = curl_easy_perform(curl);
+
+// 			if (res != CURLE_OK)
+// 			{
+// 				throw std::runtime_error(std::string("curl_easy_perform() failed: ") + curl_easy_strerror(res));
+// 			}
+
+// 			std::cout << readBuffer << std::endl;
+// 		}
+// 		catch (const std::exception& e)
+// 		{
+// 			std::cerr << "Error: " << e.what() << std::endl;
+// 		}
+
+// 		curl_slist_free_all(headers);
+// 		curl_easy_cleanup(curl);
+// 	}
+
+// }
+
+// Define a struct to hold the response data
+struct ResponseData {
+    std::ostringstream stream;
+};
+
+// Callback function to write response data into the stringstream
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+    size_t totalSize = size * nmemb;
+    ResponseData* response = static_cast<ResponseData*>(userp);
+    response->stream.write(static_cast<const char*>(contents), totalSize);
+    return totalSize;
+}
+
+// Function to make an HTTP request and return the response as a string
+std::string getJWTToken(const std::string& remote_url) {
+	 const char* charURL = remote_url.c_str();
+    // Initialize libcurl
+    CURL* curl = curl_easy_init();
+    if (!curl) {
+        throw std::runtime_error("Failed to initialize libcurl");
+    }
+
+    // Create a ResponseData object to collect the response
+    ResponseData responseData;
+
+    try {
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, charURL);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
+
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Expect:");
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
+		 const char* charJSON = json.c_str();
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, charJSON);
+
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseData);
+
+        // Perform the HTTP request
+        CURLcode res = curl_easy_perform(curl);
+
+        if (res != CURLE_OK) {
+            throw std::runtime_error(std::string("curl_easy_perform() failed: ") + curl_easy_strerror(res));
+        }
+
+       
+
+
+	std::string responsestr = responseData.stream.str();
 
 	Json responses_json;
 	try
 	{
-		responses_json = Json::parse(response);
-		printf("config all_content: %s\n", response.c_str());
+		responses_json = Json::parse(responsestr);
+		printf("config all_content: %s\n", responsestr.c_str());
 	}
 	catch (Json::parse_error& ex)
 	{
@@ -767,120 +960,18 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
 		}
 	}
 
-	printf("Token in callback is: %s\n", token.c_str());
-	std::lock_guard<std::mutex> lock(mtx);
-	jwtTokenGenerated = true;
+		// Cleanup libcurl
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
 
-	return size * nmemb;
-}
-
-void getJWTToken(std::string remote_url)
-{
-	//printf("declaring curl \n");
-	//CURL* curl;
-	//CURLcode res;
-	//std::string readBuffer;
-
-	//char* json = NULL;
-	//struct curl_slist* headers = NULL;
-	//printf("initing curl \n");
-	//curl = curl_easy_init();
-	//if (curl)
-	//{
-
-	//	printf("setting remote url: %s\n", remote_url.c_str());
-	//	curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
-
-	//	// buffer size
-	//	printf("setting buffer \n");
-	//	curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
-
-	//	// temp workaround to enable SSL / HTTPS
-	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
-	//	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
-
-	//	// headers
-	//	printf("setting headers \n");
-	//	headers = curl_slist_append(headers, "Expect:");
-	//	headers = curl_slist_append(headers, "Content-Type: application/json");
-	//	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-	//	std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
-	//	printf("setting payload: %s\n", json.c_str());
-	//	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
-
-	//	// callback
-	//	printf("preparing callback \n");
-	//	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-	//	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-	//	// perform
-	//	printf("calling remote URL \n");
-	//	res = curl_easy_perform(curl);
-	//	std::cout << readBuffer << std::endl;
-
-	//	/* Check for errors */
-	//	if (res != CURLE_OK)
-	//		fprintf(stderr, "curl_easy_perform() failed: %s\n",
-	//			curl_easy_strerror(res));
-
-	//	/* always cleanup */
-	//	curl_slist_free_all(headers);
-	//	curl_easy_cleanup(curl);
-	//}
-
-	printf("declaring curl \n");
-
-
-
-	char* json = NULL;
-	struct curl_slist* headers = NULL;
-	printf("initing curl \n");
-	CURL* curl = curl_easy_init();
-	if (curl)
-	{
-		CURLcode res;
-		std::string readBuffer;
-
-		try
-		{
-			curl_easy_setopt(curl, CURLOPT_URL, remote_url.c_str());
-			curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 120000L);
-
-			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 0);
-
-			struct curl_slist* headers = NULL;
-			headers = curl_slist_append(headers, "Expect:");
-			headers = curl_slist_append(headers, "Content-Type: application/json");
-			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-			std::string json = "{\"meetingNumber\":\"" + meeting_number + "\",\"role\":1}";
-			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
-
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-			res = curl_easy_perform(curl);
-
-			if (res != CURLE_OK)
-			{
-				throw std::runtime_error(std::string("curl_easy_perform() failed: ") + curl_easy_strerror(res));
-			}
-
-			std::cout << readBuffer << std::endl;
-		}
-		catch (const std::exception& e)
-		{
-			std::cerr << "Error: " << e.what() << std::endl;
-		}
-
-		curl_slist_free_all(headers);
-		curl_easy_cleanup(curl);
-	}
-
+        // Return the response data as a string
+        return responseData.stream.str();
+    } catch (const std::exception& e) {
+        // Handle exceptions
+        std::cerr << "Error: " << e.what() << std::endl;
+        // Return an empty string or handle the error as needed
+        return "";
+    }
 }
 
 gboolean timeout_callback(gpointer data)
@@ -897,14 +988,17 @@ void my_handler(int s)
 	CleanSDK();
 
 	if (useJWTTokenFromWebService) {
-		std::thread tokenThread(getJWTToken, remote_url);
-		tokenThread.join();
+		// std::thread tokenThread(getJWTToken, remote_url);
+		// tokenThread.join();
+
+		std::string response=getJWTToken(remote_url);
+	
 	}
 
 	//if (jwtTokenGenerated)
 	//{
-	//	InitMeetingSDK();
-	//	AuthMeetingSDK();
+		InitMeetingSDK();
+		AuthMeetingSDK();
 	//}
 	std::exit(0);
 }
@@ -924,19 +1018,16 @@ int main(int argc, char* argv[])
 	ReadJsonSettings();
 
 	if (useJWTTokenFromWebService) {
-		std::thread tokenThread(getJWTToken, remote_url);
-		tokenThread.join();
+		//std::thread tokenThread(getJWTToken, remote_url);
+		//tokenThread.join();
+		std::string response =getJWTToken( remote_url);
+		
 	}
 
-	if (jwtTokenGenerated)
-	{
+	
 		InitMeetingSDK();
 		AuthMeetingSDK();
-	}
-	else
-	{
-		std::cout << "JWT token generation failed." << std::endl;
-	}
+	
 
 	initAppSettings();
 
