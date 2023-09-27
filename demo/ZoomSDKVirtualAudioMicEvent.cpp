@@ -22,8 +22,6 @@ int audio_play_flag = -1;
 
 void PlayAudioFileToVirtualMic(IZoomSDKAudioRawDataSender* audio_sender, string audio_source)
 {
-
-
 	// execute in a thread.
 	while (audio_play_flag > 0 && audio_sender) {
 
@@ -54,16 +52,12 @@ void PlayAudioFileToVirtualMic(IZoomSDKAudioRawDataSender* audio_sender, string 
 		
 		//audio_play_flag = -1;
 	}
-
-
-
 }
 
 /// \brief Callback for virtual audio mic to do some initialization.
 /// \param pSender, You can send audio data based on this object, see \link IZoomSDKAudioRawDataSender \endlink.
 void ZoomSDKVirtualAudioMicEvent::onMicInitialize(IZoomSDKAudioRawDataSender* pSender) {
-	//pSender->send();
-	pSender_ = pSender;
+	//pSender->send();	pSender_ = pSender;
 	printf("OnMicInitialize\n");
 }
 
@@ -71,13 +65,10 @@ void ZoomSDKVirtualAudioMicEvent::onMicInitialize(IZoomSDKAudioRawDataSender* pS
 void ZoomSDKVirtualAudioMicEvent::onMicStartSend() {
 
 	printf("onMicStartSend\n");
-
-
 	std::cout << "onStartSend" << std::endl;
 	if (pSender_ && audio_play_flag != 1) {
 		while (audio_play_flag > -1) {}
 		audio_play_flag = 1;
-		std::string audio_source_ = "whitenoise.wav";
 		thread(PlayAudioFileToVirtualMic, pSender_, audio_source_).detach();
 
 	}
@@ -86,12 +77,15 @@ void ZoomSDKVirtualAudioMicEvent::onMicStartSend() {
 /// \brief Callback for virtual audio mic should stop send raw data.
 void ZoomSDKVirtualAudioMicEvent::onMicStopSend() {
 	printf("onMicStopSend\n");
-
-
 	audio_play_flag = 0;
 }
 /// \brief Callback for virtual audio mic is uninitialized.
 void ZoomSDKVirtualAudioMicEvent::onMicUninitialized() {
 	std::cout << "onUninitialized" << std::endl;
 	pSender_ = nullptr;
+}
+
+ZoomSDKVirtualAudioMicEvent::ZoomSDKVirtualAudioMicEvent(std::string audio_source)
+{
+	audio_source_ = audio_source;
 }

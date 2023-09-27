@@ -17,6 +17,9 @@ find_package(PkgConfig REQUIRED)
 #link_directories(${GTKMM_LIBRARY_DIRS})
 #add_definitions(${GTKMM_CFLAGS_OTHER})
 find_package(ZLIB REQUIRED)
+
+
+
 # Find FFmpeg
 
 pkg_check_modules(FFMPEG REQUIRED IMPORTED_TARGET
@@ -86,7 +89,7 @@ target_link_libraries(meetingSDKDemo pthread)
 #link_directories(${CMAKE_SOURCE_DIR}/lib/ffmpeg)
 target_link_libraries(meetingSDKDemo PkgConfig::FFMPEG)
 
-target_link_libraries(meetingSDKDemo ZLIB::ZLIB)
+#target_link_libraries(meetingSDKDemo ZLIB::ZLIB)
 
 target_include_directories(meetingSDKDemo PRIVATE ${FFMPEG_INCLUDE_DIRS})
 
@@ -100,5 +103,6 @@ configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_SOURCE_DIR}/bin/config.js
 file(COPY ${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/ DESTINATION ${CMAKE_SOURCE_DIR}/bin)
 # //SendVideoRawData
 file(COPY ${CMAKE_SOURCE_DIR}/Big_Buck_Bunny_720_10s_10MB.mp4 DESTINATION ${CMAKE_SOURCE_DIR}/bin/)
+
 # //SendAudioRawData
-file(COPY ${CMAKE_SOURCE_DIR}/whitenoise.wav DESTINATION ${CMAKE_SOURCE_DIR}/bin/)
+file(COPY ${CMAKE_SOURCE_DIR}/Big_Buck_Bunny.wav DESTINATION ${CMAKE_SOURCE_DIR}/bin/)

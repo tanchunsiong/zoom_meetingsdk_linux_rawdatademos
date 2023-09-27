@@ -53,8 +53,7 @@ yum install -y  pulseaudio pulseaudio-utils
 # Install ffmpeg
 yum install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 
-### libraries for opencv, used for converting mp4 into raw sendable video format.
-  sudo yum install opencv-devel
+
 
 
 ==============================================================
@@ -110,8 +109,7 @@ apt-get install -y  pulseaudio pulseaudio-utils
 # Install ffmpeg
 apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 
-### libraries for opencv, used for converting mp4 into raw sendable video format.
-sudo apt install libopencv-dev
+
 
 
   ======================================================================
