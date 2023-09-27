@@ -8,8 +8,6 @@
 #include <cstdio>
 #include <chrono>
 
-//#include <opencv2/imgproc.hpp>
-//#include <opencv2/videoio.hpp>
 
 //using namespace cv;
 using namespace std;
@@ -22,152 +20,7 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 }
-//void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, string video_source)
-//{
-//    char* frameBuffer;
-//    int frameLen = height / 2 * 3 * width;
-//    frameBuffer = (char*)malloc(frameLen);
-//
-//    // execute in a thread.
-//    while (video_play_flag > 0 && video_sender) {
-//        Mat frame;
-//        VideoCapture cap;
-//        cap.open(video_source);
-//        if (!cap.isOpened()) {
-//            cerr << "ERROR! Unable to open camera\n";
-//            video_play_flag = 0;
-//            return;
-//        }
-//
-//        //--- GRAB AND WRITE LOOP
-//        std::cout << "Start grabbing" << endl;
-//        while (cap.read(frame))
-//        {
-//            // wait for a new frame from camera and store it into 'frame'
-//
-//            // check if we succeeded
-//            if (frame.empty()) {
-//                cerr << "ERROR! blank frame grabbed\n";
-//                break;
-//            }
-//
-//            //covert Mat to YUV buffer
-//            Mat yuv;
-//            cv::cvtColor(frame, yuv, COLOR_BGRA2YUV_I420);
-//
-//            char* frameBuffer = (char*)yuv.data;
-//            int width = yuv.cols;
-//            int height = yuv.rows;
-//            int frameLen = yuv.total() * yuv.elemSize();
-//
-//
-//
-//            SDKError err = ((IZoomSDKVideoSender*)video_sender)->sendVideoFrame(frameBuffer, width, height, frameLen, 0);
-//            if (err != SDKERR_SUCCESS) {
-//                std::cout << "sendVideoFrame failed: Error " << err << endl;
-//            }
-//        }
-//        cap.release();
-//
-//    }
-//    video_play_flag = -1;
-//}
-//void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::string& video_source) {
-//    while (true) {
-//        // Initialize FFmpeg.
-//        av_register_all();
-//        avcodec_register_all();
-//
-//        // Open the input file (MP4).
-//        AVFormatContext* formatContext = nullptr;
-//        if (avformat_open_input(&formatContext, video_source.c_str(), nullptr, nullptr) < 0) {
-//            std::cerr << "Error: Could not open file." << std::endl;
-//            return;
-//        }
-//
-//        // Find the video stream information.
-//        if (avformat_find_stream_info(formatContext, nullptr) < 0) {
-//            std::cerr << "Error: Could not find stream information." << std::endl;
-//            avformat_close_input(&formatContext);
-//            continue; // Retry opening the file.
-//        }
-//
-//        AVCodec* codec = nullptr;
-//        int videoStreamIndex = -1;
-//
-//        // Find the video codec and stream.
-//        for (int i = 0; i < formatContext->nb_streams; i++) {
-//            if (formatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-//                videoStreamIndex = i;
-//                codec = avcodec_find_decoder(formatContext->streams[i]->codec->codec_id);
-//                if (!codec) {
-//                    std::cerr << "Error: Codec not found." << std::endl;
-//                    avformat_close_input(&formatContext);
-//                    return;
-//                }
-//                break;
-//            }
-//        }
-//
-//        // Open the codec.
-//        AVCodecContext* codecContext = formatContext->streams[videoStreamIndex]->codec;
-//        if (avcodec_open2(codecContext, codec, nullptr) < 0) {
-//            std::cerr << "Error: Could not open codec." << std::endl;
-//            avformat_close_input(&formatContext);
-//            return;
-//        }
-//
-//        // Set the pixel format explicitly to YUV420P.
-//        codecContext->pix_fmt = AV_PIX_FMT_YUV420P;
-//
-//        // Read and send frames in a loop.
-//        AVPacket packet;
-//        while (av_read_frame(formatContext, &packet) >= 0) {
-//            if (packet.stream_index == videoStreamIndex) {
-//                AVFrame* frame = av_frame_alloc();
-//                if (!frame) {
-//                    std::cerr << "Error: Could not allocate frame." << std::endl;
-//                    avformat_close_input(&formatContext);
-//                    return;
-//                }
-//
-//                int frameFinished;
-//                avcodec_decode_video2(codecContext, frame, &frameFinished, &packet);
-//
-//                if (frameFinished) {
-//                    // Now, `frame` contains the YUV420P frame.
-//
-//                    // Send the frame to the virtual camera.
-//                    SDKError err = ((IZoomSDKVideoSender*)video_sender)->sendVideoFrame(
-//                        reinterpret_cast<char*>(frame->data[0]), // Cast to char* for the frame buffer
-//                        codecContext->width,
-//                        codecContext->height,
-//                        codecContext->width * codecContext->height * 3 / 2, // Frame length for YUV420P
-//                        0, // Rotation (modify as needed)
-//                        FrameDataFormat_I420_FULL
-//                    );
-//                    if (err != SDKERR_SUCCESS) {
-//                        std::cerr << "Error: Failed to send video frame." << std::endl;
-//                        av_frame_free(&frame);
-//                        avformat_close_input(&formatContext);
-//                        return;
-//                    }
-//                }
-//
-//                av_frame_free(&frame);
-//            }
-//
-//            av_packet_unref(&packet);
-//
-//            // Add a delay to control the frame rate (adjust as needed).
-//            std::this_thread::sleep_for(std::chrono::milliseconds(33));  // Approximately 30 frames per second.
-//        }
-//
-//        // Clean up.
-//        avcodec_close(codecContext);
-//        avformat_close_input(&formatContext);
-//    } // End of the infinite loop
-//}
+
 void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::string& video_source) {
     while (true) {
         // Initialize FFmpeg.
@@ -177,7 +30,7 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
         // Open the input file (MP4).
         AVFormatContext* formatContext = nullptr;
         if (avformat_open_input(&formatContext, video_source.c_str(), nullptr, nullptr) < 0) {
-            std::cerr << "Error: Could not open file." << std::endl;
+            std::cerr << "Error: Could not open file :" << video_source << std::endl;
             return;
         }
 

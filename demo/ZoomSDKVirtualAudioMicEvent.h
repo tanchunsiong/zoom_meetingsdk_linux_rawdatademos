@@ -16,7 +16,7 @@ class ZoomSDKVirtualAudioMicEvent :
 
 private:
 	IZoomSDKAudioRawDataSender* pSender_;
-
+	std::string audio_source_;
 protected:
 
 	/// \brief Callback for virtual audio mic to do some initialization.
@@ -31,4 +31,7 @@ protected:
 
 	/// \brief Callback for virtual audio mic is uninitialized.
 	virtual void onMicUninitialized();
+
+public:
+	ZoomSDKVirtualAudioMicEvent(std::string audio_source);
 };
