@@ -54,6 +54,8 @@ link_directories(${CMAKE_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs/Qt/lib)
 
 add_executable(meetingSDKDemo 
               ${CMAKE_SOURCE_DIR}/meeting_sdk_demo.cpp
+              ${CMAKE_SOURCE_DIR}/MeetingChatEventListener.h 
+              ${CMAKE_SOURCE_DIR}/MeetingChatEventListener.cpp
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.h
               ${CMAKE_SOURCE_DIR}/MeetingReminderEventListener.cpp
               ${CMAKE_SOURCE_DIR}/MeetingServiceEventListener.h
