@@ -57,6 +57,9 @@
 #include "ZoomSDKVirtualAudioMicEvent.h"
 #include <mutex>
 
+//references for chatDemo
+#include "MeetingChatEventListener.h"
+
 USING_ZOOM_SDK_NAMESPACE
 using namespace httplib;
 
@@ -68,7 +71,6 @@ std::string meeting_number, token, meeting_password, recording_token, remote_url
 
 //references for SendAudioRawData
 std::string DEFAULT_AUDIO_SOURCE = "Big_Buck_Bunny.wav";
-
 
 //references for SendVideoRawData
 std::string DEFAULT_VIDEO_SOURCE = "Big_Buck_Bunny_720_10s_10MB.mp4";
@@ -109,6 +111,8 @@ bool GetVideoRawData = false;
 bool GetAudioRawData = false;
 bool SendVideoRawData = false;
 bool SendAudioRawData = false;
+
+bool chatDemo = true;
 
 //this is a helper method to get the first User ID, it is just an arbitary UserID
 uint32_t getUserID() {
@@ -256,6 +260,9 @@ void onIsGivenRecordingPermission() {
 	printf("Is given recording permissions now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 
+
+}
+void turnOnSendVideoAndAudio() {
 	//testing WIP
 	if (SendVideoRawData) {
 		IMeetingVideoController* meetingVidController = m_pMeetingService->GetMeetingVideoController();
@@ -269,8 +276,21 @@ void onIsGivenRecordingPermission() {
 		//meetingAudController->MuteAudio(getMyself()->GetUserID(),true);
 		meetingAudController->UnMuteAudio(getMyself()->GetUserID());
 
-		m_pSettingService->GetAudioSettings()->GetMicList();
-		m_pSettingService->GetAudioSettings()->UseDefaultSystemMic();
+		//m_pSettingService->GetAudioSettings()->GetMicList();
+		//m_pSettingService->GetAudioSettings()->UseDefaultSystemMic();
+	}
+}
+void turnOffSendVideoandAudio() {
+	//testing WIP
+	if (SendVideoRawData) {
+		IMeetingVideoController* meetingVidController = m_pMeetingService->GetMeetingVideoController();
+		meetingVidController->MuteVideo();
+	}
+	//testing WIP
+	if (SendAudioRawData) {
+		IMeetingAudioController* meetingAudController = m_pMeetingService->GetMeetingAudioController();
+		meetingAudController->MuteAudio(getMyself()->GetUserID(),true);
+
 	}
 }
 
@@ -286,7 +306,13 @@ void onInMeeting() {
 		//print all list of participants
 		IList<unsigned int>* participants = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
 		printf("Participants count: %d\n", participants->GetCount());
+	}
 
+
+	//chatDemo
+	if (chatDemo) {
+	
+		m_pMeetingService->GetMeetingChatController()->SetEvent(new MeetingChatEventListener(&turnOnSendVideoAndAudio, &turnOffSendVideoandAudio));
 	}
 
 	//first attempt to start raw recording  / sending, upon successfully joined and achieved "in-meeting" state.
@@ -322,22 +348,22 @@ std::string getSelfDirPath()
 
 // Function to parse and process JSON value as a string
 template<typename T>
-bool processJsonValue(const Json& json, const std::string& key, T& value {
+bool processJsonValue(const Json& json, const std::string& key, T& value ){
 	if (!json[key].is_null()) {
 		value = json[key].get<std::string>();
-		printf("config %s: %s\n", json.c_str(), value.c_str());
+		printf("config %s: %s\n",key.c_str(), value.c_str());
 		return true;
 	}
 	return false;
 }
 
 // Function to parse and process JSON value as a boolean
-bool processJsonBoolean(const Json& json, const std::string& key, bool& value {
+bool processJsonBoolean(const Json& json, const std::string& key, bool& value) {
 	if (!json[key].is_null()) {
 		std::string stringValue = json[key].get<std::string>();
 		std::transform(stringValue.begin(), stringValue.end(), stringValue.begin(), ::tolower);
 		value = (stringValue == "true");
-		printf("%s value is %s\n", json.c_str(), (value ? "true" : "false"));
+		printf("%s value is %s\n", key.c_str(), (value ? "true" : "false"));
 		return true;
 	}
 	return false;
@@ -346,6 +372,8 @@ bool processJsonBoolean(const Json& json, const std::string& key, bool& value {
 
 void ReadJsonSettings()
 {
+	
+
 	std::string self_dir = getSelfDirPath();
 	printf("self path: %s\n", self_dir.c_str());
 	self_dir.append("/config.json");
@@ -383,6 +411,17 @@ void ReadJsonSettings()
 		processJsonBoolean(config_json, "SendAudioRawData", SendAudioRawData);
 		// Additional processing or handling of parsed values can be done here
 	}
+
+
+	std::string bin_dir1 = getSelfDirPath();
+	if (SendAudioRawData) {
+		DEFAULT_AUDIO_SOURCE = bin_dir1.append("/").append(DEFAULT_AUDIO_SOURCE);
+	}
+	std::string bin_dir2 = getSelfDirPath();
+	if (SendVideoRawData) {
+		DEFAULT_VIDEO_SOURCE = bin_dir2.append("/").append(DEFAULT_VIDEO_SOURCE);
+	}
+
 	printf("directory of config file: %s\n", self_dir.c_str());
 }
 

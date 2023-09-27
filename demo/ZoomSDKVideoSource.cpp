@@ -148,7 +148,7 @@ void ZoomSDKVideoSource::onStartSend()
 
 void ZoomSDKVideoSource::onStopSend()
 {
-    std::cout << "onStopSend" << endl;
+    std::cout << "onCameraStopSend" << endl;
     video_play_flag = 0;
 }
 
