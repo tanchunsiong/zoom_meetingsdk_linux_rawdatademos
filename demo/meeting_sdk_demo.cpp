@@ -721,7 +721,7 @@ void AuthMeetingSDK()
 	if (!token.size() == 0)
 	{
 		param.jwt_token = token.c_str();
-		std::cerr << "AuthSDK:success " << std::endl;
+		std::cerr << "AuthSDK:using token from webservice " << std::endl;
 	}
 
 	//attempt to authenticate
@@ -733,7 +733,7 @@ void AuthMeetingSDK()
 	}
 	else
 	{
-		std::cerr << "AuthSDK:success " << std::endl;
+		std::cerr << "AuthSDK:send success, waiting callback " << std::endl;
 	}
 }
 
@@ -914,10 +914,11 @@ int main(int argc, char* argv[])
 	if (useJWTTokenFromWebService) {
 		std::string response = getJWTToken(remote_url);
 	}
+	initAppSettings();
 
 	InitMeetingSDK();
 	AuthMeetingSDK();
-	initAppSettings();
+
 
 	loop = g_main_loop_new(NULL, FALSE);
 	// add source to default context

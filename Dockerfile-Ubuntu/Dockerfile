@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     libegl-mesa0 \
     libsdl2-dev \
     g++-multilib 
+
 # Install CURL related libs
 RUN apt-get install -y libcurl4-openssl-dev
 
@@ -74,6 +75,6 @@ RUN echo '#!/bin/bash' > /app/demo/run.sh \
 RUN chmod +x /app/demo/run.sh
 
 # Specify the run script as the CMD
-CMD ["/app/demo/run.sh"]
-#CMD ["/bin/bash"]
+#CMD ["/app/demo/run.sh"]
+CMD ["/bin/bash"]
 #CMD ["./meetingSDKDemo"]
