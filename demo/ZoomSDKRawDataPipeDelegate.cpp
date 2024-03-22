@@ -5,6 +5,13 @@
 #include <rawdata/rawdata_renderer_interface.h>
 #include <string>
 
+
+//GetAudioRawData
+#include "rawdata/rawdata_audio_helper_interface.h"
+#include "zoom_sdk_def.h" 
+#include <iostream>
+#include <fstream>
+
 USING_ZOOM_SDK_NAMESPACE;
 
 const AVPixelFormat pix_fmts[] = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
@@ -157,6 +164,37 @@ void ZoomSDKRawDataPipeDelegate::err_msg(int code)
 	printf("%s\n", errbuf);
 }
 
+void ZoomSDKRawDataPipeDelegate::onMixedAudioRawDataReceived(AudioRawData* audioRawData)
+{
+}
+
+void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audioRawData, uint32_t node_id)
+{
+
+	//add your code here
+
+
+	static std::ofstream pcmFile;
+	pcmFile.open("audio.pcm", std::ios::out | std::ios::binary | std::ios::app);
+
+	if (!pcmFile.is_open()) {
+		std::cout << "Failed to open wave file" << std::endl;
+		return;
+	}
+
+	// Write the audio data to the file
+	pcmFile.write((char*)audioRawData->GetBuffer(), audioRawData->GetBufferLen());
+	//std::cout << "buffer length: " << audioRawData->GetBufferLen() << std::endl;
+	std::cout << "audio buffer : " << audioRawData->GetBufferLen() << std::endl;
+
+	// Close the wave file
+	pcmFile.close();
+	pcmFile.flush();
+
+
+
+}
+
 void ZoomSDKRawDataPipeDelegate::log(const wchar_t* format, ...)
 {
 	va_list args;
@@ -164,110 +202,7 @@ void ZoomSDKRawDataPipeDelegate::log(const wchar_t* format, ...)
 	wprintf(format, args);
 	va_end(args);
 }
-/*
-int ZoomSDKRawDataPipeDelegate::ffmpeg_start(const char* userName, uint userID, int sourceID)
-{
-    int ret = 0;
 
-    // Timestamp
-    start_time = steady_clock::now();
-
-    // Init files
-    if (userID == 0)
-        userID = 0;
-    char fileName[100];
-    sprintf(fileName, "%d_%d_%s_%dx%d_to_%dx%d", userID, sourceID, userName, in_width, in_height, out_width, out_height);
-    char yuvFileName[110];
-    sprintf(yuvFileName, "../%s.yuv", fileName);
-    if (isOutputYUV)
-    {
-        fp_yuv = fopen(yuvFileName, "wb+");
-        if (fp_yuv == NULL)
-        {
-            printf("Error opening output file.\n");
-            return -1;
-        }
-    }
-
-    char outFileName[110];
-    sprintf(outFileName, "%s.avi", fileName);
-    sprintf(fn_out, "../%s", outFileName);
-
-    // FFmpeg init
-    // Init filters
-    avfilter_register_all();
-
-    ffmpeg_filter_init();
-
-    // Init encoder
-    av_register_all();
-    pFormatCtx = avformat_alloc_context();
-
-    // Method 1: Guess Format
-    fmt = av_guess_format("avi", fn_out, NULL);
-    if (!fmt)
-    {
-        printf("AVI format not available.\n");
-        return -1;
-    }
-    pFormatCtx->oformat = fmt;
-
-    // Open output file
-    if (avio_open(&pFormatCtx->pb, fn_out, AVIO_FLAG_WRITE) < 0)
-    {
-        printf("Failed to open output file!\n");
-        return -1;
-    }
-
-    // Init streams & codec
-    video_st = avformat_new_stream(pFormatCtx, 0);
-    if (video_st == NULL)
-    {
-        return -1;
-    }
-
-    // Param that must be set
-    pCodecCtx = video_st->codec;
-    pCodecCtx->codec_id = AV_CODEC_ID_MPEG4;
-    pCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
-    pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
-    pCodecCtx->width = out_width;
-    pCodecCtx->height = out_height;
-
-    // Set your desired bitrate and other codec parameters here
-    pCodecCtx->bit_rate = 400000;
-    pCodecCtx->gop_size = 10; // Set your desired GOP size
-    pCodecCtx->time_base.num = 1;
-    pCodecCtx->time_base.den = 25;
-    pCodecCtx->qmin = 10;
-    pCodecCtx->qmax = 51;
-    pCodecCtx->max_b_frames = 3;
-
-    // Specify MPEG-4 codec explicitly
-    pCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
-    if (!pCodec)
-    {
-        printf("MPEG-4 codec not found!\n");
-        return -1;
-    }
-
-    // Open MPEG-4 encoder
-    if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
-    {
-        printf("Failed to open MPEG-4 encoder!\n");
-        return -1;
-    }
-
-    // Write File Header
-    if ((ret = avformat_write_header(pFormatCtx, NULL)) < 0)
-    {
-        printf("Failed to write header!\n");
-        return ret;
-    }
-    return ret;
-}
-
-*/
 
 int ZoomSDKRawDataPipeDelegate::ffmpeg_start(const char* userName, uint userID, int sourceID)
 {

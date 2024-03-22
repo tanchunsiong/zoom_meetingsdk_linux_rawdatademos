@@ -45,13 +45,13 @@
 #include "MeetingRecordingCtrlEventListener.h"
 
 //references for GetVideoRawData
-#include "ZoomSDKRenderer.h"
 #include "rawdata/rawdata_renderer_interface.h"
 #include "rawdata/zoom_rawdata_api.h"
 
 //references for GetAudioRawData
-#include "ZoomSDKAudioRawData.h"
 #include "meeting_service_components/meeting_recording_interface.h"
+
+//references for GetAudioRawData && GetVideoRawData
 #include "ZoomSDKRawDataPipeDelegate.h"
 
 //references for SendVideoRawData
@@ -85,16 +85,19 @@ ZOOM_SDK_NAMESPACE::ISettingService* m_pSettingService;
 
 
 //references for GetVideoRawData
-ZoomSDKRenderer* videoSource = new ZoomSDKRenderer();
+
 IZoomSDKRenderer* videoHelper;
 IMeetingRecordingController* m_pRecordController;
 IMeetingParticipantsController* m_pParticipantsController;
+
+
+
 
 //new renderer
 ZoomSDKRawDataPipeDelegate* rawdatapipedelegate = new ZoomSDKRawDataPipeDelegate();
 
 //references for GetAudioRawData
-ZoomSDKAudioRawData* audio_source = new ZoomSDKAudioRawData();
+//ZoomSDKRawDataPipeDelegate* rawdatapipedelegate = new ZoomSDKRawDataPipeDelegate();
 IZoomSDKAudioRawDataHelper* audioHelper;
 
 //this is used to get a userID, there is no specific proper logic here. It just gets the first userID.
@@ -110,14 +113,14 @@ bool useRecordingTokenFromWebService = true;
 
 //this will enable or disable logic to get raw video and raw audio
 //do note that this will be overwritten by config.json
-bool GetVideoRawData = false;
-bool GetAudioRawData = false;
-bool SendVideoRawData = true;
+bool GetVideoRawData = true;
+bool GetAudioRawData = true;
+bool SendVideoRawData = false;
 bool SendAudioRawData = false;
+bool chatDemo = false;
 
-bool chatDemo = true;
-
-bool LocalRecording = true;
+//please note that LocalRecording and GetVideoRaw || GetAudioRawData are mutually exclusive
+bool LocalRecording = false;
 
 
 //this is a helper method to get the first User ID, it is just an arbitary UserID
@@ -176,30 +179,11 @@ void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 				std::cout << "Error occurred starting raw recording" << std::endl;
 			}
 			else {
-				//old render
-				//this saves YUV direct to disk, does not need FFMPEG library and headers
-				//GetVideoRawData
-				//if (isVideo) {
-				//	SDKError err = createRenderer(&videoHelper, videoSource);
-				//	if (err != SDKERR_SUCCESS) {
-				//		std::cout << "Error occurred" << std::endl;
-				//		// Handle error
-				//	}
-				//	else {
-				//		std::cout << "attemptToStartRawRecording : subscribing" << std::endl;
-				//		videoHelper->setRawDataResolution(ZoomSDKResolution_720P);
-				//		videoHelper->subscribe(getUserID(), RAW_DATA_TYPE_VIDEO);
-				//	}
-				//}
-
-
-				//new renderer
-				//this requires all the FFMPEG library and headers
+				
 				//GetVideoRawData
 				if (isVideo) {
 					//get all users, for each user
 					IUserInfo* p = getUserObj();
-
 					createRenderer(&videoHelper, rawdatapipedelegate);
 					rawdatapipedelegate->SubScribeUser(p, videoHelper);
 
@@ -208,7 +192,7 @@ void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 				if (isAudio) {
 					audioHelper = GetAudioRawdataHelper();
 					if (audioHelper) {
-						SDKError err = audioHelper->subscribe(audio_source);
+						SDKError err = audioHelper->subscribe(rawdatapipedelegate);
 						if (err != SDKERR_SUCCESS) {
 							std::cout << "Error occurred subscribing to audio : " << err << std::endl;
 						}
