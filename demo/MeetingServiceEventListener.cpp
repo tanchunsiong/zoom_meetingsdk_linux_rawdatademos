@@ -18,7 +18,7 @@ void MeetingServiceEventListener::onMeetingStatusChanged(MeetingStatus status, i
 		printf("No meeting is running.\n");
 		break;
 	case MEETING_STATUS_CONNECTING:
-		printf("Connect to the meeting server status.\n");
+		printf("Connecting to the meeting server status.\n");
 		break;
 	case MEETING_STATUS_WAITINGFORHOST:
 		printf("Waiting for the host to start the meeting.\n");

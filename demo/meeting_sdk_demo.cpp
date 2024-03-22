@@ -1,4 +1,4 @@
-#include <httplib.h>
+
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,6 +35,10 @@
 //used to listen to callbacks from authentication related matters
 #include "AuthServiceEventListener.h"
 
+//used for share event listener
+#include "meeting_service_components/meeting_sharing_interface.h"
+#include "MeetingShareCtrlEventListener.h"
+
 
 //used for event listener
 #include "MeetingParticipantsCtrlEventListener.h"
@@ -61,7 +65,6 @@
 #include "MeetingChatEventListener.h"
 
 USING_ZOOM_SDK_NAMESPACE
-using namespace httplib;
 
 GMainLoop* loop;
 
@@ -109,10 +112,13 @@ bool useRecordingTokenFromWebService = true;
 //do note that this will be overwritten by config.json
 bool GetVideoRawData = false;
 bool GetAudioRawData = false;
-bool SendVideoRawData = false;
+bool SendVideoRawData = true;
 bool SendAudioRawData = false;
 
 bool chatDemo = true;
+
+bool LocalRecording = true;
+
 
 //this is a helper method to get the first User ID, it is just an arbitary UserID
 uint32_t getUserID() {
@@ -138,6 +144,25 @@ IUserInfo* getUserObj() {
 	return returnvalue;
 }
 
+void CheckAndStartLocalRecording(bool LocalRecording){
+	if (LocalRecording) {
+		m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
+		SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRecording(false, 0);
+		if (err2 == SDKERR_SUCCESS) {
+			time_t starttime;
+			SDKError err1 = m_pRecordController->StartRecording(starttime);
+			if (err1 != SDKERR_SUCCESS) {
+				std::cout << "Error occurred starting local recording" << std::endl;
+			}
+			else {
+			}
+		}
+		else {
+			std::cout << "Cannot start local recording: no permissions yet, need host, co-host, or recording privilege" << std::endl;
+		}
+	
+	}
+}
 //check if you have permission to start raw recording
 void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 
@@ -248,20 +273,25 @@ void CheckAndStartRawSending(bool isVideo, bool isAudio) {
 void onIsHost() {
 	printf("Is host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
+	CheckAndStartLocalRecording(LocalRecording);
 }
 
 //callback when given cohost permission
 void onIsCoHost() {
 	printf("Is co-host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
+	CheckAndStartLocalRecording(LocalRecording);
 }
+
 //callback when given recording permission
 void onIsGivenRecordingPermission() {
 	printf("Is given recording permissions now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
-
-
+	CheckAndStartLocalRecording(LocalRecording);
 }
+
+
+
 void turnOnSendVideoAndAudio() {
 	//testing WIP
 	if (SendVideoRawData) {
@@ -316,6 +346,7 @@ void onInMeeting() {
 	}
 
 	//first attempt to start raw recording  / sending, upon successfully joined and achieved "in-meeting" state.
+	CheckAndStartLocalRecording(LocalRecording);
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 	CheckAndStartRawSending(SendVideoRawData, SendAudioRawData);
 }
@@ -342,7 +373,7 @@ std::string getSelfDirPath()
 	char* tmp = strrchr(dest, '/');
 	if (tmp)
 		*tmp = 0;
-	printf("getpath\n");
+	printf("getting project path\n");
 	return std::string(dest);
 }
 
@@ -388,7 +419,7 @@ void ReadJsonSettings()
 	Json config_json;
 	try {
 		config_json = Json::parse(buffer);
-		printf("config all_content: %s\n", buffer.c_str());
+		printf("values of configuration from localfile: %s\n", buffer.c_str());
 	}
 	catch (Json::parse_error& ex) {
 		// Handle JSON parse error
@@ -572,6 +603,10 @@ void JoinMeeting()
 	IMeetingReminderController* meetingremindercontroller = m_pMeetingService->GetMeetingReminderController();
 	MeetingReminderEventListener* meetingremindereventlistener = new MeetingReminderEventListener();
 	meetingremindercontroller->SetEvent(meetingremindereventlistener);
+	
+	//set event for Share Controller
+	IMeetingShareController* meetingShareController = m_pMeetingService->GetMeetingShareController();
+	SDKError shareEventError = meetingShareController->SetEvent(new MeetingShareCtrlEventListener());
 
 	//prepare params used for joining meeting
 	ZOOM_SDK_NAMESPACE::JoinParam joinParam;
@@ -821,7 +856,7 @@ std::string getJWTToken(const std::string& remote_url) {
 		try
 		{
 			responses_json = Json::parse(responsestr);
-			printf("config all_content: %s\n", responsestr.c_str());
+			printf("config from web service: %s\n", responsestr.c_str());
 		}
 		catch (Json::parse_error& ex)
 		{

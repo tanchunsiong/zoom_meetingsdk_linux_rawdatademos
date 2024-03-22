@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(meetingSDKDemo CXX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-add_definitions(-std=c++14)
+add_definitions(-std=c++11)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -76,6 +76,8 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/ZoomSDKVideoSource.cpp
               ${CMAKE_SOURCE_DIR}/ZoomSDKVirtualAudioMicEvent.h 
               ${CMAKE_SOURCE_DIR}/ZoomSDKVirtualAudioMicEvent.cpp
+              ${CMAKE_SOURCE_DIR}/MeetingShareCtrlEventListener.h 
+              ${CMAKE_SOURCE_DIR}/MeetingShareCtrlEventListener.cpp
               )
 
 target_link_libraries(meetingSDKDemo gcc_s gcc)

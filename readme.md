@@ -1,4 +1,4 @@
-# Preparing development / docker environment on differen distributions
+# Preparing development / docker environment on different distributions
 
 ==============================================================
 
@@ -222,18 +222,20 @@ way, instead of trying to solve this new issue, I simply downloaded the Impish b
 
 
 download binary openssl packages from Impish builds
-wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.19_amd64.deb
-wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.19_amd64.deb
-wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
+wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.20_amd64.deb |
+wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.20_amd64.deb |
+wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
 
 
 install downloaded binary packages
-sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
-sudo dpkg -i libssl-dev_1.1.1f-1ubuntu2.19_amd64.deb
-sudo dpkg -i openssl_1.1.1f-1ubuntu2.19_amd64.deb
+ dpkg -i libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb |
+ dpkg -i libssl-dev_1.1.1f-1ubuntu2.20_amd64.deb |
+ dpkg -i openssl_1.1.1f-1ubuntu2.20_amd64.deb
 
 ## References : Additional libraries which might be used
 
+
+send video and send audio requires manual chat to turn it on
 
 
 

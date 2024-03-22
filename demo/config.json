@@ -9,5 +9,5 @@
   "GetVideoRawData": "false",
   "GetAudioRawData": "false",
   "SendVideoRawData": "true",
-  "SendAudioRawData": "true"
+  "SendAudioRawData": "false"
 }
