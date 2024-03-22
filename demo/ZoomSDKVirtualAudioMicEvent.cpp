@@ -58,7 +58,7 @@ void PlayAudioFileToVirtualMic(IZoomSDKAudioRawDataSender* audio_sender, string 
 /// \param pSender, You can send audio data based on this object, see \link IZoomSDKAudioRawDataSender \endlink.
 void ZoomSDKVirtualAudioMicEvent::onMicInitialize(IZoomSDKAudioRawDataSender* pSender) {
 	//pSender->send();	pSender_ = pSender;
-	printf("OnMicInitialize\n");
+	printf("ZoomSDKVirtualAudioMicEvent OnMicInitialize, waiting for turnOn chat command\n");
 }
 
 /// \brief Callback for virtual audio mic can send raw data with 'pSender'.

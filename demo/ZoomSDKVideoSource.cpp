@@ -119,7 +119,7 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
 }
 void ZoomSDKVideoSource::onInitialize(IZoomSDKVideoSender* sender, IList<VideoSourceCapability>* support_cap_list, VideoSourceCapability& suggest_cap)
 {
-    std::cout << "ZoomSDKVideoSource::onInitialize" << endl;
+    std::cout << "ZoomSDKVideoSource onInitialize waiting for turnOn chat command" << endl;
     video_sender_ = sender;
 }
 
