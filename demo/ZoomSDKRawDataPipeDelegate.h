@@ -27,11 +27,17 @@ extern "C"
 #include "rawdata/rawdata_video_source_helper_interface.h"
 #include "rawdata/rawdata_renderer_interface.h"
 
+//GetAudioRawData
+#include "rawdata/rawdata_audio_helper_interface.h"
+#include "zoom_sdk.h"
+#include "zoom_sdk_raw_data_def.h"
+
 
 USING_ZOOM_SDK_NAMESPACE;
 
 class ZoomSDKRawDataPipeDelegate :
-	public IZoomSDKRendererDelegate
+	public IZoomSDKRendererDelegate, 
+	public IZoomSDKAudioRawDataDelegate
 {
 	virtual void onRendererBeDestroyed();
 	virtual void onRawDataFrameReceived(YUVRawDataI420* data);
@@ -99,17 +105,21 @@ class ZoomSDKRawDataPipeDelegate :
 
 public:
 	ZoomSDKRawDataPipeDelegate();
-	
 	~ZoomSDKRawDataPipeDelegate();
 
 
 	virtual void SubScribeUser(IUserInfo* user, IZoomSDKRenderer* renderer);
 	virtual void SubScribeShareScreen(IUserInfo* user, bool isShareScreen, IZoomSDKRenderer* renderer);
-
 	static void stop_encoding_for(IUserInfo* user);
 	static void stop_encoding_for(IUserInfo* user, bool isShareScreen);
 	static void log(const wchar_t* format, ...);
 	static void err_msg(int code);
+
+
+
+public:
+	virtual void onMixedAudioRawDataReceived(AudioRawData* data_);
+	virtual void onOneWayAudioRawDataReceived(AudioRawData* data_, uint32_t node_id);
 };
 
 

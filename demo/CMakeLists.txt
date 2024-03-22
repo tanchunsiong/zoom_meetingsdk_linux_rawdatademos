@@ -66,10 +66,6 @@ add_executable(meetingSDKDemo
               ${CMAKE_SOURCE_DIR}/MeetingParticipantsCtrlEventListener.cpp
               ${CMAKE_SOURCE_DIR}/MeetingRecordingCtrlEventListener.h
               ${CMAKE_SOURCE_DIR}/MeetingRecordingCtrlEventListener.cpp
-              ${CMAKE_SOURCE_DIR}/ZoomSDKRenderer.h
-              ${CMAKE_SOURCE_DIR}/ZoomSDKRenderer.cpp
-              ${CMAKE_SOURCE_DIR}/ZoomSDKAudioRawData.h
-              ${CMAKE_SOURCE_DIR}/ZoomSDKAudioRawData.cpp
               ${CMAKE_SOURCE_DIR}/ZoomSDKRawDataPipeDelegate.h
               ${CMAKE_SOURCE_DIR}/ZoomSDKRawDataPipeDelegate.cpp
               ${CMAKE_SOURCE_DIR}/ZoomSDKVideoSource.h 
