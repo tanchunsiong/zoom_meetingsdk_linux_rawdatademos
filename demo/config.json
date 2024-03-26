@@ -6,8 +6,8 @@
   "remote_url": "https://asdc.cc/meeting-csdk/",
   "useJWTTokenFromWebService": "true",
   "useRecordingTokenFromWebService": "true",
-  "GetVideoRawData": "true",
-  "GetAudioRawData": "true",
+  "GetVideoRawData": "false",
+  "GetAudioRawData": "false",
   "SendVideoRawData": "false",
   "SendAudioRawData": "false"
 }

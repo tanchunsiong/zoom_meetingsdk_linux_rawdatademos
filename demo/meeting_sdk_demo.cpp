@@ -113,14 +113,14 @@ bool useRecordingTokenFromWebService = true;
 
 //this will enable or disable logic to get raw video and raw audio
 //do note that this will be overwritten by config.json
-bool GetVideoRawData = true;
-bool GetAudioRawData = true;
+bool GetVideoRawData = false;
+bool GetAudioRawData = false;
 bool SendVideoRawData = false;
 bool SendAudioRawData = false;
 bool chatDemo = false;
 
-//please note that LocalRecording and GetVideoRaw || GetAudioRawData are mutually exclusive
-bool LocalRecording = false;
+
+
 
 
 //this is a helper method to get the first User ID, it is just an arbitary UserID
@@ -149,8 +149,13 @@ IUserInfo* getUserObj() {
 
 void CheckAndStartLocalRecording(bool LocalRecording){
 	if (LocalRecording) {
+
+	
+		
+
+
 		m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
-		SDKError err2 = m_pMeetingService->GetMeetingRecordingController()->CanStartRecording(false, 0);
+		SDKError err2 = m_pRecordController->CanStartRecording(false, 0);
 		if (err2 == SDKERR_SUCCESS) {
 			time_t starttime;
 			SDKError err1 = m_pRecordController->StartRecording(starttime);
@@ -158,6 +163,18 @@ void CheckAndStartLocalRecording(bool LocalRecording){
 				std::cout << "Error occurred starting local recording" << std::endl;
 			}
 			else {
+
+				//subscribe to video, if not it will be black screen
+				
+				std::cout << "Getting user" << std::endl;
+				IUserInfo* p = getUserObj();
+
+				std::cout << "create renderer" << std::endl;
+				createRenderer(&videoHelper, rawdatapipedelegate);
+
+				std::cout << "subscribing user" << std::endl;
+				rawdatapipedelegate->SubScribeUser(p, videoHelper);
+		
 			}
 		}
 		else {
@@ -257,21 +274,21 @@ void CheckAndStartRawSending(bool isVideo, bool isAudio) {
 void onIsHost() {
 	printf("Is host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
-	CheckAndStartLocalRecording(LocalRecording);
+
 }
 
 //callback when given cohost permission
 void onIsCoHost() {
 	printf("Is co-host now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
-	CheckAndStartLocalRecording(LocalRecording);
+
 }
 
 //callback when given recording permission
 void onIsGivenRecordingPermission() {
 	printf("Is given recording permissions now...\n");
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
-	CheckAndStartLocalRecording(LocalRecording);
+
 }
 
 
@@ -330,7 +347,7 @@ void onInMeeting() {
 	}
 
 	//first attempt to start raw recording  / sending, upon successfully joined and achieved "in-meeting" state.
-	CheckAndStartLocalRecording(LocalRecording);
+
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
 	CheckAndStartRawSending(SendVideoRawData, SendAudioRawData);
 }

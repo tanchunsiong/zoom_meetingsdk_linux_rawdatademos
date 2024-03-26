@@ -18,7 +18,16 @@ const AVPixelFormat pix_fmts[] = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
 std::vector<ZoomSDKRawDataPipeDelegate*> ZoomSDKRawDataPipeDelegate::list_;
 int ZoomSDKRawDataPipeDelegate::instance_count = 0;
 
+//buffer for raw audio data
+bool audioDataAvailable = false;
+std::vector<uint8_t> audioBuffer;
 
+AVFormatContext* pFormatCtx = nullptr;
+AVCodecContext* pAudioCodecCtx = nullptr;
+AVStream* audioStream = nullptr;
+
+
+//constructor
 ZoomSDKRawDataPipeDelegate::ZoomSDKRawDataPipeDelegate()
 {
 	
@@ -41,6 +50,7 @@ void ZoomSDKRawDataPipeDelegate::SubScribeShareScreen(IUserInfo* user, bool isSh
 	list_.push_back(this);
 }
 
+//destructor
 ZoomSDKRawDataPipeDelegate::~ZoomSDKRawDataPipeDelegate()
 {
 	
@@ -57,7 +67,7 @@ ZoomSDKRawDataPipeDelegate::~ZoomSDKRawDataPipeDelegate()
 	user_ = nullptr;
 }
 
-
+//look for user in LIST
 ZoomSDKRawDataPipeDelegate* ZoomSDKRawDataPipeDelegate::find_instance(IUserInfo* user)
 {
 	for (auto iter = list_.begin(); iter != list_.end(); iter++)
@@ -89,27 +99,24 @@ void ZoomSDKRawDataPipeDelegate::stop_encoding_for(IUserInfo* user, bool isShare
 		encoder->~ZoomSDKRawDataPipeDelegate();
 	}
 }
-int j = 0;
+
 
 void ZoomSDKRawDataPipeDelegate::onRendererBeDestroyed()
 {
 }
 
 void ZoomSDKRawDataPipeDelegate::onRawDataFrameReceived(YUVRawDataI420* data)
-{ 
-	
-
+{
 	const zchar_t* userName = user_->GetUserName();
 	const uint userID = user_->GetUserID();
 	const int width = data->GetStreamWidth();
 	const int height = data->GetStreamHeight();
-	
 	const int bufLen = data->GetBufferLen();
 	const int rotation = data->GetRotation();
 	const int sourceID = data->GetSourceID();
 
-	if ((sourceID != current_sourceID) && (sourceID == 0 || userID !=0 ) // to skip frames when sourceID comes in but userID is not ready, otherwise create another sepreate file for this moment.
-		)
+	// to skip frames when sourceID comes in but userID is not ready, otherwise create another seperate file for this moment.
+	if ((sourceID != current_sourceID) && (sourceID == 0 || userID != 0)) 
 	{
 		log(L"********** [%d] Start encoding, user: %s, %dx%d, sourceID: %d.\n", instance_id_, user_->GetUserName(), width, height, sourceID);
 		if (is_ffmpeg_encoding_on)
@@ -124,6 +131,7 @@ void ZoomSDKRawDataPipeDelegate::onRawDataFrameReceived(YUVRawDataI420* data)
 	}
 	else
 	{
+		//if resolution changes
 		if (is_ffmpeg_encoding_on == 1 && (width != in_width || height != in_height))
 		{
 			is_ffmpeg_encoding_on = 0;
@@ -166,6 +174,8 @@ void ZoomSDKRawDataPipeDelegate::err_msg(int code)
 
 void ZoomSDKRawDataPipeDelegate::onMixedAudioRawDataReceived(AudioRawData* audioRawData)
 {
+
+
 }
 
 void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audioRawData, uint32_t node_id)
@@ -190,7 +200,6 @@ void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audi
 	// Close the wave file
 	pcmFile.close();
 	pcmFile.flush();
-
 
 
 }
