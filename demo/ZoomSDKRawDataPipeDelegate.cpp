@@ -181,11 +181,19 @@ void ZoomSDKRawDataPipeDelegate::onMixedAudioRawDataReceived(AudioRawData* audio
 void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audioRawData, uint32_t node_id)
 {
 
+
+	char fileName[100];
+	sprintf(fileName, "%d", node_id);
+	char pcmFileName[110];
+	sprintf(pcmFileName, "../%s.pcm", fileName);
+
+
+
+
 	//add your code here
 
-
 	static std::ofstream pcmFile;
-	pcmFile.open("audio.pcm", std::ios::out | std::ios::binary | std::ios::app);
+	pcmFile.open(pcmFileName, std::ios::out | std::ios::binary | std::ios::app);
 
 	if (!pcmFile.is_open()) {
 		std::cout << "Failed to open wave file" << std::endl;
@@ -195,7 +203,7 @@ void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audi
 	// Write the audio data to the file
 	pcmFile.write((char*)audioRawData->GetBuffer(), audioRawData->GetBufferLen());
 	//std::cout << "buffer length: " << audioRawData->GetBufferLen() << std::endl;
-	std::cout << "audio buffer : " << audioRawData->GetBufferLen() << std::endl;
+	std::cout << "audio buffer : " << audioRawData->GetBufferLen() << " node_id: " << node_id << " source_id: " << current_sourceID << std::endl;
 
 	// Close the wave file
 	pcmFile.close();
@@ -449,7 +457,7 @@ int ZoomSDKRawDataPipeDelegate::ffmpeg_encode()
 	}
 	if (got_picture == 1)
 	{
-		printf("Succeed to encode frame: %5d\tsize:%5d\n", framecnt, pkt.size);
+		printf("Succeed to encode frame: %5d\tsize:%5d\source_id:%d\n", framecnt, pkt.size,current_sourceID);
 		framecnt++;
 		pkt.stream_index = video_st->index;
 		av_write_frame(pFormatCtx, &pkt);

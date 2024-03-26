@@ -139,7 +139,7 @@ IUserInfo* getMyself() {
 }
 
 //this is a helper method to get the first User Object, it is just an arbitary User Object
-IUserInfo* getUserObj() {
+IUserInfo* getFirstUserObj() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
 	int userID = m_pParticipantsController->GetParticipantsList()->GetItem(0);
 	IUserInfo* returnvalue = m_pParticipantsController->GetUserByUserID(userID);
@@ -147,42 +147,14 @@ IUserInfo* getUserObj() {
 	return returnvalue;
 }
 
-void CheckAndStartLocalRecording(bool LocalRecording){
-	if (LocalRecording) {
-
-	
-		
-
-
-		m_pRecordController = m_pMeetingService->GetMeetingRecordingController();
-		SDKError err2 = m_pRecordController->CanStartRecording(false, 0);
-		if (err2 == SDKERR_SUCCESS) {
-			time_t starttime;
-			SDKError err1 = m_pRecordController->StartRecording(starttime);
-			if (err1 != SDKERR_SUCCESS) {
-				std::cout << "Error occurred starting local recording" << std::endl;
-			}
-			else {
-
-				//subscribe to video, if not it will be black screen
-				
-				std::cout << "Getting user" << std::endl;
-				IUserInfo* p = getUserObj();
-
-				std::cout << "create renderer" << std::endl;
-				createRenderer(&videoHelper, rawdatapipedelegate);
-
-				std::cout << "subscribing user" << std::endl;
-				rawdatapipedelegate->SubScribeUser(p, videoHelper);
-		
-			}
-		}
-		else {
-			std::cout << "Cannot start local recording: no permissions yet, need host, co-host, or recording privilege" << std::endl;
-		}
-	
-	}
+//this is a helper method to get the first User Object, it is just an arbitary User Object
+IList<unsigned int >* getAllUserObj() {
+	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
+	IList<unsigned int >* ParticipantsList = m_pParticipantsController->GetParticipantsList();
+	std::cout << "Participant List is : " << ParticipantsList->GetCount() << std::endl;
+	return ParticipantsList;
 }
+
 //check if you have permission to start raw recording
 void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 
@@ -196,17 +168,58 @@ void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
 				std::cout << "Error occurred starting raw recording" << std::endl;
 			}
 			else {
-				
+
 				//GetVideoRawData
 				if (isVideo) {
-					//get all users, for each user
-					IUserInfo* p = getUserObj();
-					createRenderer(&videoHelper, rawdatapipedelegate);
-					rawdatapipedelegate->SubScribeUser(p, videoHelper);
+
+
+					//get only for 1 user
+					//IUserInfo* p = getFirstUserObj();
+					//createRenderer(&videoHelper, rawdatapipedelegate);
+					//rawdatapipedelegate->SubScribeUser(p, videoHelper);
+
+					//get for all users
+					IList<unsigned int >* pList = getAllUserObj();
+					
+
+				
+
+					for (int i = 0; i < pList->GetCount(); ++i) {
+						unsigned int userID = pList->GetItem(i);
+
+						// Do something with userID
+						m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
+						IUserInfo* p = m_pParticipantsController->GetUserByUserID(userID);
+						if (p != getMyself()) {
+							cout << "User ID: " << userID << endl;
+							rawdatapipedelegate = new ZoomSDKRawDataPipeDelegate();
+							createRenderer(&videoHelper, rawdatapipedelegate);
+							rawdatapipedelegate->SubScribeUser(p, videoHelper);
+
+							//use the same delegate to subscribe audio
+							if (isAudio) {
+								audioHelper = GetAudioRawdataHelper();
+								if (audioHelper) {
+									SDKError err = audioHelper->subscribe(rawdatapipedelegate);
+									if (err != SDKERR_SUCCESS) {
+										std::cout << "Error occurred subscribing to audio : " << err << std::endl;
+									}
+								}
+								else {
+									std::cout << "Error getting audioHelper" << std::endl;
+								}
+							}
+
+						}
+						else {
+							cout << "Skipping self User ID : " << userID << endl;
+						}
+					}
+
 
 				}
 				//GetAudioRawData
-				if (isAudio) {
+				if (isAudio && !isVideo) {
 					audioHelper = GetAudioRawdataHelper();
 					if (audioHelper) {
 						SDKError err = audioHelper->subscribe(rawdatapipedelegate);
@@ -320,7 +333,7 @@ void turnOffSendVideoandAudio() {
 	//testing WIP
 	if (SendAudioRawData) {
 		IMeetingAudioController* meetingAudController = m_pMeetingService->GetMeetingAudioController();
-		meetingAudController->MuteAudio(getMyself()->GetUserID(),true);
+		meetingAudController->MuteAudio(getMyself()->GetUserID(), true);
 
 	}
 }
@@ -342,7 +355,7 @@ void onInMeeting() {
 
 	//chatDemo
 	if (chatDemo) {
-	
+
 		m_pMeetingService->GetMeetingChatController()->SetEvent(new MeetingChatEventListener(&turnOnSendVideoAndAudio, &turnOffSendVideoandAudio));
 	}
 
@@ -380,10 +393,10 @@ std::string getSelfDirPath()
 
 // Function to parse and process JSON value as a string
 template<typename T>
-bool processJsonValue(const Json& json, const std::string& key, T& value ){
+bool processJsonValue(const Json& json, const std::string& key, T& value) {
 	if (!json[key].is_null()) {
 		value = json[key].get<std::string>();
-		printf("config %s: %s\n",key.c_str(), value.c_str());
+		printf("config %s: %s\n", key.c_str(), value.c_str());
 		return true;
 	}
 	return false;
@@ -404,7 +417,7 @@ bool processJsonBoolean(const Json& json, const std::string& key, bool& value) {
 
 void ReadJsonSettings()
 {
-	
+
 
 	std::string self_dir = getSelfDirPath();
 	printf("self path: %s\n", self_dir.c_str());
@@ -604,7 +617,7 @@ void JoinMeeting()
 	IMeetingReminderController* meetingremindercontroller = m_pMeetingService->GetMeetingReminderController();
 	MeetingReminderEventListener* meetingremindereventlistener = new MeetingReminderEventListener();
 	meetingremindercontroller->SetEvent(meetingremindereventlistener);
-	
+
 	//set event for Share Controller
 	IMeetingShareController* meetingShareController = m_pMeetingService->GetMeetingShareController();
 	SDKError shareEventError = meetingShareController->SetEvent(new MeetingShareCtrlEventListener());
@@ -673,25 +686,25 @@ void JoinMeeting()
 		}
 	}
 
-		//attempt to join meeting
-		if (m_pMeetingService)
-		{
-			err = m_pMeetingService->Join(joinParam);
-		}
-		else
-		{
-			std::cout << "join_meeting m_pMeetingService:Null" << std::endl;
-		}
+	//attempt to join meeting
+	if (m_pMeetingService)
+	{
+		err = m_pMeetingService->Join(joinParam);
+	}
+	else
+	{
+		std::cout << "join_meeting m_pMeetingService:Null" << std::endl;
+	}
 
-		if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS == err)
-		{
-			std::cout << "join_meeting:success" << std::endl;
-		}
-		else
-		{
-			std::cout << "join_meeting:error" << std::endl;
-		}
-	
+	if (ZOOM_SDK_NAMESPACE::SDKERR_SUCCESS == err)
+	{
+		std::cout << "join_meeting:success" << std::endl;
+	}
+	else
+	{
+		std::cout << "join_meeting:error" << std::endl;
+	}
+
 }
 
 void LeaveMeeting()
@@ -699,36 +712,36 @@ void LeaveMeeting()
 	ZOOM_SDK_NAMESPACE::MeetingStatus status = ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED;
 
 
-		if (NULL == m_pMeetingService)
-		{
+	if (NULL == m_pMeetingService)
+	{
 
-			std::cout << "leave_meeting m_pMeetingService:Null" << std::endl;
-		
-		}
-		else
-		{
-			status = m_pMeetingService->GetMeetingStatus();
-		}
+		std::cout << "leave_meeting m_pMeetingService:Null" << std::endl;
 
-		if (status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_IDLE ||
-			status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_ENDED ||
-			status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED)
-		{
+	}
+	else
+	{
+		status = m_pMeetingService->GetMeetingStatus();
+	}
 
-			std::cout << "LeaveMeeting() not in meeting " << std::endl;
-			
-		}
+	if (status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_IDLE ||
+		status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_ENDED ||
+		status == ZOOM_SDK_NAMESPACE::MEETING_STATUS_FAILED)
+	{
 
-		if (SDKError::SDKERR_SUCCESS == m_pMeetingService->Leave(ZOOM_SDK_NAMESPACE::LEAVE_MEETING))
-		{
-			std::cout << "LeaveMeeting() success " << std::endl;
-		
-		}
-		else
-		{
-			std::cout << "LeaveMeeting() error" << std::endl;
-			
-		}
+		std::cout << "LeaveMeeting() not in meeting " << std::endl;
+
+	}
+
+	if (SDKError::SDKERR_SUCCESS == m_pMeetingService->Leave(ZOOM_SDK_NAMESPACE::LEAVE_MEETING))
+	{
+		std::cout << "LeaveMeeting() success " << std::endl;
+
+	}
+	else
+	{
+		std::cout << "LeaveMeeting() error" << std::endl;
+
+	}
 
 }
 
