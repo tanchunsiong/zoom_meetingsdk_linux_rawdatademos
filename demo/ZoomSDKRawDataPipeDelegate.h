@@ -103,6 +103,10 @@ class ZoomSDKRawDataPipeDelegate :
 	//Output video file name.
 	char fn_out[120];
 
+
+
+	AVStream* audioStream;
+
 public:
 	ZoomSDKRawDataPipeDelegate();
 	~ZoomSDKRawDataPipeDelegate();
