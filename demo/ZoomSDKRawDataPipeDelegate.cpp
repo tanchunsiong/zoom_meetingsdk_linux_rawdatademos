@@ -22,9 +22,6 @@ int ZoomSDKRawDataPipeDelegate::instance_count = 0;
 bool audioDataAvailable = false;
 std::vector<uint8_t> audioBuffer;
 
-AVFormatContext* pFormatCtx = nullptr;
-AVCodecContext* pAudioCodecCtx = nullptr;
-AVStream* audioStream = nullptr;
 
 
 //constructor
@@ -185,13 +182,8 @@ void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audi
 	char fileName[100];
 	sprintf(fileName, "%d", node_id);
 	char pcmFileName[110];
+
 	sprintf(pcmFileName, "../%s.pcm", fileName);
-
-
-
-
-	//add your code here
-
 	static std::ofstream pcmFile;
 	pcmFile.open(pcmFileName, std::ios::out | std::ios::binary | std::ios::app);
 
@@ -257,69 +249,45 @@ int ZoomSDKRawDataPipeDelegate::ffmpeg_start(const char* userName, uint userID, 
 
     // Init encoder
     av_register_all();
-    pFormatCtx = avformat_alloc_context();
+	formatContext = avformat_alloc_context();
 
     // Method 1: Guess Format
     fmt = av_guess_format("avi", fn_out, NULL);
-    if (!fmt)
-    {
-        printf("AVI format not available.\n");
-        return -1;
-    }
-    pFormatCtx->oformat = fmt;
+	formatContext->oformat = fmt;
 
     // Open output file
-    if (avio_open(&pFormatCtx->pb, fn_out, AVIO_FLAG_WRITE) < 0)
-    {
-        printf("Failed to open output file!\n");
-        return -1;
-    }
+	avio_open(&formatContext->pb, fn_out, AVIO_FLAG_WRITE);
 
     // Init streams & codec
-    video_st = avformat_new_stream(pFormatCtx, 0);
-    if (video_st == NULL)
-    {
-        return -1;
-    }
-
+	videoStream = avformat_new_stream(formatContext, 0);
+  
     // Param that must be set
-    pCodecCtx = video_st->codec;
-    pCodecCtx->codec_id = AV_CODEC_ID_MPEG4;
-    pCodecCtx->codec_type = AVMEDIA_TYPE_VIDEO;
-    pCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
-    pCodecCtx->width = out_width;
-    pCodecCtx->height = out_height;
+	codecContext = videoStream->codec;
+	codecContext->codec_id = AV_CODEC_ID_MPEG4;
+	codecContext->codec_type = AVMEDIA_TYPE_VIDEO;
+	codecContext->pix_fmt = AV_PIX_FMT_YUV420P;
+	codecContext->width = out_width;
+	codecContext->height = out_height;
 
     // Set your desired bitrate and other codec parameters here
-    pCodecCtx->bit_rate = 400000;
-    pCodecCtx->gop_size = 10; // Set your desired GOP size
-    pCodecCtx->time_base.num = 1;
-    pCodecCtx->time_base.den = 25;
-    pCodecCtx->qmin = 10;
-    pCodecCtx->qmax = 51;
-    pCodecCtx->max_b_frames = 3;
+	codecContext->bit_rate = 400000;
+	codecContext->gop_size = 10; // Set your desired GOP size
+	codecContext->time_base.num = 1;
+	codecContext->time_base.den = 25;
+	codecContext->qmin = 10;
+	codecContext->qmax = 51;
+	codecContext->max_b_frames = 3;
 
     // Specify MPEG-4 codec explicitly
-    pCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
-    if (!pCodec)
-    {
-        printf("MPEG-4 codec not found!\n");
-        return -1;
-    }
-
+	videoCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
+  
     // Open MPEG-4 encoder
-    if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
-    {
-        printf("Failed to open MPEG-4 encoder!\n");
-        return -1;
-    }
+	avcodec_open2(codecContext, videoCodec, NULL);
+  
 
     // Write File Header
-    if ((ret = avformat_write_header(pFormatCtx, NULL)) < 0)
-    {
-        printf("Failed to write header!\n");
-        return ret;
-    }
+	avformat_write_header(formatContext, NULL);
+
     return ret;
 }
 
@@ -444,12 +412,12 @@ int ZoomSDKRawDataPipeDelegate::ffmpeg_encode()
 	steady_clock::time_point current_time = steady_clock::now();
 
 	// frame_out->pts = ((tstruct.time - start_tstruct.time) * 1000 + (tstruct.millitm - start_tstruct.millitm)) * 10;
-	frame_out->pts = duration_cast<std::chrono::milliseconds>(current_time - start_time).count() * (video_st->time_base.den) / (video_st->time_base.num * 1000);
+	frame_out->pts = duration_cast<std::chrono::milliseconds>(current_time - start_time).count() * (videoStream->time_base.den) / (videoStream->time_base.num * 1000);
 
 	av_init_packet(&pkt);
 
 	int got_picture = 0;
-	if ((ret = avcodec_encode_video2(pCodecCtx, &pkt, frame_out, &got_picture)) < 0)
+	if ((ret = avcodec_encode_video2(codecContext, &pkt, frame_out, &got_picture)) < 0)
 	{
 		printf("Failed to encode, code: %d, ", ret);
 		err_msg(ret);
@@ -459,8 +427,8 @@ int ZoomSDKRawDataPipeDelegate::ffmpeg_encode()
 	{
 		printf("Succeed to encode frame: %5d\tsize:%5d\source_id:%d\n", framecnt, pkt.size,current_sourceID);
 		framecnt++;
-		pkt.stream_index = video_st->index;
-		av_write_frame(pFormatCtx, &pkt);
+		pkt.stream_index = videoStream->index;
+		av_write_frame(formatContext, &pkt);
 		av_packet_unref(&pkt);
 	}
 
@@ -474,23 +442,23 @@ int ZoomSDKRawDataPipeDelegate::ffmpeg_stop()
 {
 
 	// Flush Encoder
-	if ((ZoomSDKRawDataPipeDelegate::ffmpeg_flush(pFormatCtx, 0)) < 0)
+	if ((ZoomSDKRawDataPipeDelegate::ffmpeg_flush(formatContext, 0)) < 0)
 	{
 		printf("Flushing encoder failed\n");
 		return -1;
 	}
 
 	// Write file trailer
-	av_write_trailer(pFormatCtx);
+	av_write_trailer(formatContext);
 
 	// Clean
-	if (video_st)
+	if (videoStream)
 	{
-		avcodec_close(video_st->codec);
+		avcodec_close(videoStream->codec);
 		av_free(frame_out);
 	}
-	avio_close(pFormatCtx->pb);
-	avformat_free_context(pFormatCtx);
+	avio_close(formatContext->pb);
+	avformat_free_context(formatContext);
 
 	if (isOutputYUV)
 	{

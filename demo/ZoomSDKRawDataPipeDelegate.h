@@ -84,12 +84,20 @@ class ZoomSDKRawDataPipeDelegate :
 	int isOutputYUV = 0;
 
 	// ffmpeg encoding
-	AVFormatContext* pFormatCtx;
+	AVFormatContext* formatContext;
 	AVOutputFormat* fmt;
-	AVStream* video_st;
-	AVCodecContext* pCodecCtx;
-	AVCodec* pCodec;
+	AVStream* videoStream;
+	AVCodecContext* codecContext;
+	AVCodec* videoCodec;
 	AVPacket pkt;
+
+	AVCodec* audioCodec;
+	AVStream* audioStream;
+	AVCodecContext* audioCodecContext;
+	//AVPacket audioPkt;
+
+	bool initCompleted = false;
+
 	//uint8_t* picture_buf;
 	AVFrame* pFrame;
 	int picture_size;
@@ -105,7 +113,7 @@ class ZoomSDKRawDataPipeDelegate :
 
 
 
-	AVStream* audioStream;
+	
 
 public:
 	ZoomSDKRawDataPipeDelegate();
