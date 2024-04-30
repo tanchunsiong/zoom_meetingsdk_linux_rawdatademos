@@ -18,7 +18,12 @@ find_package(PkgConfig REQUIRED)
 #add_definitions(${GTKMM_CFLAGS_OTHER})
 find_package(ZLIB REQUIRED)
 
+# Find gstreamer
 
+pkg_check_modules(gtk3 REQUIRED IMPORTED_TARGET gtk+-3.0)
+pkg_check_modules(GSTREAMER IMPORTED_TARGET gstreamer-1.0)
+pkg_check_modules(GST_APP IMPORTED_TARGET gstreamer-app-1.0)
+pkg_check_modules(GST_VIDEO IMPORTED_TARGET gstreamer-video-1.0)
 
 # Find FFmpeg
 
@@ -84,12 +89,22 @@ target_link_libraries(meetingSDKDemo glib-2.0)
 target_link_libraries(meetingSDKDemo curl)
 target_link_libraries(meetingSDKDemo pthread)
 
-#target_link_libraries(meetingSDKDemo z avcodec avformat avutil)
-#target_link_libraries(meetingSDKDemo lzma swresample swscale avfilter)
-#link_directories(${CMAKE_SOURCE_DIR}/lib/ffmpeg)
-target_link_libraries(meetingSDKDemo PkgConfig::FFMPEG)
 
-#target_link_libraries(meetingSDKDemo ZLIB::ZLIB)
+#target_link_libraries(meetingSDKDemo z avcodec avformat avutil)
+#target_link_libraries(meetingSDKDemo lzma swresample swscale avfilter avdevice)
+#link_directories(${CMAKE_SOURCE_DIR}/lib/ffmpeg)
+target_link_libraries(meetingSDKDemo ZLIB::ZLIB)
+
+
+target_link_libraries(meetingSDKDemo PkgConfig::FFMPEG )
+
+
+target_link_libraries(meetingSDKDemo 
+    PkgConfig::gtk3
+    PkgConfig::GSTREAMER
+    PkgConfig::GST_APP
+    PkgConfig::GST_VIDEO
+)
 
 target_include_directories(meetingSDKDemo PRIVATE ${FFMPEG_INCLUDE_DIRS})
 

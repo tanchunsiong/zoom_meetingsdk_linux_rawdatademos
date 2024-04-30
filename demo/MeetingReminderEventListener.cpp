@@ -38,3 +38,7 @@
             }
         }
     }
+
+     void MeetingReminderEventListener::onEnableReminderNotify(IMeetingReminderContent* content, IMeetingEnableReminderHandler* handle)
+     {
+     }

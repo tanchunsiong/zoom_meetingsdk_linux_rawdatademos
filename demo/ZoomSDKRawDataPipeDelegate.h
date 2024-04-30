@@ -31,7 +31,16 @@ extern "C"
 #include "rawdata/rawdata_audio_helper_interface.h"
 #include "zoom_sdk.h"
 #include "zoom_sdk_raw_data_def.h"
+#include <string>
 
+//for resample
+#include <libavutil/opt.h>
+#include <libswresample/swresample.h>
+#include <libswresample/version.h>
+
+
+//for gstreamer
+#include <gst/gst.h>
 
 USING_ZOOM_SDK_NAMESPACE;
 
@@ -94,7 +103,7 @@ class ZoomSDKRawDataPipeDelegate :
 	AVCodec* audioCodec;
 	AVStream* audioStream;
 	AVCodecContext* audioCodecContext;
-	//AVPacket audioPkt;
+	AVPacket audioPkt;
 
 	bool initCompleted = false;
 
@@ -111,7 +120,9 @@ class ZoomSDKRawDataPipeDelegate :
 	//Output video file name.
 	char fn_out[120];
 
-
+	//gstreamer
+	int gstreamer_start();
+	GstElement* appsrc;
 
 	
 
@@ -127,11 +138,13 @@ public:
 	static void log(const wchar_t* format, ...);
 	static void err_msg(int code);
 
-
-
+	virtual void encode_audio_to_wav(uint8_t* audioDataPtr, int audioDataSize, int64_t pts);
+	virtual void save_audio_to_file(AudioRawData* audioRawData, uint32_t node_id);
+	virtual void save_audio_to_wav(uint8_t* audioDataPtr, int audioDataSize, uint32_t node_id);
 public:
 	virtual void onMixedAudioRawDataReceived(AudioRawData* data_);
 	virtual void onOneWayAudioRawDataReceived(AudioRawData* data_, uint32_t node_id);
+	virtual void onShareAudioRawDataReceived(AudioRawData* data_);
 };
 
 
