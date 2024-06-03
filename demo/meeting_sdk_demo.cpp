@@ -16,6 +16,11 @@
 
 
 
+#include <string>  // for std::wstring, std::string
+#include <locale>
+#include <codecvt>
+
+
 #include "zoom_sdk.h"
 #include "auth_service_interface.h"
 #include "meeting_service_interface.h"
@@ -109,7 +114,7 @@ unsigned int userID;
 //this will fetch the JWT Token from a web service
 bool useJWTTokenFromWebService = true;
 //this will fetch the RecordingToken from a web service. 
-bool useRecordingTokenFromWebService = true;
+bool useRecordingTokenFromWebService = false;
 
 //this will enable or disable logic to get raw video and raw audio
 //do note that this will be overwritten by config.json
@@ -117,7 +122,7 @@ bool GetVideoRawData = false;
 bool GetAudioRawData = false;
 bool SendVideoRawData = false;
 bool SendAudioRawData = false;
-bool chatDemo = false;
+bool chatDemo = true;
 
 
 
@@ -351,13 +356,42 @@ void onInMeeting() {
 		//print all list of participants
 		IList<unsigned int>* participants = m_pMeetingService->GetMeetingParticipantsController()->GetParticipantsList();
 		printf("Participants count: %d\n", participants->GetCount());
+
+
 	}
 
 
 	//chatDemo
 	if (chatDemo) {
+		IMeetingChatController* meetingchatcontroller= m_pMeetingService->GetMeetingChatController();
+		meetingchatcontroller->SetEvent(new MeetingChatEventListener(&turnOnSendVideoAndAudio, &turnOffSendVideoandAudio));
 
-		m_pMeetingService->GetMeetingChatController()->SetEvent(new MeetingChatEventListener(&turnOnSendVideoAndAudio, &turnOffSendVideoandAudio));
+		// Convert std::wstring to std::string (UTF-8)
+		std::wstring wstr = L"Hello world!";
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		std::string str = converter.to_bytes(wstr);
+
+		// Ensure zchar_t is defined as char if not already defined
+		typedef char zchar_t;
+
+		char charArray[1024]; // Choose an appropriate size
+		std::strncpy(charArray, str.c_str(), sizeof(charArray));
+
+		// Ensure null-termination
+		charArray[sizeof(charArray) / sizeof(charArray[0]) - 1] = '\0';
+
+		const zchar_t* constCharArray = charArray;
+
+		IChatMsgInfoBuilder* chatbuilder = meetingchatcontroller->GetChatMessageBuilder();
+		chatbuilder->SetReceiver(0);
+		chatbuilder->SetMessageType(SDKChatMessageType_To_All);
+		chatbuilder->SetContent(constCharArray);
+		chatbuilder->Build();
+	
+		meetingchatcontroller->SendChatMsgTo(chatbuilder->Build());
+
+
+
 	}
 
 	//first attempt to start raw recording  / sending, upon successfully joined and achieved "in-meeting" state.
@@ -644,7 +678,7 @@ void JoinMeeting()
 
 	//automatically set app_privilege token if it is present in config.json, or retrieved from web service
 	withoutloginParam.app_privilege_token = NULL;
-	if (!recording_token.size() == 0)
+	if (!recording_token.size() == 0 && useRecordingTokenFromWebService==true)
 	{
 		withoutloginParam.app_privilege_token = recording_token.c_str();
 		std::cerr << "Setting recording token" << std::endl;
