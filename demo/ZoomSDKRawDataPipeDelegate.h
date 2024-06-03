@@ -61,12 +61,9 @@ class ZoomSDKRawDataPipeDelegate :
 	static std::vector<ZoomSDKRawDataPipeDelegate*> list_;
 	IUserInfo* user_;
 
-	int ffmpeg_start(const char* userName, uint userID, int sourceID);
-	int ffmpeg_flush(AVFormatContext* fmt_ctx, unsigned int stream_index);
+	int ffmpeg_start();
 	int ffmpeg_stop();
 	int ffmpeg_filter(uint8_t* Y, uint8_t* U, uint8_t* V);
-	int ffmpeg_encode();
-	int ffmpeg_filter_init();
 
 	// ffmpeg filter
 	AVFrame* frame_in;
@@ -120,9 +117,6 @@ class ZoomSDKRawDataPipeDelegate :
 	//Output video file name.
 	char fn_out[120];
 
-	//gstreamer
-	int gstreamer_start();
-	GstElement* appsrc;
 
 	
 
@@ -137,10 +131,10 @@ public:
 	static void stop_encoding_for(IUserInfo* user, bool isShareScreen);
 	static void log(const wchar_t* format, ...);
 	static void err_msg(int code);
+	static AVFrame* create_silent_audio_frame(AVCodecContext* codecCtx);
+	static AVFrame* create_black_video_frame(AVCodecContext* codecCtx);
+	static void encode_and_mux();
 
-	virtual void encode_audio_to_wav(uint8_t* audioDataPtr, int audioDataSize, int64_t pts);
-	virtual void save_audio_to_file(AudioRawData* audioRawData, uint32_t node_id);
-	virtual void save_audio_to_wav(uint8_t* audioDataPtr, int audioDataSize, uint32_t node_id);
 public:
 	virtual void onMixedAudioRawDataReceived(AudioRawData* data_);
 	virtual void onOneWayAudioRawDataReceived(AudioRawData* data_, uint32_t node_id);
