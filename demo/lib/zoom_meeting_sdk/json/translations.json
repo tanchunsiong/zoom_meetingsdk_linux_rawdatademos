@@ -7,7 +7,7 @@
         "id": "Rekam rapat ini ke cloud?",
         "it": "Registrare questa riunione sul cloud?",
         "jp": "クラウドにこのミーティングをレコーディングしますか？",
-        "ko": "이 회의를 클라우드에 녹화하시겠습니까?",
+        "ko": "이 회의를 클라우드에 기록하시겠습니까?",
         "nl": "Deze vergadering opnemen in de cloud?",
         "pl": "Nagrać to spotkanie w chmurze?",
         "pt": "Gravar esta reunião na nuvem?",
@@ -15,8 +15,7 @@
         "tr": "Bu toplantı buluta kaydedilsin mi?",
         "vi": "Ghi lại cuộc họp này lên đám mây?",
         "zh-CN": "是否将此会议录制到云端？",
-        "zh-TW": "錄製此會議到雲端？",
-        "sv": "Vill du spela in det här mötet i molnet?"
+        "zh-TW": "錄製此會議到雲端？"
     },
     "Record this meeting to this computer?": {
         "de": "Dieses Meeting auf diesem Computer aufzeichnen?",
@@ -26,7 +25,7 @@
         "id": "Rekam rapat ini ke komputer ini?",
         "it": "Registrare questa riunione su questo computer?",
         "jp": "コンピュータにこのミーティングをレコーディングしますか？",
-        "ko": "이 회의를 컴퓨터에 녹화하시겠습니까?",
+        "ko": "이 회의를 컴퓨터에 기록하시겠습니까?",
         "nl": "Deze vergadering opnemen op deze computer?",
         "pl": "Nagrać to spotkanie na komputerze?",
         "pt": "Gravar esta reunião neste computador?",
@@ -34,8 +33,7 @@
         "tr": "Bu toplantı bu bilgisayara kaydedilsin mi?",
         "vi": "Ghi lại cuộc họp này vào máy tính?",
         "zh-CN": "是否将此会议录制到此电脑？",
-        "zh-TW": "錄製此會議到本電腦？",
-        "sv": "Spela in detta möte på denna dator?"
+        "zh-TW": "錄製此會議到本電腦？"
     },
     "You are joining %1 as a panelist": {
         "de": "You are joining %1 as a panelist",
@@ -53,8 +51,7 @@
         "tr": "You are joining %1 as a panelist",
         "vi": "You are joining %1 as a panelist",
         "zh-CN": "You are joining %1 as a panelist",
-        "zh-TW": "You are joining %1 as a panelist",
-        "sv": "You are joining %1 as a panelist"
+        "zh-TW": "You are joining %1 as a panelist"
     },
     "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included.": {
         "de": "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included.",
@@ -72,27 +69,25 @@
         "tr": "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included.",
         "vi": "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included.",
         "zh-CN": "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included.",
-        "zh-TW": "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included.",
-        "sv": "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included."
+        "zh-TW": "The webinar may be recorded, livestreamed, or archived by the host, who can share this content with apps and others. The recording may be shared with Smart Recording which uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.\n\nParticipants with relevant permissions also may save and share the webinar transcript.\n\nBy joining this webinar as a panelist, you consent to your participation being included."
     },
-    "Meeting questions is on": {
-        "de": "Meeting-Fragen sind aktiviert",
-        "en": "Meeting questions is on",
-        "es": "Las preguntas de la reunión están activadas.",
-        "fr": "Les questions de réunion sont activées",
-        "id": "Pertanyaan rapat aktif",
-        "it": "Le domande della riunione sotto attive",
-        "jp": "ミーティング内質問はオンになっています",
-        "ko": "회의 질문 켜짐",
-        "nl": "Vergadervragen is ingeschakeld",
-        "pl": "Pytania ze spotkania są włączone",
-        "pt": "As perguntas da reunião estão ativadas",
-        "ru": "Вопросы в конференции включены",
-        "tr": "Toplantı soruları açık",
-        "vi": "Câu hỏi cho cuộc họp đang bật",
-        "zh-CN": "会议问题已开启",
-        "zh-TW": "會議問題已開啟",
-        "sv": "Mötesfrågor är på"
+    "AI Companion is on": {
+        "de": "AI Companion ist eingeschaltet",
+        "en": "AI Companion is on",
+        "es": "AI Companion está activado",
+        "fr": "La fonction AI Companion est activée",
+        "id": "AI Companion aktif",
+        "it": "AI Companion attivo",
+        "jp": "AI Companion はオンです",
+        "ko": "AI Companion 켜짐",
+        "nl": "AI Companion is ingeschakeld",
+        "pl": "Asystent AI Companion jest włączony",
+        "pt": "O AI Companion está ativado",
+        "ru": "AI Companion включен",
+        "tr": "AI Companion açık",
+        "vi": "AI Companion đang bật",
+        "zh-CN": "AI Companion已开启",
+        "zh-TW": "已開啟AI Companion"
     },
     "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript.": {
         "de": "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript.",
@@ -110,8 +105,7 @@
         "tr": "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript.",
         "vi": "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript.",
         "zh-CN": "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript.",
-        "zh-TW": "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript.",
-        "sv": "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript."
+        "zh-TW": "AI Companion uses AI technology, which may include third-party models. Hosts and participants can ask questions during the meeting and answers are generated from the meeting transcript."
     },
     "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models. ": {
         "de": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
@@ -129,8 +123,7 @@
         "tr": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
         "vi": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
         "zh-CN": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
-        "zh-TW": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
-        "sv": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models."
+        "zh-TW": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models."
     },
     "AI-generated content may be inaccurate or misleading. Always check for accuracy.": {
         "de": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
@@ -148,27 +141,25 @@
         "tr": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
         "vi": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
         "zh-CN": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
-        "zh-TW": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
-        "sv": "AI-generated content may be inaccurate or misleading. Always check for accuracy."
+        "zh-TW": "AI-generated content may be inaccurate or misleading. Always check for accuracy."
     },
     "Meeting Summary with AI Companion is on": {
         "de": "Meeting-Zusammenfassung mit AI Companion ist aktiviert",
         "en": "Meeting Summary with AI Companion is on",
         "es": "El resumen de la reunión con AI Companion está activado",
-        "fr": "La fonctionnalité Synthèse de la réunion avec AI Companion est activée",
-        "id": "Ringkasan rapat dengan AI Companion aktif",
+        "fr": "La fonction Synthèse de la réunion avec AI Companion est activée",
+        "id": "Ringkasan Rapat dengan AI Companion aktif",
         "it": "Riepilogo riunione con AI Companion attivo",
-        "jp": "AI Companion によるミーティング要約はオンになっています",
+        "jp": "AI Companion によるミーティング要約はオンです",
         "ko": "AI Companion을 사용한 회의 요약이 켜져 있습니다",
         "nl": "Samenvatting van vergadering met AI Companion is ingeschakeld",
-        "pl": "Podsumowanie spotkania z asystentem AI Companion jest włączone",
-        "pt": "O resumo da reunião com o AI Companion está ativado",
+        "pl": "Podsumowanie spotkania z włączonym asystentem AI Companion",
+        "pt": "Resumo da Reunião com o AI Companion está ativado",
         "ru": "Сводка конференции с AI Companion включена",
-        "tr": "AI Companion ile toplantı özeti açık",
+        "tr": "AI Companion ile Toplantı Özeti açık",
         "vi": "Tóm tắt cuộc họp bằng AI Companion đang bật",
         "zh-CN": "使用AI Companion的会议摘要已开启",
-        "zh-TW": "已開啟使用AI Companion的會議摘要",
-        "sv": "Mötessammanfattning med AI Companion är på"
+        "zh-TW": "已開啟使用AI Companion的會議摘要"
     },
     "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.": {
         "de": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
@@ -186,8 +177,7 @@
         "tr": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
         "vi": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
         "zh-CN": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
-        "zh-TW": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
-        "sv": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models."
+        "zh-TW": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models."
     },
     "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary.": {
         "de": "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary.",
@@ -205,8 +195,7 @@
         "tr": "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary.",
         "vi": "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary.",
         "zh-CN": "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary.",
-        "zh-TW": "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary.",
-        "sv": "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary."
+        "zh-TW": "We'll send the meeting summary to invitees after the meeting ends (based on the settings configured for this meeting). Anyone who receives the meeting summary may save and share it with apps and others. The account owner can access the meeting summary."
     },
     "AI-generated content may be inaccurate or misleading. Always check for accuracy. ": {
         "de": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
@@ -224,46 +213,43 @@
         "tr": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
         "vi": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
         "zh-CN": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
-        "zh-TW": "AI-generated content may be inaccurate or misleading. Always check for accuracy.",
-        "sv": "AI-generated content may be inaccurate or misleading. Always check for accuracy."
+        "zh-TW": "AI-generated content may be inaccurate or misleading. Always check for accuracy."
     },
-    "%1 is requesting meeting questions": {
-        "de": "%1 fordert Meeting-Fragen an",
-        "en": "%1 is requesting meeting questions",
-        "es": "%1 está solicitando las preguntas de la reunión",
-        "fr": "%1 demande des questions de la réunion",
-        "id": "%1 meminta pertanyaan rapat",
-        "it": "%1 sta chiedendo le domande della riunione",
-        "jp": "%1 さんがミーティング内質問をリクエストしています",
-        "ko": "%1님이 회의 질문을 요청하고 있습니다",
-        "nl": "%1 vraagt om Vergadervragen",
-        "pl": "%1 prosi o pytania ze spotkania",
-        "pt": "%1 está solicitando perguntas da reunião",
-        "ru": "Пользователь %1 просит включить вопросы в конференции",
-        "tr": "%1, toplantı sorularını istiyor",
-        "vi": "%1 đang yêu cầu câu hỏi cho cuộc họp",
-        "zh-CN": "%1正在请求会议问题",
-        "zh-TW": "%1正在要求會議問題",
-        "sv": "%1 begär mötesfrågor"
+    "%1 is requesting AI Companion": {
+        "de": "%1 fordert AI Companion an",
+        "en": "%1 is requesting AI Companion",
+        "es": "%1 solicita AI Companion",
+        "fr": "%1 demande le lancement d’AI Companion",
+        "id": "%1 meminta AI Companion",
+        "it": "%1 chiede di avviare AI Companion",
+        "jp": "%1 さんが AI Companion をリクエストしています",
+        "ko": "%1님이 AI Companion을 요청하고 있습니다",
+        "nl": "%1 vraagt om AI Companion",
+        "pl": "%1 prosi o asystenta AI Companion",
+        "pt": "%1 está solicitando o AI Companion",
+        "ru": "%1 запрашивает AI Companion",
+        "tr": "%1, AI Companion istiyor",
+        "vi": "%1 đang yêu cầu AI Companion",
+        "zh-CN": "%1正在请求AI Companion",
+        "zh-TW": "%1正在要求AI Companion"
     },
-    "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.": {
-        "de": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "en": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "es": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "fr": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "id": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "it": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "jp": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "ko": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "nl": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "pl": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "pt": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "ru": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "tr": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "vi": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "zh-CN": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "zh-TW": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
-        "sv": "Zoom will use AI technology, which may include third-party models, to provide the meeting questions service.Participants will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript."
+    "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.": {
+        "de": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "en": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "es": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "fr": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "id": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "it": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "jp": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "ko": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "nl": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "pl": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "pt": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "ru": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "tr": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "vi": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "zh-CN": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript.",
+        "zh-TW": "Zoom will use AI technology, which may include third-party models, to provide the AI Companion service. Invitees will be able to ask questions about the meeting to AI Companion, which will provide responses based on the meeting transcript."
     },
     "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.": {
         "de": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
@@ -281,8 +267,7 @@
         "tr": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
         "vi": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
         "zh-CN": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
-        "zh-TW": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models.",
-        "sv": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models."
+        "zh-TW": "Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom’s or third-party AI models."
     },
     "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings.": {
         "de": "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings.",
@@ -300,27 +285,25 @@
         "tr": "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings.",
         "vi": "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings.",
         "zh-CN": "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings.",
-        "zh-TW": "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings.",
-        "sv": "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings."
+        "zh-TW": "By clicking \"Enable\", the web setting for this feature will be enabled for your account, and the feature will be turned on for this meeting and available for hosts to turn on in future meetings. You can change this any time in Settings."
     },
-    "Enable meeting questions with AI Companion for your account within admin settings": {
-        "de": "Aktivieren Sie die Meeting-Fragen mit AI Companion für Ihr Konto in den Meeting-Einstellungen für Admins",
-        "en": "Enable meeting questions with AI Companion for your account within admin settings",
-        "es": "Habilite las preguntas de la reunión con AI Companion para su cuenta en la configuración del administrador",
-        "fr": "Activer les questions de réunion avec AI Companion pour votre compte dans les paramètres d’administration",
-        "id": "Aktifkan pertanyaan rapat dengan AI Companion untuk akun Anda dalam pengaturan admin",
-        "it": "Abilita le domande della riunione con AI Companion per il tuo account nelle impostazioni dell’amministratore",
-        "jp": "アカウントに対する AI Companion によるミーティング内質問の有効化は、管理者設定で行います",
-        "ko": "관리자 설정에서 계정에 대한 AI Companion으로 회의 질문 활성화",
-        "nl": "Schakel Vergadervragen met AI Companion voor uw account in via de instellingen voor beheerders",
-        "pl": "Włącz pytania ze spotkania z asystentem AI Companion dla Twojego konta w ustawieniach administratora",
-        "pt": "Habilitar perguntas de reunião com o AI Companion para sua conta nas configurações de administrador",
-        "ru": "Включить вопросы в конференции с AI Companion для вашей учетной записи в настройках конференции для администратора",
-        "tr": "Yönetici ayarlarında hesabınız için AI Companion ile toplantı sorularını etkinleştirin",
-        "vi": "Bật câu hỏi cuộc họp bằng AI Companion cho tài khoản của bạn trong cài đặt của quản trị viên",
-        "zh-CN": "在管理员设置中为你的账户启用使用AI Companion的会议问题",
-        "zh-TW": "在管理員設定中為您的帳戶啟用使用AI Companion的會議問題",
-        "sv": "Aktivera mötesfrågor med AI Companion för ditt konto i admin-inställningarna"
+    "Enable AI Companion for your account within admin meeting settings": {
+        "de": "AI Companion für Ihr Konto mit Admin-Meeting-Einstellungen aktivieren",
+        "en": "Enable AI Companion for your account within admin meeting settings",
+        "es": "Habilitar AI Companion para su cuenta dentro de la configuración de reunión del administrador",
+        "fr": "Activez AI Companion pour votre compte dans les paramètres de réunion de l’administrateur",
+        "id": "Aktifkan AI Companion untuk akun Anda dalam pengaturan rapat admin",
+        "it": "Abilita AI Companion per il tuo account nelle impostazioni della riunione dell’amministratore",
+        "jp": "[管理者のミーティング設定] でアカウントの AI Companion を有効にする",
+        "ko": "관리자 회의 설정 내에서 계정에 대한 AI Companion 활성화",
+        "nl": "Schakel AI Companion voor uw account in via de vergaderinstellingen voor beheerders",
+        "pl": "Włącz asystenta AI Companion na swoim koncie w ramach ustawień spotkania administratora.",
+        "pt": "Habilitar o AI Companion para sua conta nas configurações da reunião de administrador",
+        "ru": "Включить AI Companion для вашей учетной записи в настройках конференции, выполняемых администратором",
+        "tr": "Yönetici toplantı ayarlarında hesabınız için AI Companion'ı etkinleştirin",
+        "vi": "Bật AI Companion cho tài khoản của bạn trong cài đặt cuộc họp của quản trị viên",
+        "zh-CN": "在管理员会议设置中为你的账户启用AI Companion",
+        "zh-TW": "在管理員會議設定中啟用您帳戶的AI Companion"
     },
     "%1 is requesting Meeting Summary with AI Companion": {
         "de": "%1 fordert die Meeting-Zusammenfassung mit AI Companion an",
@@ -338,8 +321,7 @@
         "tr": "%1, AI Companion ile Toplantı Özeti istiyor",
         "vi": "%1 đang yêu cầu Tóm tắt cuộc họp bằng AI Companion",
         "zh-CN": "%1正在请求使用AI Companion的会议摘要",
-        "zh-TW": "%1正在要求使用AI Companion的會議摘要",
-        "sv": "%1 begär en mötessammanfattning med AI Companion"
+        "zh-TW": "%1正在要求使用AI Companion的會議摘要"
     },
     "Enable Meeting Summary for your account within admin meeting settings": {
         "de": "Enable Meeting Summary for your account within admin meeting settings",
@@ -357,8 +339,7 @@
         "tr": "Enable Meeting Summary for your account within admin meeting settings",
         "vi": "Enable Meeting Summary for your account within admin meeting settings",
         "zh-CN": "Enable Meeting Summary for your account within admin meeting settings",
-        "zh-TW": "Enable Meeting Summary for your account within admin meeting settings",
-        "sv": "Enable Meeting Summary for your account within admin meeting settings"
+        "zh-TW": "Enable Meeting Summary for your account within admin meeting settings"
     },
     "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models.": {
         "de": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models.",
@@ -376,8 +357,7 @@
         "tr": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models.",
         "vi": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models.",
         "zh-CN": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models.",
-        "zh-TW": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models.",
-        "sv": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models."
+        "zh-TW": "Meeting Summary uses AI technology, which may include third-party models. Zoom does not use any audio, video, chat, screen sharing, attachments or other communications-like content (such as poll results, whiteboard and reactions) to train Zoom's or third-party AI models."
     },
     "Learn More": {
         "de": "Mehr erfahren",
@@ -385,7 +365,7 @@
         "es": "Más información",
         "fr": "En savoir plus",
         "id": "Pelajari selengkapnya",
-        "it": "Scopri di più",
+        "it": "Ulteriori informazioni",
         "jp": "詳細情報",
         "ko": "자세히 알아보기",
         "nl": "Meer informatie",
@@ -395,8 +375,7 @@
         "tr": "Daha fazla bilgi edinin",
         "vi": "Tìm hiểu thêm",
         "zh-CN": "了解更多",
-        "zh-TW": "深入瞭解",
-        "sv": "Läs mer"
+        "zh-TW": "深入瞭解"
     },
     "This meeting is being recorded": {
         "de": "Dieses Meeting wird aufgezeichnet",
@@ -406,7 +385,7 @@
         "id": "Rapat ini sedang direkam",
         "it": "La riunione è in fase di registrazione",
         "jp": "このミーティングはレコーディングされています",
-        "ko": "이 회의는 녹화되고 있습니다",
+        "ko": "이 회의는 기록되고 있습니다",
         "nl": "Deze vergadering wordt opgenomen",
         "pl": "Spotkanie jest nagrywane",
         "pt": "Esta reunião está sendo gravada",
@@ -414,8 +393,7 @@
         "tr": "Bu toplantı kaydediliyor",
         "vi": "Cuộc họp này đang được ghi lại",
         "zh-CN": "此会议正在录制中",
-        "zh-TW": "正在錄製本會議",
-        "sv": "Detta möte spelas in"
+        "zh-TW": "正在錄製本會議"
     },
     "By staying in this meeting, you consent to being recorded": {
         "de": "By staying in this meeting, you consent to being recorded",
@@ -433,27 +411,25 @@
         "tr": "By staying in this meeting, you consent to being recorded",
         "vi": "By staying in this meeting, you consent to being recorded",
         "zh-CN": "By staying in this meeting, you consent to being recorded",
-        "zh-TW": "By staying in this meeting, you consent to being recorded",
-        "sv": "By staying in this meeting, you consent to being recorded"
+        "zh-TW": "By staying in this meeting, you consent to being recorded"
     },
     "This meeting is being livestreamed": {
-        "de": "Dieses Meeting wird per Livestream übertragen.",
+        "de": "Dieses Meeting wird per Livestream übertragen",
         "en": "This meeting is being livestreamed",
-        "es": "La reunión se está transmitiendo en directo.",
-        "fr": "Cette réunion est diffusée en direct.",
-        "id": "Rapat ini sedang di-streaming langsung.",
-        "it": "Questa riunione è in fase di trasmissione in diretta streaming.",
-        "jp": "このミーティングはライブ配信されています。",
-        "ko": "이 회의는 라이브 스트리밍 중입니다.",
-        "nl": "Deze vergadering wordt gelivestreamd.",
-        "pl": "Z tego spotkania prowadzona jest transmisja na żywo.",
-        "pt": "Esta reunião está sendo transmitida ao vivo.",
-        "ru": "Идет прямая трансляция этой конференции.",
-        "tr": "Bu toplantı canlı yayınlanıyor.",
-        "vi": "Cuộc họp này đang được phát trực tiếp.",
-        "zh-CN": "此会议正在直播中。",
-        "zh-TW": "正在直播此會議。",
-        "sv": "Detta möte livestreamas."
+        "es": "La reunión se está transmitiendo en directo",
+        "fr": "Cette réunion est diffusée en direct",
+        "id": "Rapat ini sedang di-streaming langsung",
+        "it": "Questa riunione è in diretta streaming",
+        "jp": "このミーティングはライブストリーム中です",
+        "ko": "이 회의는 라이브 스트리밍되는 중입니다",
+        "nl": "Deze vergadering wordt gelivestreamd",
+        "pl": "Z tego spotkania prowadzona jest transmisja na żywo",
+        "pt": "Esta reunião está sendo transmitida ao vivo",
+        "ru": "Идет прямая трансляция этой конференции",
+        "tr": "Bu toplantı canlı yayınlanıyor",
+        "vi": "Cuộc họp này đang được phát trực tiếp",
+        "zh-CN": "此会议正在直播中",
+        "zh-TW": "正在直播此會議"
     },
     "By staying in this meeting, you consent to being livestreamed.": {
         "de": "Als Teilnehmer in diesem Meeting stimmen Sie Ihrer Aufnahme in den Live-Stream zu.",
@@ -471,8 +447,7 @@
         "tr": "Bu toplantıda kalarak canlı yayına alınmaya izin vermiş olursunuz.",
         "vi": "Khi ở lại cuộc họp này, bạn đồng ý được phát trực tiếp.",
         "zh-CN": "如果留在会议中，即表示你同意直播。",
-        "zh-TW": "若留在本會議內，即表示您同意出現在直播畫面中。",
-        "sv": "Genom att stanna kvar i detta möte samtycker du till att livestreamas."
+        "zh-TW": "若留在本會議內，即表示您同意出現在直播畫面中。"
     },
     "Anyone with access to the livestream can watch or share with others.": {
         "de": "Anyone with access to the livestream can watch or share with others.",
@@ -490,8 +465,7 @@
         "tr": "Anyone with access to the livestream can watch or share with others.",
         "vi": "Anyone with access to the livestream can watch or share with others.",
         "zh-CN": "Anyone with access to the livestream can watch or share with others.",
-        "zh-TW": "Anyone with access to the livestream can watch or share with others.",
-        "sv": "Anyone with access to the livestream can watch or share with others."
+        "zh-TW": "Anyone with access to the livestream can watch or share with others."
     },
     "%1 and %2": {
         "de": "%1 und %2",
@@ -509,8 +483,7 @@
         "tr": "%1 ve %2",
         "vi": "%1 và %2",
         "zh-CN": "%1和%2",
-        "zh-TW": "%1和%2",
-        "sv": "%1 och %2"
+        "zh-TW": "%1和%2"
     },
     "%1, %2, and %3": {
         "de": "%1, %2 and %3",
@@ -528,8 +501,7 @@
         "tr": "%1, %2 ve %3",
         "vi": "%1, %2 và %3",
         "zh-CN": "%1、%2和%3",
-        "zh-TW": "%1、%2和%3",
-        "sv": "%1, %2 och %3"
+        "zh-TW": "%1、%2和%3"
     },
     "%1, %2, %3, and %4": {
         "de": "%1, %2, %3 und %4",
@@ -547,8 +519,7 @@
         "tr": "%1, %2, %3 ve %4",
         "vi": "%1, %2, %3 và %4",
         "zh-CN": "%1、%2、%3和%4",
-        "zh-TW": "%1、%2、%3和%4",
-        "sv": "%1, %2, %3 och %4"
+        "zh-TW": "%1、%2、%3和%4"
     },
     "video": {
         "de": "Video",
@@ -566,8 +537,7 @@
         "tr": "Video",
         "vi": "Video",
         "zh-CN": "视频",
-        "zh-TW": "視訊",
-        "sv": "Video"
+        "zh-TW": "視訊"
     },
     "audio": {
         "de": "Audio",
@@ -585,8 +555,7 @@
         "tr": "Ses",
         "vi": "Âm thanh",
         "zh-CN": "音频",
-        "zh-TW": "音訊",
-        "sv": "Ljud"
+        "zh-TW": "音訊"
     },
     "chat (public and direct)": {
         "de": "Chat (öffentlich und direkt)",
@@ -604,8 +573,7 @@
         "tr": "sohbet (genel ve doğrudan)",
         "vi": "cuộc trò chuyện (công khai và trực tiếp)",
         "zh-CN": "聊天（公共和私聊）",
-        "zh-TW": "聊天（公開和一對一）",
-        "sv": "chatt (offentlig och direkt)"
+        "zh-TW": "聊天（公開和一對一）"
     },
     "chat (public only)": {
         "de": "Chat (nur öffentlich)",
@@ -623,8 +591,7 @@
         "tr": "sohbet (yalnızca herkese açık)",
         "vi": "trò chuyện (chỉ công khai)",
         "zh-CN": "聊天（仅公共聊天）",
-        "zh-TW": "聊天（僅限公開）",
-        "sv": "chatt (endast offentlig)"
+        "zh-TW": "聊天（僅限公開）"
     },
     "Transcript": {
         "de": "Transkript",
@@ -642,8 +609,7 @@
         "tr": "Döküm",
         "vi": "Bản chép lại",
         "zh-CN": "转录文字",
-        "zh-TW": "轉錄文字",
-        "sv": "Avskrift"
+        "zh-TW": "轉錄文字"
     },
     "This meeting is being archived": {
         "de": "Dieses Meeting wird archiviert",
@@ -661,8 +627,7 @@
         "tr": "Bu toplantı arşivleniyor",
         "vi": "Cuộc họp này đang được lưu trữ",
         "zh-CN": "此会议正在存档中",
-        "zh-TW": "正在封存此會議",
-        "sv": "Detta möte arkiveras"
+        "zh-TW": "正在封存此會議"
     },
     "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived.": {
         "de": "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived.",
@@ -680,8 +645,7 @@
         "tr": "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived.",
         "vi": "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived.",
         "zh-CN": "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived.",
-        "zh-TW": "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived.",
-        "sv": "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived."
+        "zh-TW": "One or more participants in this meeting are subject to archiving based on their account's policy. Their {u}{a %l}{c #232333}account owner{/c}{/a}{/u} will receive content from this meeting and can share it with apps and others.<br><br>By staying in this meeting, you consent to this meeting's {b}%v{/b} being archived."
     },
     "Who can see your messages?": {
         "de": "Wer kann Ihre Nachrichten sehen?",
@@ -699,8 +663,7 @@
         "tr": "Mesajlarınızı kimler görebilir?",
         "vi": "Ai có thể xem tin nhắn của bạn?",
         "zh-CN": "谁能看到你的消息？",
-        "zh-TW": "誰能夠看到您的訊息？",
-        "sv": "Vem kan se dina meddelanden?"
+        "zh-TW": "誰能夠看到您的訊息？"
     },
     "Who can see your messages? Recording, Archiving & DLP On": {
         "de": "Wer kann Ihre Nachrichten sehen? Aufzeichnung, Archivierung und DLP ein",
@@ -710,7 +673,7 @@
         "id": "Siapa yang dapat melihat pesan Anda? Perekaman, Pengarsipan, dan DLP Aktif",
         "it": "Chi può vedere i tuoi messaggi? Registrazione, archiviazione e DLP attive",
         "jp": "メッセージは誰に表示されますか？レコーディング、アーカイブ、DLP が有効",
-        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 녹화, 보관 및 DLP 켜기",
+        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 기록, 보관 및 DLP 켜기",
         "nl": "Wie kan uw berichten zien? Opnemen, archiveren en DLP aan",
         "pl": "Kto może zobaczyć Twoje wiadomości? Nagrywanie, archiwizacja i DLP włączone",
         "pt": "Quem pode ver suas mensagens? Gravação, arquivamento e DLP ativados",
@@ -718,8 +681,7 @@
         "tr": "Mesajlarınızı kimler görebilir? Kayıt, Arşivleme ve Veri Kaybını Önleme Açık",
         "vi": "Ai có thể xem tin nhắn của bạn? Tính năng ghi, lưu trữ & DLP đang bật",
         "zh-CN": "谁能看到你的消息？录制、存档和DLP已启用",
-        "zh-TW": "誰能夠看到您的訊息？啟用錄製、封存和DLP",
-        "sv": "Vem kan se dina meddelanden? Inspelning, arkivering och DLP på"
+        "zh-TW": "誰能夠看到您的訊息？啟用錄製、封存和DLP"
     },
     "Who can see your messages? Recording & Archiving On": {
         "de": "Wer kann Ihre Nachrichten sehen? Aufzeichnung und Archivierung ein",
@@ -729,7 +691,7 @@
         "id": "Siapa yang dapat melihat pesan Anda? Perekaman dan Pengarsipan Aktif",
         "it": "Chi può vedere i tuoi messaggi? Registrazione e archiviazione attive",
         "jp": "メッセージは誰に表示されますか？レコーディングとアーカイブが有効",
-        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 녹화 및 보관 켜기",
+        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 기록 및 보관 켜기",
         "nl": "Wie kan uw berichten zien? Opnemen en archiveren aan",
         "pl": "Kto może zobaczyć Twoje wiadomości? Nagrywanie i archiwizacja włączone",
         "pt": "Quem pode ver suas mensagens? Gravação e arquivamento ativados",
@@ -737,8 +699,7 @@
         "tr": "Mesajlarınızı kimler görebilir? Kayıt ve Arşivleme Açık",
         "vi": "Ai có thể xem tin nhắn của bạn? Tính năng ghi & lưu trữ đang bật",
         "zh-CN": "谁能看到你的消息？录制和存档已启用",
-        "zh-TW": "誰能夠看到您的訊息？啟用錄製和封存",
-        "sv": "Vem kan se dina meddelanden? Inspelning och arkivering på"
+        "zh-TW": "誰能夠看到您的訊息？啟用錄製和封存"
     },
     "Who can see your messages? Archiving & DLP On": {
         "de": "Wer kann Ihre Nachrichten sehen? Archivierung und DLP ein",
@@ -756,8 +717,7 @@
         "tr": "Mesajlarınızı kimler görebilir? Arşivleme ve Veri Kaybını Önleme Açık",
         "vi": "Ai có thể xem tin nhắn của bạn? Tính năng lưu trữ & DLP đang bật",
         "zh-CN": "谁能看到你的消息？存档和DLP已启用",
-        "zh-TW": "誰能夠看到您的訊息？啟用封存和DLP",
-        "sv": "Vem kan se dina meddelanden? Arkivering och DLP på"
+        "zh-TW": "誰能夠看到您的訊息？啟用封存和DLP"
     },
     "Who can see your messages? Archiving On": {
         "de": "Wer kann Ihre Nachrichten sehen? Archivierung Ein",
@@ -775,8 +735,7 @@
         "tr": "Mesajlarınızı kimler görebilir? Arşivleme Açık",
         "vi": "Ai có thể xem tin nhắn của bạn? Tính năng lưu trữ đang bật",
         "zh-CN": "谁能看到你的消息？存档已启用",
-        "zh-TW": "誰能夠看到您的訊息？已啟用封存",
-        "sv": "Vem kan se dina meddelanden? Arkivering på"
+        "zh-TW": "誰能夠看到您的訊息？已啟用封存"
     },
     "Who can see your messages? Recording & DLP On": {
         "de": "Wer kann Ihre Nachrichten sehen? Aufzeichnung und DLP ein",
@@ -786,7 +745,7 @@
         "id": "Siapa yang dapat melihat pesan Anda? Perekaman & DLP Aktif",
         "it": "Chi può vedere i tuoi messaggi? Registrazione e DLP attive",
         "jp": "メッセージは誰に表示されますか？レコーディングと DLP が有効",
-        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 녹화 및 DLP 켜기",
+        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 기록 및 DLP 켜기",
         "nl": "Wie kan uw berichten zien? Opnemen en DLP aan",
         "pl": "Kto może zobaczyć Twoje wiadomości? Nagrywanie i DLP włączone",
         "pt": "Quem pode ver suas mensagens? Gravação e DLP ativados",
@@ -794,8 +753,7 @@
         "tr": "Mesajlarınızı kimler görebilir? Kayıt ve Veri Kaybını Önleme Açık",
         "vi": "Ai có thể xem tin nhắn của bạn? Tính năng ghi & DLP đang bật",
         "zh-CN": "谁能看到你的消息？录制和DLP已启用",
-        "zh-TW": "誰能夠看到您的訊息？啟用錄製和DLP",
-        "sv": "Vem kan se dina meddelanden? Inspelning och DLP på"
+        "zh-TW": "誰能夠看到您的訊息？啟用錄製和DLP"
     },
     "Who can see your messages? Recording On": {
         "de": "Wer kann Ihre Nachrichten sehen? Aufzeichnung Ein",
@@ -805,7 +763,7 @@
         "id": "Siapa yang dapat melihat pesan Anda? Perekaman Aktif",
         "it": "Chi può vedere i tuoi messaggi? Registrazione attiva",
         "jp": "メッセージは誰に表示されますか？レコーディングが有効",
-        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 녹화가 켜져 있음",
+        "ko": "귀하의 메시지를 볼 수 있는 사람은 누구입니까? 기록이 켜져 있음",
         "nl": "Wie kan uw berichten zien? Opnemen aan",
         "pl": "Kto może zobaczyć Twoje wiadomości? Nagrywanie włączone",
         "pt": "Quem pode ver as suas mensagens? Gravação ligada",
@@ -813,8 +771,7 @@
         "tr": "Mesajlarınızı kimler görebilir? Kayıt Açık",
         "vi": "Ai có thể xem tin nhắn của bạn? Tính năng ghi lại đang được bật",
         "zh-CN": "谁能看到你的消息？录制已开启",
-        "zh-TW": "誰能夠看到您的訊息？已啟用錄製",
-        "sv": "Vem kan se dina meddelanden? Inspelning på"
+        "zh-TW": "誰能夠看到您的訊息？已啟用錄製"
     },
     "Who can see your messages? DLP On": {
         "de": "Wer kann Ihre Nachrichten sehen? DLP ein",
@@ -832,8 +789,7 @@
         "tr": "Mesajlarınızı kimler görebilir? Veri Kaybını Önleme Açık",
         "vi": "Ai có thể xem tin nhắn của bạn? DLP đang bật",
         "zh-CN": "谁能看到你的消息？DLP已启用",
-        "zh-TW": "誰能夠看到您的訊息？啟用DLP",
-        "sv": "Vem kan se dina meddelanden? DLP på"
+        "zh-TW": "誰能夠看到您的訊息？啟用DLP"
     },
     "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.": {
         "de": "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
@@ -851,8 +807,7 @@
         "tr": "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
         "vi": "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
         "zh-CN": "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
-        "zh-TW": "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
-        "sv": "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others."
+        "zh-TW": "Everyone in the meeting can see and save your messages with Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others."
     },
     "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -870,8 +825,7 @@
         "tr": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -889,8 +843,7 @@
         "tr": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.": {
         "de": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
@@ -908,8 +861,7 @@
         "tr": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
         "vi": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
         "zh-CN": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
-        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
-        "sv": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone."
+        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone."
     },
     "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.": {
         "de": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
@@ -927,8 +879,7 @@
         "tr": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
         "vi": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
         "zh-CN": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
-        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
-        "sv": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone."
+        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone."
     },
     "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -946,8 +897,7 @@
         "tr": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). The account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -965,8 +915,7 @@
         "tr": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -984,8 +933,7 @@
         "tr": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -1003,8 +951,7 @@
         "tr": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.": {
         "de": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
@@ -1022,8 +969,7 @@
         "tr": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
         "vi": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
         "zh-CN": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
-        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone.",
-        "sv": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone."
+        "zh-TW": "Recording is on. One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting and the account owner can see and save your messages with Everyone."
     },
     "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -1041,8 +987,7 @@
         "tr": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "One or more meeting participants is subject to archiving. The host account has also enabled data loss prevention (DLP). These account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others. Any messages that conflict with DLP policies defined by the host account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -1060,8 +1005,7 @@
         "tr": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "One or more meeting participants is subject to archiving. Their account owner(s) can see and save your messages - not including direct messages with these participants - and share them with apps and others.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.": {
         "de": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
@@ -1079,8 +1023,7 @@
         "tr": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
         "vi": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
         "zh-CN": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
-        "zh-TW": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
-        "sv": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted."
+        "zh-TW": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted."
     },
     "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.": {
         "de": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
@@ -1098,8 +1041,7 @@
         "tr": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
         "vi": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
         "zh-CN": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
-        "zh-TW": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
-        "sv": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others."
+        "zh-TW": "Recording is on, so everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others."
     },
     "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.": {
         "de": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
@@ -1117,8 +1059,7 @@
         "tr": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
         "vi": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
         "zh-CN": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
-        "zh-TW": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.",
-        "sv": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted."
+        "zh-TW": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOne or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted."
     },
     "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.": {
         "de": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
@@ -1136,8 +1077,7 @@
         "tr": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
         "vi": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
         "zh-CN": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
-        "zh-TW": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others.",
-        "sv": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others."
+        "zh-TW": "Recording is on, so the account owner and everyone in the meeting can see and save messages sent to Everyone — and can share them with apps and others.\r\n\r\nOnly you and those you chat with can save your direct messages and share them with apps and others."
     },
     "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.": {
         "de": "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
@@ -1155,8 +1095,7 @@
         "tr": "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "vi": "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
         "zh-CN": "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "zh-TW": "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone.",
-        "sv": "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
+        "zh-TW": "One or more meeting participants is subject to data loss prevention (DLP). Their account owner(s) can see and save your messages - including direct messages with these participants - and share them with apps and others. Any messages that conflict with policies defined by the account owner will be deleted.\r\n\r\nEveryone in the meeting can see and save your messages with Everyone."
     },
     "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details.": {
         "de": "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details.",
@@ -1174,8 +1113,7 @@
         "tr": "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details.",
         "vi": "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details.",
         "zh-CN": "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details.",
-        "zh-TW": "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details.",
-        "sv": "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details."
+        "zh-TW": "New messages sent to Everyone Will be saved to Zoom Team Chat. You can ask the host for more details."
     },
     "Messages will not be saved to Zoom Team Chat.": {
         "de": "Nachrichten werden nicht im Zoom Team Chat gespeichert.",
@@ -1193,463 +1131,42 @@
         "tr": "Mesajlar Zoom Team Chat'e kaydedilmeyecek.",
         "vi": "Tin nhắn sẽ không được lưu vào Zoom Team Chat.",
         "zh-CN": "消息将不会保存到Zoom Team Chat。",
-        "zh-TW": "訊息將不會儲存至Zoom Team Chat。",
-        "sv": "Meddelanden kommer inte att sparas på Zoom Team Chat."
+        "zh-TW": "訊息將不會儲存至Zoom Team Chat。"
     },
     "Enable Meeting Summary with AI Companion": {
-        "de": "Enable Meeting Summary with AI Companion",
+        "de": "Meeting-Zusammenfassung mit AI Companion aktivieren",
         "en": "Enable Meeting Summary with AI Companion",
-        "es": "Enable Meeting Summary with AI Companion",
-        "fr": "Enable Meeting Summary with AI Companion",
-        "id": "Enable Meeting Summary with AI Companion",
-        "it": "Enable Meeting Summary with AI Companion",
-        "jp": "Enable Meeting Summary with AI Companion",
-        "ko": "Enable Meeting Summary with AI Companion",
-        "nl": "Enable Meeting Summary with AI Companion",
-        "pl": "Enable Meeting Summary with AI Companion",
-        "pt": "Enable Meeting Summary with AI Companion",
-        "ru": "Enable Meeting Summary with AI Companion",
-        "tr": "Enable Meeting Summary with AI Companion",
-        "vi": "Enable Meeting Summary with AI Companion",
-        "zh-CN": "Enable Meeting Summary with AI Companion",
-        "zh-TW": "Enable Meeting Summary with AI Companion",
-        "sv": "Enable Meeting Summary with AI Companion"
+        "es": "Habilitar el Resumen de la reunión con AI Companion",
+        "fr": "Activer la synthèse de la réunion avec AI Companion",
+        "id": "Aktifkan Ringkasan Rapat dengan AI Companion",
+        "it": "Abilita Riepilogo riunione con AI Companion",
+        "jp": "AI Companion によるミーティング要約を有効にする",
+        "ko": "AI Companion을 사용한 회의 요약 활성화",
+        "nl": "Samenvatting van vergadering met AI Companion inschakelen",
+        "pl": "Włącz podsumowanie spotkania z asystentem AI Companion",
+        "pt": "Habilitar o Resumo da Reunião com o AI Companion",
+        "ru": "Включить сводку конференции с AI Companion",
+        "tr": "AI Companion ile Toplantı Özetini Etkinleştir",
+        "vi": "Bật Tóm tắt cuộc họp bằng AI Companion",
+        "zh-CN": "启用使用AI Companion的会议摘要",
+        "zh-TW": "啟用使用AI Companion的會議摘要"
     },
     "Enable Meeting Summary with AI Companion for your account": {
-        "de": "Enable Meeting Summary with AI Companion for your account",
+        "de": "Meeting-Zusammenfassung mit AI Companion für Ihr Konto aktivieren",
         "en": "Enable Meeting Summary with AI Companion for your account",
-        "es": "Enable Meeting Summary with AI Companion for your account",
-        "fr": "Enable Meeting Summary with AI Companion for your account",
-        "id": "Enable Meeting Summary with AI Companion for your account",
-        "it": "Enable Meeting Summary with AI Companion for your account",
-        "jp": "Enable Meeting Summary with AI Companion for your account",
-        "ko": "Enable Meeting Summary with AI Companion for your account",
-        "nl": "Enable Meeting Summary with AI Companion for your account",
-        "pl": "Enable Meeting Summary with AI Companion for your account",
-        "pt": "Enable Meeting Summary with AI Companion for your account",
-        "ru": "Enable Meeting Summary with AI Companion for your account",
-        "tr": "Enable Meeting Summary with AI Companion for your account",
-        "vi": "Enable Meeting Summary with AI Companion for your account",
-        "zh-CN": "Enable Meeting Summary with AI Companion for your account",
-        "zh-TW": "Enable Meeting Summary with AI Companion for your account",
-        "sv": "Enable Meeting Summary with AI Companion for your account"
-    },
-    "Enable Smart Recording with AI Companion": {
-        "de": "Enable Smart Recording with AI Companion",
-        "en": "Enable Smart Recording with AI Companion",
-        "es": "Enable Smart Recording with AI Companion",
-        "fr": "Enable Smart Recording with AI Companion",
-        "id": "Enable Smart Recording with AI Companion",
-        "it": "Enable Smart Recording with AI Companion",
-        "jp": "Enable Smart Recording with AI Companion",
-        "ko": "Enable Smart Recording with AI Companion",
-        "nl": "Enable Smart Recording with AI Companion",
-        "pl": "Enable Smart Recording with AI Companion",
-        "pt": "Enable Smart Recording with AI Companion",
-        "ru": "Enable Smart Recording with AI Companion",
-        "tr": "Enable Smart Recording with AI Companion",
-        "vi": "Enable Smart Recording with AI Companion",
-        "zh-CN": "Enable Smart Recording with AI Companion",
-        "zh-TW": "Enable Smart Recording with AI Companion",
-        "sv": "Enable Smart Recording with AI Companion"
-    },
-    "Settings": {
-        "de": "Settings",
-        "en": "Settings",
-        "es": "Settings",
-        "fr": "Settings",
-        "id": "Settings",
-        "it": "Settings",
-        "jp": "Settings",
-        "ko": "Settings",
-        "nl": "Settings",
-        "pl": "Settings",
-        "pt": "Settings",
-        "ru": "Settings",
-        "tr": "Settings",
-        "vi": "Settings",
-        "zh-CN": "Settings",
-        "zh-TW": "Settings",
-        "sv": "Settings"
-    },
-    "You received a request to record to the cloud": {
-        "de": "Sie haben eine Cloud-Aufzeichnungsanfrage erhalten",
-        "en": "You received a request to record to the cloud",
-        "es": "Ha recibido una solicitud para grabar en la nube",
-        "fr": "Vous avez reçu une demande d’enregistrement dans le cloud",
-        "id": "Anda menerima permintaan perekaman ke cloud",
-        "it": "Hai ricevuto una richiesta di registrazione nel cloud",
-        "jp": "クラウドへのレコーディングのリクエストを受け取りました",
-        "ko": "클라우드에 녹화하라는 요청을 받았습니다",
-        "nl": "U hebt een verzoek ontvangen om op te nemen in de cloud",
-        "pl": "Otrzymano prośbę o nagrywanie w chmurze",
-        "pt": "Você recebeu uma solicitação para gravar na nuvem",
-        "ru": "Вы получили запрос на запись в облако",
-        "tr": "Buluta kayıt yapma isteği aldınız",
-        "vi": "Bạn đã nhận được yêu cầu ghi lại trên đám mây",
-        "zh-CN": "你已收到录制到云端的请求",
-        "zh-TW": "您已收到錄製到雲端的要求",
-        "sv": "Du har fått en begäran om att spela in till molnet"
-    },
-    "webinar": {
-        "de": "Webinar",
-        "en": "webinar",
-        "es": "Seminario web",
-        "fr": "Webinaire",
-        "id": "Webinar",
-        "it": "Webinar",
-        "jp": "ウェビナー",
-        "ko": "웨비나",
-        "nl": "Webinar",
-        "pl": "Webinar",
-        "pt": "Webinar",
-        "ru": "Вебинар",
-        "tr": "Web Semineri",
-        "vi": "Hội thảo trực tuyến",
-        "zh-CN": "网络研讨会",
-        "zh-TW": "網路研討會",
-        "sv": "Webbinarium"
-    },
-    "meeting": {
-        "de": "Meeting",
-        "en": "meeting",
-        "es": "Reunión",
-        "fr": "Réunion",
-        "id": "Rapat",
-        "it": "Riunione",
-        "jp": "ミーティング",
-        "ko": "회의",
-        "nl": "Vergadering",
-        "pl": "Spotkanie",
-        "pt": "Reunião",
-        "ru": "Конференция",
-        "tr": "Toplantı",
-        "vi": "Cuộc họp",
-        "zh-CN": "会议",
-        "zh-TW": "會議",
-        "sv": "Möte"
-    },
-    "Anyone with access to the recording, livestream, or transcript may view or share them with others.": {
-        "de": "Jeder mit Zugriff auf die Aufzeichnung, den Livestream oder das Transkript kann diese anzeigen oder an andere freigeben.",
-        "en": "Anyone with access to the recording, livestream, or transcript may view or share them with others.",
-        "es": "Cualquier persona con acceso a la grabación, a la transmisión en directo o a la transcripción puede verlas o compartirlas con otros.",
-        "fr": "Toute personne ayant accès à l’enregistrement, à la diffusion en direct ou à la transcription peut les visionner ou les partager avec d’autres personnes.",
-        "id": "Siapa saja yang memiliki akses ke rekaman, streaming langsung, atau transkrip dapat melihat atau membagikannya dengan orang lain.",
-        "it": "Chiunque disponga dell’accesso alla registrazione, alla diretta streaming o alla trascrizione può visualizzarla e condividerla con altri.",
-        "jp": "そのレコーディング、ライブストリーム、または文字起こしへのアクセス権がある人は誰でも、それらを視聴したり他の人々と共有したりできます。",
-        "ko": "녹화, 라이브 스트리밍 또는 대화 내용에 액세스할 수 있는 사람은 누구나 이를 보거나 다른 사람과 공유할 수 있습니다.",
-        "nl": "Iedereen met toegang tot de opname, livestream of het transcript kan deze bekijken of met anderen delen.",
-        "pl": "Każdy, kto ma dostęp do nagrania, transmisji na żywo lub transkrypcji, może je wyświetlać lub udostępniać innym.",
-        "pt": "Qualquer pessoa com acesso à gravação, transmissão ao vivo ou transcrição poderá visualizá-la ou compartilhá-la com outras pessoas.",
-        "ru": "Все, у кого есть доступ к записи, прямой трансляции или расшифровке, могут смотреть их и делиться ими с другими пользователями.",
-        "tr": "Kayda, canlı yayına veya döküme erişimi olan herkes bunları görüntüleyebilir veya başkalarıyla paylaşabilir.",
-        "vi": "Bất kỳ ai có quyền truy cập vào bản ghi, buổi phát trực tiếp hoặc bản phiên âm đều có thể xem hoặc chia sẻ với những người khác.",
-        "zh-CN": "任何有权访问该录制文件、直播或转录文字的人都可以进行查看或将其与其他人共享。",
-        "zh-TW": "任何有權存取該錄製檔案、直播或轉錄文字的人，均可進行檢視或將其分享給其他人。",
-        "sv": "Alla som har åtkomst till inspelningen, livestreamen eller avskriften kan se eller dela dem med andra."
-    },
-    "Anyone with access to the recording or transcript may view or share them with others.": {
-        "de": "Jeder mit Zugriff auf die Aufzeichnung oder das Transkript kann diese anzeigen oder mit anderen teilen.",
-        "en": "Anyone with access to the recording or transcript may view or share them with others.",
-        "es": "Cualquier persona con acceso a la grabación o a la transcripción puede verlas o compartirlas con otros.",
-        "fr": "Toute personne ayant accès à l’enregistrement ou à la transcription peut les visionner ou les partager avec d’autres personnes.",
-        "id": "Siapa saja yang memiliki akses ke rekaman atau transkrip dapat melihat atau membagikannya dengan orang lain.",
-        "it": "Chiunque disponga dell’accesso alla registrazione o alla trascrizione può visualizzarla e condividerla con altri.",
-        "jp": "そのレコーディングまたは文字起こしへのアクセス権がある人は誰でも、それらを視聴したり他の人々と共有したりできます。",
-        "ko": "녹화 또는 대화 내용에 액세스할 수 있는 사람은 누구나 이를 보거나 다른 사람과 공유할 수 있습니다.",
-        "nl": "Iedereen met toegang tot de opname of het transcript kan deze bekijken of met anderen delen.",
-        "pl": "Każdy, kto ma dostęp do nagrania lub transkrypcji, może je wyświetlać lub udostępniać innym.",
-        "pt": "Qualquer pessoa com acesso à gravação ou transcrição poderá visualizá-la ou compartilhá-la com outras pessoas.",
-        "ru": "Все, у кого есть доступ к записи или расшифровке, могут смотреть их и делиться ими с другими пользователями.",
-        "tr": "Kayda veya döküme erişimi olan herkes bunları görüntüleyebilir veya başkalarıyla paylaşabilir.",
-        "vi": "Bất kỳ ai có quyền truy cập vào bản ghi hoặc bản phiên âm đều có thể xem hoặc chia sẻ với những người khác.",
-        "zh-CN": "任何有权访问该录制文件或转录文字的人都可以进行查看或将其与其他人共享。",
-        "zh-TW": "任何有權存取該錄製檔案或轉錄文字的人，均可進行檢視或將其分享給其他人。",
-        "sv": "Alla som har åtkomst till inspelningen eller avskriften kan se eller dela dem med andra."
-    },
-    "This meeting is being recorded and livestreamed.": {
-        "de": "Dieses Meeting wird aufgezeichnet und per Livestream übertragen.",
-        "en": "This meeting is being recorded and livestreamed.",
-        "es": "La reunión se está grabando y transmitiendo en directo.",
-        "fr": "Cette réunion est enregistrée et diffusée en direct.",
-        "id": "Rapat ini sedang direkam dan di-streaming langsung.",
-        "it": "Questa riunione è in fase di registrazione e trasmissione in diretta streaming.",
-        "jp": "このミーティングはレコーディングとライブ配信が行われています。",
-        "ko": "이 회의는 녹화 및 라이브 스트리밍 중입니다.",
-        "nl": "Deze vergadering wordt opgenomen en gelivestreamd.",
-        "pl": "To spotkanie jest nagrywane i transmitowane na żywo.",
-        "pt": "Esta reunião está sendo gravada e transmitida ao vivo.",
-        "ru": "Эта конференция записывается и транслируется в прямом эфире.",
-        "tr": "Bu toplantı kaydediliyor ve canlı yayınlanıyor.",
-        "vi": "Cuộc họp này đang được ghi lại và phát trực tiếp.",
-        "zh-CN": "此会议正在录制和直播中。",
-        "zh-TW": "正在錄製和直播此會議。",
-        "sv": "Detta möte spelas in och livestreamas."
-    },
-    "Anyone with access to the recording or livestream may view or share them with others.": {
-        "de": "Jeder mit Zugriff auf die Aufzeichnung oder den Livestream kann diese anzeigen oder an andere freigeben.",
-        "en": "Anyone with access to the recording or livestream may view or share them with others.",
-        "es": "Cualquier persona con acceso a la grabación o a la transmisión en directo puede verlas o compartirlas con otros.",
-        "fr": "Toute personne ayant accès à l’enregistrement ou à la diffusion en direct peut les visionner ou les partager avec d’autres personnes.",
-        "id": "Siapa saja yang memiliki akses ke rekaman atau streaming langsung dapat melihat atau membagikannya dengan orang lain.",
-        "it": "Chiunque disponga dell’accesso alla registrazione o alla diretta streaming può guardarla o condividerla con altri.",
-        "jp": "そのレコーディングまたはライブストリームへのアクセス権がある人は誰でも、それらを視聴したり他の人々と共有したりできます。",
-        "ko": "녹화 또는 라이브 스트리밍에 액세스할 수 있는 사람은 누구나 보거나 다른 사람과 공유할 수 있습니다.",
-        "nl": "Iedereen met toegang tot de opname of livestream kan deze bekijken of met anderen delen.",
-        "pl": "Każdy, kto ma dostęp do nagrania lub transmisji na żywo, może je wyświetlać lub udostępniać innym.",
-        "pt": "Qualquer pessoa com acesso à gravação ou transmissão ao vivo poderá visualizá-la ou compartilhá-la com outras pessoas.",
-        "ru": "Все, у кого есть доступ к записи или прямой трансляции, могут смотреть их и делиться ими с другими пользователями.",
-        "tr": "Kayda veya canlı yayına erişimi olan herkes bunları görüntüleyebilir veya başkalarıyla paylaşabilir.",
-        "vi": "Bất kỳ ai có quyền truy cập vào bản ghi hoặc buổi phát trực tiếp đều có thể xem hoặc chia sẻ với những người khác.",
-        "zh-CN": "任何有权访问该录制文件或直播的人都可以进行查看或将其与其他人共享。",
-        "zh-TW": "任何有權存取該錄製檔案或直播的人，均可進行檢視或將其分享給其他人。",
-        "sv": "Alla som har åtkomst till inspelningen eller livestreamen kan se eller dela dem med andra."
-    },
-    "This meeting is being transcribed for AI Companion.": {
-        "de": "Dieses Meeting wird für AI Companion transkribiert.",
-        "en": "This meeting is being transcribed for AI Companion.",
-        "es": "La reunión se está transcribiendo para AI Companion.",
-        "fr": "Cette réunion est en cours de transcription pour AI Companion.",
-        "id": "Rapat ini sedang ditranskripsikan untuk AI Companion.",
-        "it": "Questa riunione viene trascritta per AI Companion.",
-        "jp": "このミーティングは、AI Companion 用に文字起こしが行われています。",
-        "ko": "이 회의는 AI Companion을 위해 기록되고 있습니다.",
-        "nl": "Deze vergadering wordt getranscribeerd voor AI Companion.",
-        "pl": "Transkrypcja tego spotkania jest również tworzona do celów asystenta AI Companion.",
-        "pt": "Esta reunião está sendo transcrita para o AI Companion.",
-        "ru": "Выполняется расшифровка конференции для AI Companion.",
-        "tr": "Bu toplantının AI Companion için dökümü alınıyor.",
-        "vi": "Cuộc họp này đang được phiên âm cho AI Companion.",
-        "zh-CN": "正在转录此会议以便你使用AI Companion功能。",
-        "zh-TW": "正在轉錄此會議以便您使用AI Companion功能。",
-        "sv": "Detta möte transkriberas för AI Companion."
-    },
-    "This meeting is being recorded.": {
-        "de": "Dieses Meeting wird aufgezeichnet",
-        "en": "This meeting is being recorded.",
-        "es": "La reunión se está grabando",
-        "fr": "Cette réunion est enregistrée",
-        "id": "Rapat ini sedang direkam",
-        "it": "La riunione è in fase di registrazione",
-        "jp": "このミーティングはレコーディングされています",
-        "ko": "이 회의는 녹화되고 있습니다",
-        "nl": "Deze vergadering wordt opgenomen",
-        "pl": "Spotkanie jest nagrywane",
-        "pt": "Esta reunião está sendo gravada",
-        "ru": "Идет запись этой конференции",
-        "tr": "Bu toplantı kaydediliyor",
-        "vi": "Cuộc họp này đang được ghi lại",
-        "zh-CN": "此会议正在录制中",
-        "zh-TW": "正在錄製本會議",
-        "sv": "Detta möte spelas in"
-    },
-    "Anyone with access to the recording may view or share it with others.": {
-        "de": "Jeder mit Zugriff auf die Aufzeichnung kann sie anzeigen oder an andere freigeben.",
-        "en": "Anyone with access to the recording may view or share it with others.",
-        "es": "Cualquier persona con acceso a la grabación puede verla o compartirla con otros.",
-        "fr": "Toute personne ayant accès à l’enregistrement peut le visionner ou le partager avec d’autres personnes.",
-        "id": "Siapa saja yang memiliki akses ke rekaman dapat melihat atau membagikannya dengan orang lain.",
-        "it": "Chiunque disponga dell’accesso alla registrazione può guardarla o condividerla con altri.",
-        "jp": "そのレコーディングへのアクセス権がある人は誰でも、それを視聴したり他の人々と共有したりできます。",
-        "ko": "녹화에 액세스할 수 있는 사람은 누구나 보거나 다른 사람과 공유할 수 있습니다.",
-        "nl": "Iedereen met toegang tot de opname kan deze bekijken of met anderen delen.",
-        "pl": "Każdy, kto ma dostęp do nagrania, może je wyświetlać lub udostępniać innym.",
-        "pt": "Qualquer pessoa com acesso à gravação poderá visualizá-la ou compartilhá-la com outras pessoas.",
-        "ru": "Все, у кого есть доступ к записи, могут смотреть ее и делиться ей с другими пользователями.",
-        "tr": "Kayda erişimi olan herkes bunu görüntüleyebilir veya başkalarıyla paylaşabilir.",
-        "vi": "Bất kỳ ai có quyền truy cập vào bản ghi đều có thể xem hoặc chia sẻ với những người khác.",
-        "zh-CN": "任何有权访问该录制文件的人都可以进行查看或将其与其他人共享。",
-        "zh-TW": "任何有權存取該錄製檔案的人，均可進行檢視或將其分享給其他人。",
-        "sv": "Alla som har åtkomst till inspelningen kan se eller dela den med andra."
-    },
-    "This meeting is being transcribed.": {
-        "de": "Dieses Meeting wird transkribiert.",
-        "en": "This meeting is being transcribed.",
-        "es": "La reunión se está transcribiendo.",
-        "fr": "Cette réunion est en cours de transcription.",
-        "id": "Rapat ini sedang ditranskripsikan.",
-        "it": "Questa riunione è in fase di trascrizione.",
-        "jp": "このミーティングは文字起こしが行われています。",
-        "ko": "이 회의는 기록되고 있습니다.",
-        "nl": "Deze vergadering wordt getranscribeerd.",
-        "pl": "Do tego spotkania tworzona jest transkrypcja.",
-        "pt": "Esta reunião está sendo transcrita.",
-        "ru": "Выполняется расшифровка конференции.",
-        "tr": "Bu toplantının dökümü alınıyor.",
-        "vi": "Cuộc họp này đang được phiên âm.",
-        "zh-CN": "此会议正在转录中。",
-        "zh-TW": "正在轉錄此會議。",
-        "sv": "Detta möte håller på att transkriberas."
-    },
-    "This meeting is being livestreamed.": {
-        "de": "Dieses Meeting wird per Livestream übertragen.",
-        "en": "This meeting is being livestreamed.",
-        "es": "La reunión se está transmitiendo en directo.",
-        "fr": "Cette réunion est diffusée en direct.",
-        "id": "Rapat ini sedang di-streaming langsung.",
-        "it": "Questa riunione è in fase di trasmissione in diretta streaming.",
-        "jp": "このミーティングはライブ配信されています。",
-        "ko": "이 회의는 라이브 스트리밍 중입니다.",
-        "nl": "Deze vergadering wordt gelivestreamd.",
-        "pl": "Z tego spotkania prowadzona jest transmisja na żywo.",
-        "pt": "Esta reunião está sendo transmitida ao vivo.",
-        "ru": "Идет прямая трансляция этой конференции.",
-        "tr": "Bu toplantı canlı yayınlanıyor.",
-        "vi": "Cuộc họp này đang được phát trực tiếp.",
-        "zh-CN": "此会议正在直播中。",
-        "zh-TW": "正在直播此會議。",
-        "sv": "Detta möte livestreamas."
-    },
-    "A participant has enabled Closed Captioning": {
-        "de": "Ein Teilnehmer hat Untertitel aktiviert",
-        "en": "A participant has enabled Closed Captioning",
-        "es": "Un participante ha habilitado los subtítulos",
-        "fr": "Un participant a activé le sous-titrage",
-        "id": "Seorang peserta telah mengaktifkan Teks Tertutup",
-        "it": "Un partecipante ha abilitato i sottotitoli",
-        "jp": "参加者が字幕を有効にしました",
-        "ko": "참가자가 자막을 사용하도록 설정했습니다",
-        "nl": "Een deelnemer heeft ondertiteling ingeschakeld",
-        "pl": "Uczestnik umożliwił wyłączenie napisów",
-        "pt": "Um participante habilitou a legenda oculta",
-        "ru": "Участник включил субтитры по требованию",
-        "tr": "Bir katılımcı alt yazı özelliğini etkinleştirdi",
-        "vi": "Người tham gia đã bật Phụ đề rời",
-        "zh-CN": "参会者已启用字幕",
-        "zh-TW": "與會者已啟用字幕",
-        "sv": "En deltagare har aktiverat undertext"
-    },
-    "Live Transcription (Closed Captioning) has been enabled": {
-        "de": "Live-Transkription (Untertitel) wurde aktiviert",
-        "en": "Live Transcription (Closed Captioning) has been enabled",
-        "es": "Se ha habilitado la transcripción en directo (subtítulos)",
-        "fr": "La transcription en direct (sous-titres) a été activée",
-        "id": "Transkripsi Langsung (Teks Tertutup) telah diaktifkan",
-        "it": "La trascrizione simultanea (sottotitoli) è stata abilitata",
-        "jp": "ライブ文字起こし（字幕）が有効になりました",
-        "ko": "실시간 대화 내용(선택 자막)이 활성화되었습니다",
-        "nl": "Live transcriptie (ondertiteling) is ingeschakeld",
-        "pl": "Transkrypcja na żywo (napisy) została włączona",
-        "pt": "A transcrição ao vivo (legenda oculta) foi habilitada",
-        "ru": "Расшифровка в реальном времени (субтитры по требованию) включена",
-        "tr": "Canlı Döküm (Alt Yazı Oluşturma) etkinleştirildi",
-        "vi": "Chép lại trực tiếp (Phụ đề rời) đã được bật",
-        "zh-CN": "已启用实时转录（字幕）",
-        "zh-TW": "已啟用即時轉錄文字（字幕）",
-        "sv": "Liveavskrift (undertext) har aktiverats"
-    },
-    "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).": {
-        "de": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "en": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "es": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "fr": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "id": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "it": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "jp": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "ko": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "nl": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "pl": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "pt": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "ru": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "tr": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "vi": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "zh-CN": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "zh-TW": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting).",
-        "sv": "The transcript from this meeting may be saved and shared with apps and others by participants with relevant permissions (based on the settings configured for this meeting)."
-    },
-    "Who can see this transcript? Recording on": {
-        "de": "Who can see this transcript? Recording on",
-        "en": "Who can see this transcript? Recording on",
-        "es": "Who can see this transcript? Recording on",
-        "fr": "Who can see this transcript? Recording on",
-        "id": "Who can see this transcript? Recording on",
-        "it": "Who can see this transcript? Recording on",
-        "jp": "Who can see this transcript? Recording on",
-        "ko": "Who can see this transcript? Recording on",
-        "nl": "Who can see this transcript? Recording on",
-        "pl": "Who can see this transcript? Recording on",
-        "pt": "Who can see this transcript? Recording on",
-        "ru": "Who can see this transcript? Recording on",
-        "tr": "Who can see this transcript? Recording on",
-        "vi": "Who can see this transcript? Recording on",
-        "zh-CN": "Who can see this transcript? Recording on",
-        "zh-TW": "Who can see this transcript? Recording on",
-        "sv": "Who can see this transcript? Recording on"
-    },
-    "Who can see this transcript?": {
-        "de": "Wer kann diese Transkription sehen?",
-        "en": "Who can see this transcript?",
-        "es": "¿Quién puede ver esta transcripción?",
-        "fr": "Qui peut voir cette transcription ?",
-        "id": "Siapa yang dapat melihat transkrip ini?",
-        "it": "Chi può vedere questa trascrizione?",
-        "jp": "この文字起こしは誰に表示されますか？",
-        "ko": "이 대화 내용을 볼 수 있는 사람은 누구입니까?",
-        "nl": "Wie kan dit transcript zien?",
-        "pl": "Kto może zobaczyć tę transkrypcję?",
-        "pt": "Quem pode ver esta transcrição?",
-        "ru": "Кто может видеть эту расшифровку?",
-        "tr": "Bu dökümü kimler görebilir?",
-        "vi": "Ai có thể xem bản chép này?",
-        "zh-CN": "谁能看到此转录文字？",
-        "zh-TW": "誰能夠看到此轉錄文字？",
-        "sv": "Vem kan se den här avskriften?"
-    },
-    "To be able to turn on your audio and video, please acknowledge you want to stay in this meeting.": {
-        "de": "Bestätigen Sie, dass Sie an diesem Meeting teilnehmen möchten, damit Ihr Audio und Video eingeschaltet werden können.",
-        "en": "To be able to turn on your audio and video, please acknowledge you want to stay in this meeting.",
-        "es": "Para poder activar el audio y el vídeo, confirme que desea permanecer en esta reunión.",
-        "fr": "Pour pouvoir activer l’audio et la vidéo, veuillez confirmer que vous souhaitez rester dans cette réunion.",
-        "id": "Agar dapat mengaktifkan audio dan video Anda, tunjukkan bahwa Anda ingin tetap berada dalam rapat ini.",
-        "it": "Per poter attivare l’audio e il video, conferma di voler restare in questa riunione.",
-        "jp": "オーディオとビデオをオンにするには、このミーティングに引き続き参加することを表明してください。",
-        "ko": "오디오 및 비디오를 켜려면 이 회의에 계속 참석하고 싶다는 의사를 표시해 주세요.",
-        "nl": "Als u uw audio en video wilt inschakelen, moet u bevestigen dat u in deze vergadering wilt blijven.",
-        "pl": "Aby móc włączyć dźwięk i wideo, potwierdź, że chcesz pozostać na tym spotkaniu.",
-        "pt": "Para poder ativar seu áudio e vídeo, reconheça que deseja permanecer nesta reunião.",
-        "ru": "Чтобы включить звук и видео, подтвердите, что хотите остаться в этой конференции.",
-        "tr": "Sesinizi ve videonuzu açabilmek için lütfen bu toplantıda kalmak istediğinizi belirtin.",
-        "vi": "Để có thể bật âm thanh và video của bạn, vui lòng xác nhận rằng bạn muốn ở lại cuộc họp này.",
-        "zh-CN": "为了能够打开你的音频和视频，请确认你希望留在此会议中。",
-        "zh-TW": "為能開啟您的音訊和視訊，請確認您想留在此會議中。",
-        "sv": "Om du vill aktivera ljud och bild måste du bekräfta att du vill stanna kvar i detta möte."
-    },
-    "It's also being transcribed.": {
-        "de": "It's also being transcribed.",
-        "en": "It's also being transcribed.",
-        "es": "It's also being transcribed.",
-        "fr": "It's also being transcribed.",
-        "id": "It's also being transcribed.",
-        "it": "It's also being transcribed.",
-        "jp": "It's also being transcribed.",
-        "ko": "It's also being transcribed.",
-        "nl": "It's also being transcribed.",
-        "pl": "It's also being transcribed.",
-        "pt": "It's also being transcribed.",
-        "ru": "It's also being transcribed.",
-        "tr": "It's also being transcribed.",
-        "vi": "It's also being transcribed.",
-        "zh-CN": "It's also being transcribed.",
-        "zh-TW": "It's also being transcribed.",
-        "sv": "It's also being transcribed."
-    },
-    "It's also being transcribed for AI Companion.": {
-        "de": "It's also being transcribed for AI Companion.",
-        "en": "It's also being transcribed for AI Companion.",
-        "es": "It's also being transcribed for AI Companion.",
-        "fr": "It's also being transcribed for AI Companion.",
-        "id": "It's also being transcribed for AI Companion.",
-        "it": "It's also being transcribed for AI Companion.",
-        "jp": "It's also being transcribed for AI Companion.",
-        "ko": "It's also being transcribed for AI Companion.",
-        "nl": "It's also being transcribed for AI Companion.",
-        "pl": "It's also being transcribed for AI Companion.",
-        "pt": "It's also being transcribed for AI Companion.",
-        "ru": "It's also being transcribed for AI Companion.",
-        "tr": "It's also being transcribed for AI Companion.",
-        "vi": "It's also being transcribed for AI Companion.",
-        "zh-CN": "It's also being transcribed for AI Companion.",
-        "zh-TW": "It's also being transcribed for AI Companion.",
-        "sv": "It's also being transcribed for AI Companion."
+        "es": "Habilitar el Resumen de la reunión con AI Companion para su cuenta",
+        "fr": "Activer la synthèse de la réunion avec AI Companion pour votre compte",
+        "id": "Aktifkan Ringkasan Rapat dengan AI Companion untuk akun Anda",
+        "it": "Abilita Riepilogo riunione con AI Companion per il tuo account",
+        "jp": "アカウントに対して AI Companion によるミーティング要約を有効にする",
+        "ko": "계정에 대해 AI Companion을 사용한 회의 요약 활성화",
+        "nl": "Samenvatting van vergadering met AI Companion inschakelen voor uw account",
+        "pl": "Włącz podsumowanie spotkania z asystentem AI Companion na swoim koncie",
+        "pt": "Habilitar o Resumo da Reunião com o AI Companion para sua conta",
+        "ru": "Включить сводку конференции с AI Companion для вашей учетной записи",
+        "tr": "Hesabınız için AI Companion ile Toplantı Özeti'ni etkinleştirin",
+        "vi": "Bật Tóm tắt cuộc họp bằng AI Companion cho tài khoản của bạn",
+        "zh-CN": "为你的账户启用使用AI Companion的会议摘要",
+        "zh-TW": "啟用您帳戶的使用AI Companion的會議摘要"
     }
 }

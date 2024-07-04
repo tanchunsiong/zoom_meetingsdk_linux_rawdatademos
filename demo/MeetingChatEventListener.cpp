@@ -22,8 +22,6 @@ MeetingChatEventListener::MeetingChatEventListener(void(*turnOnSendVideoAndAudio
 
 	turnOnSendVideoAndAudio_ = turnOnSendVideoAndAudio;
 	turnOffSendVideoAndAudio_ = turnOffSendVideoAndAudio;
-
-
 }
 
 void MeetingChatEventListener::onChatMsgNotifcation(IChatMsgInfo* chatMsg, const zchar_t* content)
@@ -34,7 +32,6 @@ void MeetingChatEventListener::onChatMsgNotifcation(IChatMsgInfo* chatMsg, const
 	else if (ZCharStringMatches(chatMsg->GetContent(), "turnOff")) {
 		turnOffSendVideoAndAudio_();
 	}
-
 	std::cout<<"onChatMsgNotifcation: " << chatMsg->GetSenderDisplayName() << " says " << chatMsg->GetContent() << endl;
 
 }
