@@ -322,7 +322,6 @@ void turnOnSendVideoAndAudio() {
 
 		//m_pSettingService->GetAudioSettings()->GetMicList();
 		//m_pSettingService->GetAudioSettings()->UseDefaultSystemMic();
-	
 	}
 }
 void turnOffSendVideoandAudio() {
