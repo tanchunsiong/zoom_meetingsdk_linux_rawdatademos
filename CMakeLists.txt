@@ -5,3 +5,6 @@ project(MasterProject)
 
 # Add subdirectories for each project
 add_subdirectory(AllInOneExample/demo)
+add_subdirectory(ChatExample/demo)
+add_subdirectory(GetRawVideoAndAudioExample/demo)
+add_subdirectory(SendRawVideoAndAudioExample/demo)
