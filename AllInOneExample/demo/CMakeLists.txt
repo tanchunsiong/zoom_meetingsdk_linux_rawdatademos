@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(meetingSDKDemo CXX)
+set(TARGET_NAME meetingSDKDemo)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_definitions(-std=c++11)
 set(CMAKE_BUILD_TYPE Debug)
@@ -16,6 +18,11 @@ find_package(PkgConfig REQUIRED)
 #include_directories(${GTKMM_INCLUDE_DIRS})
 #link_directories(${GTKMM_LIBRARY_DIRS})
 #add_definitions(${GTKMM_CFLAGS_OTHER})
+
+
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+pkg_check_modules(GIO REQUIRED gio-2.0)
+
 find_package(ZLIB REQUIRED)
 
 
@@ -46,14 +53,19 @@ include_directories(/usr/lib64/glib-2.0/include/)
 # Add FFmpeg include directories
 # include_directories(${FFMPEG_INCLUDE_DIRS})
 
+include_directories(${GLIB_INCLUDE_DIRS} ${GIO_INCLUDE_DIRS})
+
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/zoom_meeting_sdk)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/zoom_meeting_sdk/qt_libs/Qt/lib)
+link_directories(${GLIB_LIBRARY_DIRS} ${GIO_LIBRARY_DIRS})
 
 
-add_executable(meetingSDKDemo 
-              ${CMAKE_CURRENT_SOURCE_DIR}/meeting_sdk_demo.cpp
+add_definitions(${GLIB_CFLAGS_OTHER} ${GIO_CFLAGS_OTHER})
+
+add_executable(${TARGET_NAME} 
+             ${CMAKE_CURRENT_SOURCE_DIR}/meeting_sdk_demo.cpp
               ${CMAKE_CURRENT_SOURCE_DIR}/MeetingChatEventListener.h 
               ${CMAKE_CURRENT_SOURCE_DIR}/MeetingChatEventListener.cpp
               ${CMAKE_CURRENT_SOURCE_DIR}/MeetingReminderEventListener.h
@@ -76,22 +88,28 @@ add_executable(meetingSDKDemo
               ${CMAKE_CURRENT_SOURCE_DIR}/MeetingShareCtrlEventListener.cpp
               )
 
-target_link_libraries(meetingSDKDemo gcc_s gcc)
-target_link_libraries(meetingSDKDemo meetingsdk)
-target_link_libraries(meetingSDKDemo glib-2.0)
+
+
+
+target_link_libraries(${TARGET_NAME} gcc_s gcc)
+target_link_libraries(${TARGET_NAME} meetingsdk)
+target_link_libraries(${TARGET_NAME} glib-2.0)
+
 #no longer needed for headless demo
-#target_link_libraries(meetingSDKDemo ${GTKMM_LIBRARIES})
-target_link_libraries(meetingSDKDemo curl)
-target_link_libraries(meetingSDKDemo pthread)
+#target_link_libraries(${TARGET_NAME} ${GTKMM_LIBRARIES})
+target_link_libraries(${TARGET_NAME} curl)
+target_link_libraries(${TARGET_NAME} pthread)
 
-#target_link_libraries(meetingSDKDemo z avcodec avformat avutil)
-#target_link_libraries(meetingSDKDemo lzma swresample swscale avfilter)
+#target_link_libraries(${TARGET_NAME} z avcodec avformat avutil)
+#target_link_libraries(${TARGET_NAME} lzma swresample swscale avfilter)
 #link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/ffmpeg)
-target_link_libraries(meetingSDKDemo PkgConfig::FFMPEG)
+target_link_libraries(${TARGET_NAME} PkgConfig::FFMPEG)
 
-#target_link_libraries(meetingSDKDemo ZLIB::ZLIB)
+#target_link_libraries(${TARGET_NAME} ZLIB::ZLIB)
 
-target_include_directories(meetingSDKDemo PRIVATE ${FFMPEG_INCLUDE_DIRS})
+target_link_libraries(${TARGET_NAME}  ${GLIB_LIBRARIES} ${GIO_LIBRARIES})
+
+target_include_directories(${TARGET_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS})
 
 # Create a symbolic link
 execute_process(COMMAND ln -s libmeetingsdk.so libmeetingsdk.so.1
@@ -101,6 +119,7 @@ execute_process(COMMAND ln -s libmeetingsdk.so libmeetingsdk.so.1
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.json ${CMAKE_CURRENT_SOURCE_DIR}/bin/config.json COPYONLY)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lib/zoom_meeting_sdk/ DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
 # //SendVideoRawData
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Big_Buck_Bunny_720_10s_10MB.mp4 DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin/)
 

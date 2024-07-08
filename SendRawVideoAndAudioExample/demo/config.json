@@ -1,0 +1,11 @@
+{
+  "meeting_number": "9898533313",
+  "token": "xxxxxx.yyyyyyyyy.zzzzzzzz",
+  "meeting_password": "005777",
+  "recording_token": "",
+  "remote_url": "https://asdc.cc/meeting-csdk/",
+  "useJWTTokenFromWebService": "true",
+  "useRecordingTokenFromWebService": "false",
+  "SendVideoRawData": "false",
+  "SendAudioRawData": "false"
+}
