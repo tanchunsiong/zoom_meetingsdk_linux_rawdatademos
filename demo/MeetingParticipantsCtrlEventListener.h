@@ -16,9 +16,9 @@ public:
 
 
 	/// \brief Callback event of notification of users who are in the meeting.
-/// \param lstUserID List of user IDs. 
-/// \param strUserList List of users in JSON format. This function is currently invalid, hereby only for reservations.
-/// \remarks Valid for both normal user and webinar attendee.
+	/// \param lstUserID List of user IDs. 
+	/// \param strUserList List of users in JSON format. This function is currently invalid, hereby only for reservations.
+	/// \remarks Valid for both normal user and webinar attendee.
 	virtual void onUserJoin(IList<unsigned int >* lstUserID, const zchar_t* strUserList = NULL);
 
 	/// \brief Callback event of notification of user who leaves the meeting.
@@ -34,7 +34,7 @@ public:
 	/// \brief Callback event of changing the state of the hand.
 	/// \param bLow TRUE indicates to put down the hand, FALSE indicates to raise the hand. 
 	/// \param userid Specify the user ID whose status changes.
-	virtual void onLowOrRaiseHandStatusChanged(bool bLow, unsigned int userid);;
+	virtual void onLowOrRaiseHandStatusChanged(bool bLow, unsigned int userid) ;
 
 	/// \brief Callback event of changing the screen name. 
 	/// \param userId list Specify the users ID whose status changes.
@@ -44,7 +44,7 @@ public:
 	/// \brief Callback event of changing the co-host.
 	/// \param userId Specify the user ID whose status changes. 
 	/// \param isCoHost TRUE indicates that the specified user is co-host.
-	virtual void onCoHostChangeNotification(unsigned int userId, bool isCoHost);;
+	virtual void onCoHostChangeNotification(unsigned int userId, bool isCoHost);
 
 	/// \brief Callback event of invalid host key.
 	virtual void onInvalidReclaimHostkey();
@@ -55,7 +55,7 @@ public:
 	/// \brief Callback event that the status of local recording changes.
 	/// \param userId Specify the user ID whose status changes. 
 	/// \param status Value of recording status. For more details, see \link RecordingStatus \endlink enum.
-	virtual void onLocalRecordingStatusChanged(unsigned int user_id, RecordingStatus status);;
+	virtual void onLocalRecordingStatusChanged(unsigned int user_id, RecordingStatus status);
 
 	/// \brief Callback event that lets participants rename themself.
 	/// \param bAllow True allow. If false, participants may not rename themselves.
@@ -77,8 +77,24 @@ public:
 	/// \param status Value of request local recording privilege status. For more details, see \link LocalRecordingRequestPrivilegeStatus \endlink enum.
 	virtual void onRequestLocalRecordingPrivilegeChanged(LocalRecordingRequestPrivilegeStatus status);
 
+	/// \brief Callback event that lets participants request that the host starts cloud recording.
+	/// \param bAllow True allow. If false, disallow.
+	virtual void onAllowParticipantsRequestCloudRecording(bool bAllow);
+
 	/// \brief Callback event that the user avatar path is updated in the meeting.
 	/// \param userID Specify the user ID whose avatar updated. 
 	virtual void onInMeetingUserAvatarPathUpdated(unsigned int userID);
+
+	/// \brief Callback event that participant profile status change.
+	/// \param bHide true means hide participant profile picture, false means show participant profile picture. 
+	virtual void onParticipantProfilePictureStatusChange(bool bHidden);
+
+	/// \brief Callback event that focus mode changed by host or co-host.
+	/// \param bEnabled True means the focus mode change to on. Otherwise off.
+	virtual void onFocusModeStateChanged(bool bEnabled);
+
+	/// \brief Callback event that that focus mode share type changed by host or co-host.
+	/// \param type Share type change.
+	virtual void onFocusModeShareTypeChanged(FocusModeShareType type);
 };
 

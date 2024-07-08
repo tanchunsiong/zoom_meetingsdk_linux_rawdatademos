@@ -6,5 +6,5 @@ qt_libs
 ## files
 libmeetingsdk.so
 libmpg123.so
-libturbojpeg.so
-libmeetingsdk.so
+libturbojpeg.so  (deprecated, no longer present in newer SDK versions)
+libmeetingsdk.so  (deprecated, no longer present in newer SDK versions)

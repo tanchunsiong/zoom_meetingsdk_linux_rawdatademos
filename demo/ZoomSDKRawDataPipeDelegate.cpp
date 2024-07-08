@@ -204,6 +204,14 @@ void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audi
 
 }
 
+void ZoomSDKRawDataPipeDelegate::onShareAudioRawDataReceived(AudioRawData* data_)
+{
+}
+
+void ZoomSDKRawDataPipeDelegate::onOneWayInterpreterAudioRawDataReceived(AudioRawData* data_, const zchar_t* pLanguageName)
+{
+}
+
 void ZoomSDKRawDataPipeDelegate::log(const wchar_t* format, ...)
 {
 	va_list args;
