@@ -1,28 +1,28 @@
-demo/bin/
-demo/build/
-demo/lib/ffmpeg/
-demo/lib/zoom_meeting_sdk/*.so
-demo/lib/zoom_meeting_sdk/*.1
-demo/lib/zoom_meeting_sdk/qt_libs/Qt/*
-demo/include/h/*
-demo/include/ffmpeg/
-demo/.vscode/
-demo/out
-demo/*.avi
-demo/*.mkv
+*./demo/bin/
+*./demo/build/
+*./demo/lib/ffmpeg/
+*./demo/lib/zoom_meeting_sdk/*.so
+*./demo/lib/zoom_meeting_sdk/*.1
+*./demo/lib/zoom_meeting_sdk/qt_libs/Qt/*
+*./demo/include/h/*
+*./demo/include/ffmpeg/
+*./demo/.vscode/
+*./demo/out
+*./demo/*.avi
+*./demo/*.mkv
 
 
-demo-compact/bin/
-demo-compact/build/
-demo-compact/lib/zoom_meeting_sdk/*.so
-demo-compact/lib/zoom_meeting_sdk/*.1
-demo-compact/lib/zoom_meeting_sdk/qt_libs/Qt/*
-demo-compact/include/h/*
-demo-compact/.vscode/
+*./bin/
+*./build/
+*./lib/zoom_meeting_sdk/*.so
+*./lib/zoom_meeting_sdk/*.1
+*./lib/zoom_meeting_sdk/qt_libs/Qt/*
+*./include/h/*
+*/.vscode/
 
-/.vscode/
-/build/
-/YUVFile/*.yuv
+
+
+*./YUVFile/*.yuv
 
 #files for vs 2022
 .vs/
@@ -32,3 +32,4 @@ demo-compact/CMakeSettings.json
 # Untrack the files (but keep them locally)
 git rm --cached config.json
 
+/AllInOneExample/demo
