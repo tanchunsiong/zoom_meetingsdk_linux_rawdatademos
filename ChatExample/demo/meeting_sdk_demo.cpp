@@ -112,6 +112,38 @@ void onIsGivenRecordingPermission() {
 
 }
 
+//callback when given host permission
+void onChatMessageReceived(IChatMsgInfo* chatMsg) {
+	printf("onChatMessageReceived\n");
+	IMeetingChatController* meetingchatcontroller = m_pMeetingService->GetMeetingChatController();
+
+
+	// Convert std::wstring to std::string (UTF-8)
+	std::wstring wstr = L"Reply to user!";
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::string str = converter.to_bytes(wstr);
+
+	// Ensure zchar_t is defined as char if not already defined
+	typedef char zchar_t;
+
+	char charArray[1024]; // Choose an appropriate size
+	std::strncpy(charArray, str.c_str(), sizeof(charArray));
+
+	// Ensure null-termination
+	charArray[sizeof(charArray) / sizeof(charArray[0]) - 1] = '\0';
+
+	const zchar_t* constCharArray = charArray;
+
+	IChatMsgInfoBuilder* chatbuilder = meetingchatcontroller->GetChatMessageBuilder();
+	chatbuilder->SetReceiver(0);
+	chatbuilder->SetMessageType(SDKChatMessageType_To_All);
+	chatbuilder->SetContent(constCharArray);
+	chatbuilder->Build();
+
+	meetingchatcontroller->SendChatMsgTo(chatbuilder->Build());
+
+
+}
 
 //callback when the SDK is inmeeting
 void onInMeeting() {
@@ -133,7 +165,7 @@ void onInMeeting() {
 	//chatDemo
 	if (chatDemo) {
 		IMeetingChatController* meetingchatcontroller= m_pMeetingService->GetMeetingChatController();
-		meetingchatcontroller->SetEvent(new MeetingChatEventListener());
+		meetingchatcontroller->SetEvent(new MeetingChatEventListener(&onChatMessageReceived));
 
 		// Convert std::wstring to std::string (UTF-8)
 		std::wstring wstr = L"Hello world!";

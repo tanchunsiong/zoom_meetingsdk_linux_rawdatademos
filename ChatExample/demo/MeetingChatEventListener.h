@@ -10,10 +10,11 @@ class MeetingChatEventListener :
 	public IMeetingChatCtrlEvent
 {
 
-	
+	void(*onChatMessageReceived_)(IChatMsgInfo* chatMsg);
 
 public:
 	MeetingChatEventListener();
+	MeetingChatEventListener(void (*onChatMessageReceived_)(IChatMsgInfo* chatMsg));
 	
 
 	/// \brief Chat message callback. This function is used to inform the user once received the message sent by others.

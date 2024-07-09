@@ -22,12 +22,18 @@ MeetingChatEventListener::MeetingChatEventListener() {
 
 }
 
+MeetingChatEventListener::MeetingChatEventListener(void(*onChatMessageReceived)(IChatMsgInfo* chatMsg))
+{
+	onChatMessageReceived_ = onChatMessageReceived;
+}
+
+
 void MeetingChatEventListener::onChatMsgNotifcation(IChatMsgInfo* chatMsg, const zchar_t* content)
 {
 
 
 	std::cout<<"onChatMsgNotifcation: " << chatMsg->GetSenderDisplayName() << " says " << chatMsg->GetContent() << endl;
-
+	if (onChatMessageReceived_)onChatMessageReceived_(chatMsg);
 }
 
 void MeetingChatEventListener::onChatStatusChangedNotification(ChatStatus* status_)
