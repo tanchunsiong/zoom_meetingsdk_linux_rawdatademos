@@ -30,8 +30,6 @@ MeetingChatEventListener::MeetingChatEventListener(void(*onChatMessageReceived)(
 
 void MeetingChatEventListener::onChatMsgNotifcation(IChatMsgInfo* chatMsg, const zchar_t* content)
 {
-
-
 	std::cout<<"onChatMsgNotifcation: " << chatMsg->GetSenderDisplayName() << " says " << chatMsg->GetContent() << endl;
 	if (onChatMessageReceived_)onChatMessageReceived_(chatMsg);
 }

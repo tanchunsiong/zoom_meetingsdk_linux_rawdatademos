@@ -112,7 +112,7 @@ void onIsGivenRecordingPermission() {
 
 }
 
-//callback when given host permission
+//callback when given receive messages
 void onChatMessageReceived(IChatMsgInfo* chatMsg) {
 	printf("onChatMessageReceived\n");
 	IMeetingChatController* meetingchatcontroller = m_pMeetingService->GetMeetingChatController();
