@@ -1,0 +1,13 @@
+{
+  "meeting_number": "9898533313",
+  "token": "xxxxxx.yyyyyyyyy.zzzzzzzz",
+  "meeting_password": "123123",
+  "recording_token": "",
+  "remote_url": "https://yourdomain.com/meetingsdkjwtauthtokengenerator/",
+  "useJWTTokenFromWebService": "false",
+  "useRecordingTokenFromWebService": "false",
+  "GetVideoRawData": "true",
+  "GetAudioRawData": "true",
+  "SendVideoRawData": "false",
+  "SendAudioRawData": "false"
+}

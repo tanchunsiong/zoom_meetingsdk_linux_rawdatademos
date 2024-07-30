@@ -481,7 +481,6 @@ void ReadJsonSettings()
 		processJsonValue(config_json, "recording_token", recording_token);
 		processJsonValue(config_json, "remote_url", remote_url);
 
-
 		processJsonBoolean(config_json, "useJWTTokenFromWebService", useJWTTokenFromWebService);
 		processJsonBoolean(config_json, "useRecordingTokenFromWebService", useRecordingTokenFromWebService);
 		processJsonBoolean(config_json, "GetVideoRawData", GetVideoRawData);

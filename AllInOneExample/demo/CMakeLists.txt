@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(meetingSDKDemo CXX)
-set(TARGET_NAME meetingSDKDemo)
+project(AllInOneDemo CXX)
+set(TARGET_NAME AllInOneDemo)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_definitions(-std=c++11)
