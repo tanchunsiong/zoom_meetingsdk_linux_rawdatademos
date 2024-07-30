@@ -32,3 +32,8 @@
 git rm --cached config.json
 
 
+/AllInOneExample/demo/config.json
+/ChatExample/demo/config.json
+/GetRawVideoAndAudioExample/demo/config.json
+/SendRawVideoAndAudioExample/demo/config.json
+/SkeletonExample/demo/config.json
