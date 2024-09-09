@@ -62,7 +62,7 @@ WORKDIR /app/demo/bin
 # Define a shell script to run multiple commands
 RUN echo '#!/bin/bash' > /app/demo/run.sh \
     && echo '/app/demo/setup-pulseaudio.sh' >> /app/demo/run.sh \
-    && echo './meetingSDKDemo' >> /app/demo/run.sh
+    && echo './AllInOneDemo' >> /app/demo/run.sh
 
 # Make the run script executable
 RUN chmod +x /app/demo/run.sh
@@ -70,4 +70,4 @@ RUN chmod +x /app/demo/run.sh
 # Specify the run script as the CMD
 CMD ["/app/demo/run.sh"]
 #CMD ["/bin/bash"]
-#CMD ["./meetingSDKDemo"]
+#CMD ["./AllInOneDemo"]

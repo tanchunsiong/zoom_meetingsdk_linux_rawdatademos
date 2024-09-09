@@ -1,4 +1,4 @@
-#run these in /demo directory
+#run these in individual example's /demo directory
 
 # build Centos 8
 docker build -t msdk-6.1.0-on-centos8-compact -f Dockerfile-Centos8/Dockerfile .
