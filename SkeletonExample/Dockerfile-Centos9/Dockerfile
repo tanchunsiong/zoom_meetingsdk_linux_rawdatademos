@@ -55,7 +55,7 @@ COPY demo/ /app/demo/
 # # Define a shell script to run multiple commands
  RUN echo '#!/bin/bash' > /app/demo/run.sh \
      && echo '/app/demo/setup-pulseaudio-centos.sh' >> /app/demo/run.sh \
-     && echo './meetingSDKDemo' >> /app/demo/run.sh
+     && echo './SkeletonDemo' >> /app/demo/run.sh
 
  # Make the run script executable
  RUN chmod +x /app/demo/run.sh
@@ -63,4 +63,4 @@ COPY demo/ /app/demo/
  # Run the meetingSDKDemo binary when the container starts
  CMD ["/app/demo/run.sh"]
  #CMD ["/bin/bash"]
- #CMD ["./meetingSDKDemo"]
+ #CMD ["./SkeletonDemo"]

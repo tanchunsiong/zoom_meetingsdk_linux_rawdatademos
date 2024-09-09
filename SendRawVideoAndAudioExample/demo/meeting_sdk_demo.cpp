@@ -71,7 +71,7 @@ using Json = nlohmann::json;
 std::string meeting_number, token, meeting_password, recording_token, remote_url;
 
 //references for SendAudioRawData
-std::string DEFAULT_AUDIO_SOURCE = "Big_Buck_Bunny.wav";
+std::string DEFAULT_AUDIO_SOURCE = "pcm1644m.wav";
 
 //references for SendVideoRawData
 std::string DEFAULT_VIDEO_SOURCE = "Big_Buck_Bunny_720_10s_10MB.mp4";
