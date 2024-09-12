@@ -65,11 +65,22 @@
 //reference for listen socket
 #include <iostream>
 #include <thread>
-#include <cstring>
+#include <queue>
+#include <string>
+#include <mutex>
+#include <condition_variable>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <cstring>
+#include <glib.h>
 
+
+// Global queue and synchronization primitives
+std::queue<std::string> messageQueue;
+std::mutex queueMutex;
+std::condition_variable condition;
+bool stopMainLoop = false;
 
 
 
@@ -77,7 +88,7 @@ USING_ZOOM_SDK_NAMESPACE
 
 
 int listen_socket;
-std::thread listen_thread;
+
 
 GMainLoop* loop;
 
@@ -275,11 +286,9 @@ void onIsGivenRecordingPermission() {
 
 
 // Function to listen for data from Python
-void listenForPythonMessages(void (*sendMessage)(const std::string&)) {
+void listenForPythonMessages() {
 
-    void (*sendMessage_)(const std::string&) = sendMessage;
-	// Create a socket to listen for Python messages (UDP)
-	listen_socket = socket(AF_INET, SOCK_DGRAM, 0);
+	int listen_socket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (listen_socket < 0) {
 		std::cerr << "Failed to create listening socket: " << strerror(errno) << std::endl;
 		return;
@@ -303,19 +312,20 @@ void listenForPythonMessages(void (*sendMessage)(const std::string&)) {
 
 	std::cout << "Listening for incoming messages from Python on port 9090..." << std::endl;
 
-	while (true) {
-		// Receive data
+	while (!stopMainLoop) {
 		ssize_t recv_len = recvfrom(listen_socket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &addr_len);
 		if (recv_len > 0) {
 			buffer[recv_len] = '\0';  // Null-terminate the received data
-			std::cout << "Received message: " << buffer << std::endl;  // Print plain text message
+			std::string message(buffer);
 
-			//dreamtcs try to send over chat
-			string message(buffer);
-			sendMessage_(message);
-			
+			// Add message to the queue
+			{
+				std::lock_guard<std::mutex> lock(queueMutex);
+				messageQueue.push(message);
+			}
 
-
+			// Notify the main loop that a new message is available (optional if using a timed callback)
+			condition.notify_one();
 		}
 		else if (recv_len < 0) {
 			std::cerr << "Error receiving data: " << strerror(errno) << std::endl;
@@ -325,45 +335,16 @@ void listenForPythonMessages(void (*sendMessage)(const std::string&)) {
 	close(listen_socket);
 }
 
-void sendMessage(const std::string& message) {
+void sendMessage(string message) {
 
-
-
-	//IMeetingChatController* meetingchatcontroller = m_pMeetingService->GetMeetingChatController();
-
-
-	//// Convert std::wstring to std::string (UTF-8)
-	//std::wstring wstr = L"Hello world!";
-	//std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	//std::string str = converter.to_bytes(wstr);
-
-	//// Ensure zchar_t is defined as char if not already defined
-	//typedef char zchar_t;
-
-	//char charArray[1024]; // Choose an appropriate size
-	//std::strncpy(charArray, str.c_str(), sizeof(charArray));
-
-	//// Ensure null-termination
-	//charArray[sizeof(charArray) / sizeof(charArray[0]) - 1] = '\0';
-
-	//const zchar_t* constCharArray = charArray;
-
-	//IChatMsgInfoBuilder* chatbuilder = meetingchatcontroller->GetChatMessageBuilder();
-	//chatbuilder->SetReceiver(0);
-	//chatbuilder->SetMessageType(SDKChatMessageType_To_All);
-	//chatbuilder->SetContent(constCharArray);
-	//chatbuilder->Build();
-
-	//meetingchatcontroller->SendChatMsgTo(chatbuilder->Build());
 
 
 	IMeetingChatController* meetingchatcontroller = m_pMeetingService->GetMeetingChatController();
 
 
 	// Convert std::wstring to std::string (UTF-8)
-	std::wstring wstr = L"Reply to user!";
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	std::string str = converter.to_bytes(wstr);
+	
+	std::string str = message;
 
 	// Ensure zchar_t is defined as char if not already defined
 	typedef char zchar_t;
@@ -417,10 +398,6 @@ void onInMeeting() {
 	//first attempt to start raw recording  / sending, upon successfully joined and achieved "in-meeting" state.
 
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
-	
-	listen_thread = std::thread(listenForPythonMessages, &sendMessage);
-
-	listen_thread.detach();
 
 
 
@@ -992,8 +969,38 @@ void initAppSettings()
 	sigaction(SIGINT, &sigIntHandler, NULL);
 }
 
+
+// Function to process the message queue and call sendMessage
+gboolean processQueue(gpointer user_data) {
+	
+
+	std::string message;
+	{
+		std::lock_guard<std::mutex> lock(queueMutex);
+		if (!messageQueue.empty()) {
+			message = messageQueue.front();
+			messageQueue.pop();
+		}
+	}
+
+	if (!message.empty()) {
+		// Call the sendMessage method from the MyClass instance
+
+		sendMessage(message);
+	}
+
+	// Continue checking the queue periodically
+	return TRUE;  // Keep the source active in the GLib main loop
+}
+
 int main(int argc, char* argv[])
 {
+
+	// Define the sendMessage function
+	auto sendMessage = [](const std::string& message) {
+		std::cout << "Sending message: " << message << std::endl;
+		};
+
 
 	ReadJsonSettings();
 
@@ -1005,10 +1012,30 @@ int main(int argc, char* argv[])
 	InitMeetingSDK();
 	AuthMeetingSDK();
 
-	loop = g_main_loop_new(NULL, FALSE);
-	// add source to default context
-	g_timeout_add(100, timeout_callback, loop);
+	// Start the listener thread
+	std::thread listenerThread(listenForPythonMessages);
+
+	// Set up the GLib main loop
+	GMainLoop* loop = g_main_loop_new(NULL, FALSE);
+
+	// Add a timeout to periodically check the message queue
+	std::function<void(const std::string&)>* sendMessagePtr = new std::function<void(const std::string&)>(sendMessage);
+	g_timeout_add(100, processQueue, sendMessagePtr);  // Check every 100 ms
+
+	// Run the GLib main loop
 	g_main_loop_run(loop);
+
+	// Clean up when the loop exits
+	stopMainLoop = true;
+	listenerThread.join();
+	delete sendMessagePtr;
+	g_main_loop_unref(loop);
+
+
+	//loop = g_main_loop_new(NULL, FALSE);
+	//// add source to default context
+	//g_timeout_add(100, timeout_callback, loop);
+	//g_main_loop_run(loop);
 	return 0;
 }
 
