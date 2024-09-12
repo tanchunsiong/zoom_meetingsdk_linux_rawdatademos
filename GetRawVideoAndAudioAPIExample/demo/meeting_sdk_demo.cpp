@@ -382,7 +382,7 @@ void sendMessage(const std::string& message) {
 	chatbuilder->SetContent(constCharArray);
 	chatbuilder->Build();
 	
-	listen_thread.join();
+	
 	SDKError err = meetingchatcontroller->SendChatMsgTo(chatbuilder->Build());
 	//print err
 	if (err != SDKERR_SUCCESS) {
