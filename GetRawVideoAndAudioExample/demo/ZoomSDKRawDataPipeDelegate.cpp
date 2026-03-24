@@ -204,7 +204,7 @@ void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audi
 
 }
 
-void ZoomSDKRawDataPipeDelegate::onShareAudioRawDataReceived(AudioRawData* data_)
+void ZoomSDKRawDataPipeDelegate::onShareAudioRawDataReceived(AudioRawData* data_, uint32_t user_id)
 {
 }
 

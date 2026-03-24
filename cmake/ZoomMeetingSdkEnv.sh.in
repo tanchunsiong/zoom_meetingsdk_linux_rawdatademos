@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ZOOM_SDK_LIB_PATHS="${SCRIPT_DIR}:${SCRIPT_DIR}/qt_libs:${SCRIPT_DIR}/qt_libs/Qt/lib"
+
+if [[ -n "${LD_LIBRARY_PATH:-}" ]]; then
+  export LD_LIBRARY_PATH="${ZOOM_SDK_LIB_PATHS}:${LD_LIBRARY_PATH}"
+else
+  export LD_LIBRARY_PATH="${ZOOM_SDK_LIB_PATHS}"
+fi

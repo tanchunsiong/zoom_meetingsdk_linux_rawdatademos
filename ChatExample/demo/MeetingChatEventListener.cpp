@@ -17,21 +17,34 @@ bool ZCharStringMatches(const zchar_t* myZCharString, const char* targetString) 
 	return strcmp(myCString, targetString) == 0;
 }
 
-MeetingChatEventListener::MeetingChatEventListener() {
+MeetingChatEventListener::MeetingChatEventListener(void(*turnOnSendVideoAndAudio)(), void(*turnOffSendVideoAndAudio)()) {
 
 
+	turnOnSendVideoAndAudio_ = turnOnSendVideoAndAudio;
+	turnOffSendVideoAndAudio_ = turnOffSendVideoAndAudio;
+	onChatMessageReceived_ = nullptr;
 }
 
-MeetingChatEventListener::MeetingChatEventListener(void(*onChatMessageReceived)(IChatMsgInfo* chatMsg))
-{
+MeetingChatEventListener::MeetingChatEventListener(void(*onChatMessageReceived)(IChatMsgInfo*)) {
+	turnOnSendVideoAndAudio_ = nullptr;
+	turnOffSendVideoAndAudio_ = nullptr;
 	onChatMessageReceived_ = onChatMessageReceived;
 }
 
-
-void MeetingChatEventListener::onChatMsgNotifcation(IChatMsgInfo* chatMsg, const zchar_t* content)
+void MeetingChatEventListener::onChatMsgNotification(IChatMsgInfo* chatMsg, const zchar_t* content)
 {
-	std::cout<<"onChatMsgNotifcation: " << chatMsg->GetSenderDisplayName() << " says " << chatMsg->GetContent() << endl;
-	if (onChatMessageReceived_)onChatMessageReceived_(chatMsg);
+	if (onChatMessageReceived_) {
+		onChatMessageReceived_(chatMsg);
+	}
+	else if (ZCharStringMatches(chatMsg->GetContent(),"turnOn")) {
+		turnOnSendVideoAndAudio_();
+	}
+	else if (ZCharStringMatches(chatMsg->GetContent(), "turnOff")) {
+		turnOffSendVideoAndAudio_();
+	}
+
+	std::cout<<"onChatMsgNotification: " << chatMsg->GetSenderDisplayName() << " says " << chatMsg->GetContent() << endl;
+
 }
 
 void MeetingChatEventListener::onChatStatusChangedNotification(ChatStatus* status_)
@@ -39,6 +52,10 @@ void MeetingChatEventListener::onChatStatusChangedNotification(ChatStatus* statu
 }
 
 void MeetingChatEventListener::onChatMsgDeleteNotification(const zchar_t* msgID, SDKChatMessageDeleteType deleteBy)
+{
+}
+
+void MeetingChatEventListener::onChatMessageEditNotification(IChatMsgInfo* chatMsg)
 {
 }
 

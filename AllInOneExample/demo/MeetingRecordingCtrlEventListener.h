@@ -50,8 +50,6 @@ public:
 	/// \param handler A pointer to the ISmartRecordingEnableActionHandler. For more details, see \link ISmartRecordingEnableActionHandler \endlink.
 	virtual void onSmartRecordingEnableActionCallback(ISmartRecordingEnableActionHandler* handler);
 
-
-
+	virtual void onTranscodingStatusChanged(TranscodingStatus status, const zchar_t* path);
 
 };
-

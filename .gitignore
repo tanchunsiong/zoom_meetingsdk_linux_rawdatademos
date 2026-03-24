@@ -1,5 +1,6 @@
 */demo/bin/
 */demo/build/
+*/demo/config.json
 */demo/lib/ffmpeg/
 */demo/lib/zoom_meeting_sdk/*.so
 */demo/lib/zoom_meeting_sdk/*.1
@@ -28,12 +29,6 @@
 .vs/
 *CMakeSettings.json
 
-# Untrack the files (but keep them locally)
-git rm --cached config.json
-
-
-/AllInOneExample/demo/config.json
-/ChatExample/demo/config.json
-/GetRawVideoAndAudioExample/demo/config.json
-/SendRawVideoAndAudioExample/demo/config.json
-/SkeletonExample/demo/config.json
+.env
+/build/
+/sdk
