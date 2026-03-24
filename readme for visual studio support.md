@@ -1,5 +1,10 @@
-you will need to install these on your ubuntu 22 WSL
+# Visual Studio / WSL support
 
-`sudo apt-get install g++ gdb make ninja-build rsync zip`
+For the Visual Studio WSL toolchain on Ubuntu 22, install:
 
-You will also need to manage configuration and create a configuration which targets WSL-GCC-DEBUG
+```bash
+sudo apt-get install -y g++ gdb make ninja-build rsync zip
+```
+
+After that, create or select a Visual Studio configuration that targets WSL with GCC.
+The samples are Linux CMake projects, so the WSL target is the supported flow.

@@ -12,51 +12,7 @@
 #include <iostream>
 #include <fstream>
 
-
-// Socket related headers
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <fcntl.h> // For non-blocking socket
-#include <netinet/tcp.h>
-
 USING_ZOOM_SDK_NAMESPACE;
-
-// Global socket variable (optional, if socket needs to be accessed globally)
-int global_socket;
-
-
-
-// Connect to the local server at the specified IP and port
-int connectToLocalServer(const std::string& server_ip, int port) {
-	// Create the socket
-	int sock = socket(AF_INET, SOCK_DGRAM, 0);
-	if (sock < 0) {
-		std::cerr << "Socket creation error!" << std::endl;
-		return -1;
-	}
-
-	// Server address setup
-	struct sockaddr_in serv_addr {};
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(port);
-
-	// Convert IPv4 address from text to binary form
-	if (inet_pton(AF_INET, server_ip.c_str(), &serv_addr.sin_addr) <= 0) {
-		std::cerr << "Invalid address!" << std::endl;
-		return -1;
-	}
-
-	// Attempt to connect to the server
-	if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-		std::cerr << "Connection failed! Error: " << strerror(errno) << std::endl;
-		return -1;
-	}
-
-	std::cout << "Successfully connected to server on " << server_ip << ":" << port << std::endl;
-	return sock;
-}
-
 
 const AVPixelFormat pix_fmts[] = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
 std::vector<ZoomSDKRawDataPipeDelegate*> ZoomSDKRawDataPipeDelegate::list_;
@@ -72,14 +28,6 @@ std::vector<uint8_t> audioBuffer;
 ZoomSDKRawDataPipeDelegate::ZoomSDKRawDataPipeDelegate()
 {
 	
-	// Connect to the server
-	global_socket = connectToLocalServer("127.0.0.1", 8080);
-	if (global_socket < 0) {
-		std::cerr << "Failed to connect to the server." << std::endl;
-	}
-	else {
-		std::cout << "Connected to the server." << std::endl;
-	}
 }
 
 void ZoomSDKRawDataPipeDelegate::SubScribeUser(IUserInfo* user, IZoomSDKRenderer* renderer)
@@ -223,27 +171,6 @@ void ZoomSDKRawDataPipeDelegate::err_msg(int code)
 
 void ZoomSDKRawDataPipeDelegate::onMixedAudioRawDataReceived(AudioRawData* audioRawData)
 {
-	if (global_socket <= 0) {
-		std::cerr << "Invalid socket, cannot send data." << std::endl;
-		return;
-	}
-
-
-	// Fire and forget: just send the data without caring about how much was sent
-	const char* buffer = audioRawData->GetBuffer();
-	size_t buffer_len = audioRawData->GetBufferLen();
-
-	// Send data without worrying about how much is actually sent
-	ssize_t sent_bytes = send(global_socket, buffer, buffer_len, 0);
-
-	if (sent_bytes == -1) {
-		// Error occurred
-		std::cerr << "Error sending data: " << strerror(errno) << std::endl;
-	}
-	else {
-		// Just log that data was sent (fire and forget)
-		// std::cout << "Sent " << sent_bytes << " bytes to the server (fire and forget)." << std::endl;
-	}
 
 
 }
@@ -252,32 +179,32 @@ void ZoomSDKRawDataPipeDelegate::onOneWayAudioRawDataReceived(AudioRawData* audi
 {
 
 
-	//char fileName[100];
-	//sprintf(fileName, "%d", node_id);
-	//char pcmFileName[110];
+	char fileName[100];
+	sprintf(fileName, "%d", node_id);
+	char pcmFileName[110];
 
-	//sprintf(pcmFileName, "../%s.pcm", fileName);
-	//static std::ofstream pcmFile;
-	//pcmFile.open(pcmFileName, std::ios::out | std::ios::binary | std::ios::app);
+	sprintf(pcmFileName, "../%s.pcm", fileName);
+	static std::ofstream pcmFile;
+	pcmFile.open(pcmFileName, std::ios::out | std::ios::binary | std::ios::app);
 
-	//if (!pcmFile.is_open()) {
-	//	std::cout << "Failed to open wave file" << std::endl;
-	//	return;
-	//}
+	if (!pcmFile.is_open()) {
+		std::cout << "Failed to open wave file" << std::endl;
+		return;
+	}
 
-	//// Write the audio data to the file
-	//pcmFile.write((char*)audioRawData->GetBuffer(), audioRawData->GetBufferLen());
-	////std::cout << "buffer length: " << audioRawData->GetBufferLen() << std::endl;
-	//std::cout << "audio buffer : " << audioRawData->GetBufferLen() << " node_id: " << node_id << " source_id: " << current_sourceID << std::endl;
+	// Write the audio data to the file
+	pcmFile.write((char*)audioRawData->GetBuffer(), audioRawData->GetBufferLen());
+	//std::cout << "buffer length: " << audioRawData->GetBufferLen() << std::endl;
+	std::cout << "audio buffer : " << audioRawData->GetBufferLen() << " node_id: " << node_id << " source_id: " << current_sourceID << std::endl;
 
-	//// Close the wave file
-	//pcmFile.close();
-	//pcmFile.flush();
+	// Close the wave file
+	pcmFile.close();
+	pcmFile.flush();
 
 
 }
 
-void ZoomSDKRawDataPipeDelegate::onShareAudioRawDataReceived(AudioRawData* data_)
+void ZoomSDKRawDataPipeDelegate::onShareAudioRawDataReceived(AudioRawData* data_, uint32_t user_id)
 {
 }
 

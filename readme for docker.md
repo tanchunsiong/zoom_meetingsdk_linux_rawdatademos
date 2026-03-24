@@ -1,28 +1,53 @@
-#run these in individual example's /demo directory
+# Docker notes
 
-# build Centos 8
-docker build -t msdk-6.1.0-on-centos8-compact -f Dockerfile-Centos8/Dockerfile .
-docker run -it --rm msdk-6.1.0-on-centos8-compact
+Run these commands from an individual sample's `demo/` directory.
 
-# build Centos 9 (doesnt work well, dynamic fetching of token needs openssl 1.1.1 centos 9 is on 3.0.7)
-docker build -t msdk-6.1.0-on-centos9-compact -f Dockerfile-Centos9/Dockerfile .
-docker run -it --rm msdk-6.1.0-on-centos9-compact
+The image tags below are intentionally version-agnostic. Rename them if you want a
+more specific local tag.
 
-# build Ubuntu
-docker build -t msdk-6.1.0-on-ubuntu-compact -f Dockerfile-Ubuntu/Dockerfile .
-docker run -it --rm msdk-6.1.0-on-ubuntu-compact
-docker run --cpus=2.0 --memory=4G -it --rm msdk-6.1.0-on-ubuntu-compact
+## CentOS 8
 
-# build UbuntuDesktop
-docker build -t msdk-6.1.0-on-ubuntudesktop-compact -f Dockerfile-UbuntuDesktop/Dockerfile .
-docker run -it --rm msdk-6.1.0-on-ubuntudesktop-compact
+```bash
+docker build -t msdk-demo-centos8 -f ../Dockerfile-Centos8/Dockerfile .
+docker run -it --rm msdk-demo-centos8
+```
 
+## CentOS 9
 
-# list all images
+```bash
+docker build -t msdk-demo-centos9 -f ../Dockerfile-Centos9/Dockerfile .
+docker run -it --rm msdk-demo-centos9
+```
+
+CentOS 9 may still require extra OpenSSL compatibility work depending on the demo and
+runtime path you use for token-fetching code.
+
+## Ubuntu
+
+```bash
+docker build -t msdk-demo-ubuntu -f ../Dockerfile-Ubuntu/Dockerfile .
+docker run -it --rm msdk-demo-ubuntu
+docker run --cpus=2.0 --memory=4G -it --rm msdk-demo-ubuntu
+```
+
+## Ubuntu Desktop
+
+```bash
+docker build -t msdk-demo-ubuntu-desktop -f ../Dockerfile-UbuntuDesktop/Dockerfile .
+docker run -it --rm msdk-demo-ubuntu-desktop
+```
+
+## Oracle Linux 8
+
+```bash
+docker build -t msdk-demo-oraclelinux8 -f ../Dockerfile-OracleLinux8/Dockerfile .
+docker run -it --rm msdk-demo-oraclelinux8
+```
+
+## Useful commands
+
+```bash
 docker images -a
 docker ps -a
-
-# remove images
-docker rmi 
-
-
+docker rmi <image-id>
+```

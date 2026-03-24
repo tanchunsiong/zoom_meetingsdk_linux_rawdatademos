@@ -12,16 +12,18 @@ class MeetingChatEventListener :
 
 	void (*turnOnSendVideoAndAudio_)();
 	void (*turnOffSendVideoAndAudio_)();
+	void (*onChatMessageReceived_)(IChatMsgInfo*);
 	
 
 public:
 	MeetingChatEventListener(void (*turnOnSendVideoAndAudio_)(), void (*turnOffSendVideoAndAudio_)());
+	MeetingChatEventListener(void (*onChatMessageReceived_)(IChatMsgInfo*));
 	
 
 	/// \brief Chat message callback. This function is used to inform the user once received the message sent by others.
 		/// \param chatMsg An object pointer to the chat message.
 		/// \param content A pointer to the chat message in json format. This parameter is currently invalid, hereby only for reservations. 
-	virtual void onChatMsgNotifcation(IChatMsgInfo* chatMsg, const zchar_t* content = NULL);
+	virtual void onChatMsgNotification(IChatMsgInfo* chatMsg, const zchar_t* content = NULL);
 
 	/// \brief The authority of chat changes callback. This function is used to inform the user when the authority of chat changes in the meeting or webinar.
 	/// \param status_ The chat status. For more details, see \link ChatStatus \endlink.
@@ -31,6 +33,9 @@ public:
 	/// \param MsgID is the id of the deleted message.
 	/// \param deleteBy Indicates by whom the message was deleted.
 	virtual void onChatMsgDeleteNotification(const zchar_t* msgID, SDKChatMessageDeleteType deleteBy);
+
+	/// \brief Chat message be edited callback.
+	virtual void onChatMessageEditNotification(IChatMsgInfo* chatMsg);
 
 	virtual void onShareMeetingChatStatusChanged(bool isStart);
 

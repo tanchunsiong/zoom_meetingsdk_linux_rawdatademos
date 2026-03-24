@@ -133,13 +133,12 @@ public:
 
 	virtual void onMixedAudioRawDataReceived(AudioRawData* data_);
 	virtual void onOneWayAudioRawDataReceived(AudioRawData* data_, uint32_t node_id);
-	virtual void onShareAudioRawDataReceived(AudioRawData* data_);
+	virtual void onShareAudioRawDataReceived(AudioRawData* data_, uint32_t user_id);
 
 	/// \brief Invoked when individual interpreter's raw audio data received
 	/// \param data_ Raw audio data, see \link AudioRawData \endlink.
 	/// \param pLanguageName The pointer to interpreter language name.
 	virtual void onOneWayInterpreterAudioRawDataReceived(AudioRawData* data_, const zchar_t* pLanguageName);
 };
-
 
 

@@ -33,5 +33,13 @@ public:
 	/// \brief Callback event for the AI Companion active status changed. 
 	/// \param active Specify whether the AI Companion active or not.
 	virtual void onAICompanionActiveChangeNotice(bool bActive);
-};
 
+	/// \brief Callback event for the meeting topic changed.
+	virtual void onMeetingTopicChanged(const zchar_t* sTopic);
+
+	/// \brief Callback event when the meeting is full and live stream is available.
+	virtual void onMeetingFullToWatchLiveStream(const zchar_t* sLiveStreamUrl);
+
+	/// \brief Callback event when a user's network status changes.
+	virtual void onUserNetworkStatusChanged(MeetingComponentType type, ConnectionQuality level, unsigned int userId, bool uplink);
+};

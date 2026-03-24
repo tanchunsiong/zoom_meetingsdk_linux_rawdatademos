@@ -59,6 +59,11 @@
 //references for GetAudioRawData && GetVideoRawData
 #include "ZoomSDKRawDataPipeDelegate.h"
 
+
+//references for SendAudioRawData
+#include "ZoomSDKVirtualAudioMicEvent.h"
+#include <mutex>
+
 //references for chatDemo
 #include "MeetingChatEventListener.h"
 
@@ -74,6 +79,14 @@
 #include <unistd.h>
 #include <cstring>
 #include <glib.h>
+
+//wave
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 
 // Global queue and synchronization primitives
@@ -96,6 +109,8 @@ GMainLoop* loop;
 using Json = nlohmann::json;
 std::string meeting_number, token, meeting_password, recording_token, remote_url;
 
+//references for SendAudioRawData
+std::string DEFAULT_AUDIO_SOURCE = "pcm1644m.wav";
 
 
 
@@ -138,9 +153,42 @@ bool GetVideoRawData = false;
 bool GetAudioRawData = false;
 
 
+bool SendAudioRawData = true;
+
+
+bool isChatElseStream = false;
 
 
 
+// Define the WAV header structure
+struct WAVHeader {
+	char riff[4] = { 'R', 'I', 'F', 'F' };   // Chunk ID
+	uint32_t chunkSize;                    // Chunk size
+	char wave[4] = { 'W', 'A', 'V', 'E' };   // Format
+	char fmt[4] = { 'f', 'm', 't', ' ' };    // Subchunk1 ID
+	uint32_t subChunk1Size = 16;           // Subchunk1 size (PCM header size)
+	uint16_t audioFormat = 1;              // Audio format (1 for PCM)
+	uint16_t numChannels = 1;              // Number of channels
+	uint32_t sampleRate = 32000;           // Sample rate
+	uint32_t byteRate;                     // Byte rate (sampleRate * numChannels * bitsPerSample/8)
+	uint16_t blockAlign;                   // Block align (numChannels * bitsPerSample/8)
+	uint16_t bitsPerSample = 16;           // Bits per sample
+	char data[4] = { 'd', 'a', 't', 'a' };   // Subchunk2 ID
+	uint32_t dataSize;                     // Subchunk2 size (data size)
+
+	// Constructor to calculate byteRate and blockAlign
+	WAVHeader(uint32_t dataSize) : dataSize(dataSize) {
+		byteRate = sampleRate * numChannels * bitsPerSample / 8;
+		blockAlign = numChannels * bitsPerSample / 8;
+		chunkSize = 36 + dataSize;  // 36 + Subchunk2 size
+	}
+};
+
+// Function to write the WAV header
+void writeWAVHeader(std::ofstream& file, uint32_t dataSize) {
+	WAVHeader header(dataSize);
+	file.write(reinterpret_cast<const char*>(&header), sizeof(WAVHeader));
+}
 
 
 //this is a helper method to get the first User ID, it is just an arbitary UserID
@@ -174,6 +222,35 @@ IList<unsigned int >* getAllUserObj() {
 	std::cout << "Participant List is : " << ParticipantsList->GetCount() << std::endl;
 	return ParticipantsList;
 }
+
+
+
+//check if you meet the requirements to send raw data
+void CheckAndStartRawSending( bool isAudio) {
+
+
+
+
+	//SendAudioRawData
+	if (isAudio) {
+		ZoomSDKVirtualAudioMicEvent* audio_source = new ZoomSDKVirtualAudioMicEvent(DEFAULT_AUDIO_SOURCE);
+		IZoomSDKAudioRawDataHelper* audioHelper = GetAudioRawdataHelper();
+		if (audioHelper) {
+			SDKError err = audioHelper->setExternalAudioSource(audio_source);
+			//print err
+			if (err != SDKERR_SUCCESS) {
+				std::cout << "Error occurred setting external audio source: " << err << std::endl;
+			}
+			else
+				{
+				std::cout << "External audio source set successfully" << std::endl;
+			}
+		}
+	}
+
+
+}
+
 
 //check if you have permission to start raw recording
 void CheckAndStartRawRecording(bool isVideo, bool isAudio) {
@@ -313,23 +390,80 @@ void listenForPythonMessages() {
 	std::cout << "Listening for incoming messages from Python on port 9090..." << std::endl;
 
 	while (!stopMainLoop) {
-		ssize_t recv_len = recvfrom(listen_socket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &addr_len);
-		if (recv_len > 0) {
-			buffer[recv_len] = '\0';  // Null-terminate the received data
-			std::string message(buffer);
 
-			// Add message to the queue
-			{
-				std::lock_guard<std::mutex> lock(queueMutex);
-				messageQueue.push(message);
+
+			if (isChatElseStream){
+				ssize_t recv_len = recvfrom(listen_socket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&client_addr, &addr_len);
+				if (recv_len > 0) {
+					buffer[recv_len] = '\0';  // Null-terminate the received data
+				}
+				std::string message(buffer);
+
+				// Add message to the queue
+				{
+					std::lock_guard<std::mutex> lock(queueMutex);
+					messageQueue.push(message);
+				}
 			}
+			else {
+				int fileCounter = 0; // Counter to keep track of file number
+				int loopCounter = 0; // Counter to track every 500 loops
+
+				while (true) {
+					// Open the WAV file with an incremental filename
+					std::stringstream filename;
+					filename << "pcm1644m" << std::setw(3) << std::setfill('0') << fileCounter << ".wav";
+
+					std::ofstream wavFile(filename.str(), std::ios::binary);
+					if (!wavFile.is_open()) {
+						std::cerr << "Failed to open file for writing." << std::endl;
+						return;
+					}
+
+					// Placeholder to keep track of data size for WAV header
+					uint32_t totalDataSize = 0;
+
+					// Listen for audio data and write to the WAV file
+					while (loopCounter < 500) {
+						ssize_t recv_len = recvfrom(listen_socket, buffer, sizeof(buffer), 0, (struct sockaddr*)&client_addr, &addr_len);
+						if (recv_len > 0) {
+							// Write received audio data to the file
+							wavFile.write(buffer, recv_len);
+							totalDataSize += recv_len;  // Keep track of how much data is written
+
+							loopCounter++; // Increment the loop counter
+						}
+						else if (recv_len < 0) {
+							std::cerr << "Error receiving data: " << strerror(errno) << std::endl;
+							break;
+						}
+						else {
+							break;  // Exit when no more data is received
+						}
+					}
+
+					// Write the WAV header at the beginning of the file
+					wavFile.seekp(0, std::ios::beg);
+					writeWAVHeader(wavFile, totalDataSize);
+
+					// Close the file
+					wavFile.close();
+
+					// Reset loop counter and increment file counter
+					loopCounter = 0;
+					fileCounter++;
+
+					// Optionally: Break if some condition is met (e.g., receiving is done)
+					// if (some_condition) break;
+				}
+
+		
+			}
+		
 
 			// Notify the main loop that a new message is available (optional if using a timed callback)
 			condition.notify_one();
-		}
-		else if (recv_len < 0) {
-			std::cerr << "Error receiving data: " << strerror(errno) << std::endl;
-		}
+		
 	}
 
 	close(listen_socket);
@@ -398,7 +532,25 @@ void onInMeeting() {
 	//first attempt to start raw recording  / sending, upon successfully joined and achieved "in-meeting" state.
 
 	CheckAndStartRawRecording(GetVideoRawData, GetAudioRawData);
+	CheckAndStartRawSending(SendAudioRawData);
 
+	if (SendAudioRawData) {
+		IMeetingAudioController* meetingAudController = m_pMeetingService->GetMeetingAudioController();
+		SDKError err= meetingAudController->JoinVoip();
+		if (err != SDKERR_SUCCESS) {
+			std::cout << "Error joining Voip: " << err << std::endl;
+		}
+		else {
+			std::cout << "Joined Voip" << std::endl;
+		}
+
+		printf("Is my audio muted: %d\n", getMyself()->IsAudioMuted());
+		//meetingAudController->MuteAudio(getMyself()->GetUserID(),true);
+		meetingAudController->UnMuteAudio(getMyself()->GetUserID());
+
+		//m_pSettingService->GetAudioSettings()->GetMicList();
+		//m_pSettingService->GetAudioSettings()->UseDefaultSystemMic();
+	}
 
 
 	//chatDemo
@@ -501,6 +653,10 @@ void ReadJsonSettings()
 		// Additional processing or handling of parsed values can be done here
 	}
 
+	std::string bin_dir1 = getSelfDirPath();
+	if (SendAudioRawData) {
+		DEFAULT_AUDIO_SOURCE = bin_dir1.append("/").append(DEFAULT_AUDIO_SOURCE);
+	}
 
 
 	printf("directory of config file: %s\n", self_dir.c_str());
@@ -699,6 +855,18 @@ void JoinMeeting()
 		}
 	}
 
+	if (SendAudioRawData) {
+
+		ZOOM_SDK_NAMESPACE::IAudioSettingContext* pAudioContext = m_pSettingService->GetAudioSettings();
+		if (pAudioContext)
+		{
+			//ensure auto join audio
+			pAudioContext->EnableAutoJoinAudio(true);
+			pAudioContext->EnableAlwaysMuteMicWhenJoinVoip(true);
+			pAudioContext->SetSuppressBackgroundNoiseLevel(Suppress_BGNoise_Level_None);
+
+		}
+	}
 
 	//attempt to join meeting
 	if (m_pMeetingService)
@@ -986,7 +1154,13 @@ gboolean processQueue(gpointer user_data) {
 	if (!message.empty()) {
 		// Call the sendMessage method from the MyClass instance
 
-		sendMessage(message);
+		if (isChatElseStream) {
+			sendMessage(message);
+		}
+		else {
+			
+		}
+		
 	}
 
 	// Continue checking the queue periodically

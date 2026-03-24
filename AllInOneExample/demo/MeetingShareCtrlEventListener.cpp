@@ -7,17 +7,20 @@ MeetingShareCtrlEventListener::MeetingShareCtrlEventListener()
 	
 }
 
-void MeetingShareCtrlEventListener::onSharingStatus(SharingStatus status, unsigned int userId)
+void MeetingShareCtrlEventListener::onSharingStatus(ZoomSDKSharingSourceInfo shareInfo)
 {
+	printf("Participant : %d status is %d\n", shareInfo.userid, shareInfo.status);
+}
 
-	printf("Participant : %d status is %d\n", userId, status);
+void MeetingShareCtrlEventListener::onFailedToStartShare()
+{
 }
 
 void MeetingShareCtrlEventListener::onLockShareStatus(bool bLocked)
 {
 }
 
-void MeetingShareCtrlEventListener::onShareContentNotification(ShareInfo& shareInfo)
+void MeetingShareCtrlEventListener::onShareContentNotification(ZoomSDKSharingSourceInfo shareInfo)
 {
 }
 
@@ -37,5 +40,7 @@ void MeetingShareCtrlEventListener::onVideoFileSharePlayError(ZoomSDKVideoFileSh
 {
 }
 
-
+void MeetingShareCtrlEventListener::onOptimizingShareForVideoClipStatusChanged(ZoomSDKSharingSourceInfo shareInfo)
+{
+}
 

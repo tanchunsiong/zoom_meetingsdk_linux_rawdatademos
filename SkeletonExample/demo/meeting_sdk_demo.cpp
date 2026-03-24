@@ -71,7 +71,7 @@ unsigned int userID;
 
 
 //this will fetch the JWT Token from a web service
-bool useJWTTokenFromWebService = true;
+bool useJWTTokenFromWebService = false;
 //this will fetch the RecordingToken from a web service. 
 bool useRecordingTokenFromWebService = false;
 
@@ -358,6 +358,7 @@ void JoinMeeting()
 	withoutloginParam.meetingNumber = std::stoull(meeting_number);
 	withoutloginParam.vanityID = NULL;
 	withoutloginParam.userName = "LinuxChun";
+	withoutloginParam.join_token = "jYSyK7QSodLUo3uHryiW-IHS0CtwqrU6CxO1yG7f_jU.DQcAAAATVmhxnBZBUEV3VzZyV1NDcXJ4MnVQRmwtRGVBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&uuid=WN_aCXYGfpNSWuowcslTlj-tA";
 	// withoutloginParam.psw = "1";
 	withoutloginParam.psw = meeting_password.c_str();
 	withoutloginParam.customer_key = NULL;

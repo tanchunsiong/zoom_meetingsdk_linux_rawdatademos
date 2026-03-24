@@ -96,5 +96,16 @@ public:
 	/// \brief Callback event that that focus mode share type changed by host or co-host.
 	/// \param type Share type change.
 	virtual void onFocusModeShareTypeChanged(FocusModeShareType type);
-};
 
+	/// \brief Callback event that the bot relationship changed in the meeting.
+	virtual void onBotAuthorizerRelationChanged(unsigned int authorizeUserID);
+
+	/// \brief Notification of virtual name tag status change.
+	virtual void onVirtualNameTagStatusChanged(bool bOn, unsigned int userID);
+
+	/// \brief Notification of virtual name tag roster info updated.
+	virtual void onVirtualNameTagRosterInfoUpdated(unsigned int userID);
+
+	/// \brief Callback event when the user's grant co-owner permission changed.
+	virtual void onGrantCoOwnerPrivilegeChanged(bool canGrantOther);
+};

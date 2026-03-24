@@ -1,0 +1,9 @@
+{
+  "meeting_number": "1234567890",
+  "token": "xxxxxx.yyyyyyyyy.zzzzzzzz",
+  "meeting_password": "",
+  "recording_token": "",
+  "remote_url": "https://example.com/meeting-csdk/",
+  "useJWTTokenFromWebService": "false",
+  "useRecordingTokenFromWebService": "false"
+}
