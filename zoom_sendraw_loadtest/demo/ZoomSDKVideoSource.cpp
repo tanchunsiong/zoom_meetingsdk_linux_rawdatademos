@@ -1,7 +1,7 @@
 //SendVideoRawData
 
 #include "ZoomSDKVideoSource.h"
-#include <iostream>
+
 #include <thread>
 #include <iostream>
 #include <string>
@@ -9,6 +9,7 @@
 #include <chrono>
 #include <vector>
 #include <cstring>
+#include <fstream>
 
 
 //using namespace cv;
@@ -50,7 +51,66 @@ static bool CopyFrameToContiguousI420(const AVFrame* frame, int frame_width, int
     return true;
 }
 
-void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::string& video_source) {
+static bool EndsWith(const std::string& value, const std::string& suffix) {
+    return value.size() >= suffix.size() &&
+        value.compare(value.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+static void PlayRawYUV420ToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::string& video_source, int video_width, int video_height, int video_fps) {
+    video_width = WIDTH;
+    video_height = HEIGHT;
+
+    if (video_width <= 0 || video_height <= 0 || video_width % 2 != 0 || video_height % 2 != 0) {
+        std::cerr << "Error: invalid raw YUV dimensions " << video_width << "x" << video_height << std::endl;
+        return;
+    }
+
+    const int frame_len = video_width * video_height * 3 / 2;
+    const int frame_delay_ms = video_fps > 0 ? 1000 / video_fps : 33;
+    std::vector<char> frame(frame_len);
+    std::cout << "Sending raw YUV as hardcoded " << video_width << "x" << video_height << "@" << video_fps << "fps" << std::endl;
+
+    while (video_play_flag > 0) {
+        std::ifstream input(video_source.c_str(), std::ios::binary);
+        if (!input.is_open()) {
+            std::cerr << "Error: Could not open raw YUV file: " << video_source << std::endl;
+            return;
+        }
+
+        while (video_play_flag > 0) {
+            input.read(frame.data(), frame_len);
+            if (input.gcount() == 0) {
+                break;
+            }
+            if (input.gcount() != frame_len) {
+                std::cerr << "Skipping partial raw YUV frame from " << video_source << std::endl;
+                break;
+            }
+
+            SDKError err = video_sender->sendVideoFrame(
+                frame.data(),
+                video_width,
+                video_height,
+                frame_len,
+                0,
+                FrameDataFormat_I420_LIMITED
+            );
+            if (err != SDKERR_SUCCESS) {
+                std::cerr << "Error: Failed to send raw YUV frame. Error code: " << err << std::endl;
+                return;
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(frame_delay_ms));
+        }
+    }
+}
+
+void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::string& video_source, int video_width, int video_height, int video_fps) {
+    if (EndsWith(video_source, ".yuv")) {
+        PlayRawYUV420ToVirtualCamera(video_sender, video_source, video_width, video_height, video_fps);
+        return;
+    }
+
     while (video_play_flag > 0) {
         // Initialize FFmpeg.
         av_register_all();
@@ -136,7 +196,8 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
             av_packet_unref(&packet);
 
             // Add a delay to control the frame rate (adjust as needed).
-            std::this_thread::sleep_for(std::chrono::milliseconds(33));  // Approximately 30 frames per second.
+            const int frame_delay_ms = video_fps > 0 ? 1000 / video_fps : 33;
+            std::this_thread::sleep_for(std::chrono::milliseconds(frame_delay_ms));
         }
 
         // Clean up.
@@ -147,6 +208,10 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
 void ZoomSDKVideoSource::onInitialize(IZoomSDKVideoSender* sender, IList<VideoSourceCapability>* support_cap_list, VideoSourceCapability& suggest_cap)
 {
     std::cout << "ZoomSDKVideoSource onInitialize" << endl;
+    suggest_cap.width = video_width_;
+    suggest_cap.height = video_height_;
+    suggest_cap.frame = video_fps_;
+    std::cout << "request video capability: " << suggest_cap.width << "x" << suggest_cap.height << "@" << suggest_cap.frame << "fps" << endl;
     video_sender_ = sender;
 }
 
@@ -155,8 +220,9 @@ void ZoomSDKVideoSource::onPropertyChange(IList<VideoSourceCapability>* support_
     std::cout << "onPropertyChange" << endl;
     std::cout << "suggest frame: " << suggest_cap.frame << endl;
     std::cout << "suggest size: " << suggest_cap.width << "x" << suggest_cap.height << endl;
-    width = suggest_cap.width;
-    height = suggest_cap.height;
+    width = WIDTH;
+    height = HEIGHT;
+    std::cout << "using hardcoded send size: " << width << "x" << height << endl;
     std::cout << "calculated frameLen: " << height / 2 * 3 * width << endl;
 }
 
@@ -165,7 +231,7 @@ void ZoomSDKVideoSource::onStartSend()
     std::cout << "onStartSend" << endl;
     if (video_sender_ && video_play_flag != 1) {
         video_play_flag = 1;
-        thread(PlayVideoFileToVirtualCamera, video_sender_, video_source_).detach();
+        thread(PlayVideoFileToVirtualCamera, video_sender_, video_source_, video_width_, video_height_, video_fps_).detach();
     }
     else {
         std::cout << "video_sender_ is null" << endl;
@@ -184,7 +250,14 @@ void ZoomSDKVideoSource::onUninitialized()
     video_sender_ = nullptr;
 }
 
-ZoomSDKVideoSource::ZoomSDKVideoSource(string video_source)
+ZoomSDKVideoSource::ZoomSDKVideoSource(string video_source, int video_width, int video_height, int video_fps)
 {
     video_source_ = video_source;
+    if (video_width != WIDTH || video_height != HEIGHT) {
+        std::cout << "Ignoring configured video dimensions " << video_width << "x" << video_height
+            << "; using hardcoded " << WIDTH << "x" << HEIGHT << std::endl;
+    }
+    video_width_ = WIDTH;
+    video_height_ = HEIGHT;
+    video_fps_ = video_fps;
 }

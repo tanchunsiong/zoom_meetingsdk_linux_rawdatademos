@@ -32,3 +32,18 @@
 .env
 /build/
 /sdk
+
+# Local load-test media and runtime config.
+zoom_sendraw_loadtest/.env
+zoom_sendraw_loadtest/demo/config.json
+zoom_sendraw_loadtest/media/*
+!zoom_sendraw_loadtest/media/.gitkeep
+zoom_sendraw_loadtest/videosamples/*
+!zoom_sendraw_loadtest/videosamples/.gitkeep
+zoom_sendraw_loadtest/**/*.mp4
+zoom_sendraw_loadtest/**/*.wav
+zoom_sendraw_loadtest/**/*.pcm
+zoom_sendraw_loadtest/**/*.yuv
+zoom_sendraw_loadtest/**/*.m4a
+zoom_sendraw_loadtest/**/*.mp3
+zoom_sendraw_loadtest/**/*.flac
