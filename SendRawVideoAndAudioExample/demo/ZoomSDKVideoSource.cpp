@@ -2,11 +2,13 @@
 
 #include "ZoomSDKVideoSource.h"
 
-#include <thread> 
+#include <thread>
 #include <iostream>
 #include <string>
 #include <cstdio>
 #include <chrono>
+#include <vector>
+#include <cstring>
 
 
 //using namespace cv;
@@ -21,8 +23,35 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 }
 
+static void CopyPlaneToI420(const uint8_t* src, int src_stride, char* dst, int width, int height) {
+    for (int row = 0; row < height; ++row) {
+        memcpy(dst + row * width, src + row * src_stride, width);
+    }
+}
+
+static bool CopyFrameToContiguousI420(const AVFrame* frame, int frame_width, int frame_height, std::vector<char>& output) {
+    if (!frame || !frame->data[0] || !frame->data[1] || !frame->data[2]) {
+        return false;
+    }
+
+    const int y_size = frame_width * frame_height;
+    const int uv_width = frame_width / 2;
+    const int uv_height = frame_height / 2;
+    const int uv_size = uv_width * uv_height;
+    output.resize(y_size + (uv_size * 2));
+
+    char* y_plane = output.data();
+    char* u_plane = y_plane + y_size;
+    char* v_plane = u_plane + uv_size;
+
+    CopyPlaneToI420(frame->data[0], frame->linesize[0], y_plane, frame_width, frame_height);
+    CopyPlaneToI420(frame->data[1], frame->linesize[1], u_plane, uv_width, uv_height);
+    CopyPlaneToI420(frame->data[2], frame->linesize[2], v_plane, uv_width, uv_height);
+    return true;
+}
+
 void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::string& video_source) {
-    while (true) {
+    while (video_play_flag > 0) {
         // Initialize FFmpeg.
         av_register_all();
         avcodec_register_all();
@@ -71,7 +100,8 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
 
         // Read and send frames in a loop.
         AVPacket packet;
-        while (av_read_frame(formatContext, &packet) >= 0) {
+        std::vector<char> i420_frame;
+        while (video_play_flag > 0 && av_read_frame(formatContext, &packet) >= 0) {
             if (packet.stream_index == videoStreamIndex) {
                 AVFrame* frame = av_frame_alloc();
                 if (!frame) {
@@ -83,20 +113,17 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
                 int frameFinished;
                 avcodec_decode_video2(codecContext, frame, &frameFinished, &packet);
 
-                if (frameFinished) {
-                    // Now, `frame` contains the YUV420P frame.
-
-                    // Send the frame to the virtual camera.
-                    SDKError err = ((IZoomSDKVideoSender*)video_sender)->sendVideoFrame(
-                        reinterpret_cast<char*>(frame->data[0]), // Cast to char* for the frame buffer
+                if (frameFinished && CopyFrameToContiguousI420(frame, codecContext->width, codecContext->height, i420_frame)) {
+                    SDKError err = video_sender->sendVideoFrame(
+                        i420_frame.data(),
                         codecContext->width,
-                        codecContext->height, 
-                        codecContext->width * codecContext->height * 3 / 2, // Frame length for YUV420I
-                        0, // Rotation (modify as needed)
-                        FrameDataFormat_I420_FULL
+                        codecContext->height,
+                        static_cast<int>(i420_frame.size()),
+                        0,
+                        FrameDataFormat_I420_LIMITED
                     );
                     if (err != SDKERR_SUCCESS) {
-                        std::cerr << "Error: Failed to send video frame." << std::endl;
+                        std::cerr << "Error: Failed to send video frame. Error code: " << err << std::endl;
                         av_frame_free(&frame);
                         avformat_close_input(&formatContext);
                         return;
@@ -115,11 +142,11 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
         // Clean up.
         avcodec_close(codecContext);
         avformat_close_input(&formatContext);
-    } // End of the infinite loop
+    }
 }
 void ZoomSDKVideoSource::onInitialize(IZoomSDKVideoSender* sender, IList<VideoSourceCapability>* support_cap_list, VideoSourceCapability& suggest_cap)
 {
-    std::cout << "ZoomSDKVideoSource onInitialize waiting for turnOn chat command" << endl;
+    std::cout << "ZoomSDKVideoSource onInitialize" << endl;
     video_sender_ = sender;
 }
 
@@ -137,7 +164,6 @@ void ZoomSDKVideoSource::onStartSend()
 {
     std::cout << "onStartSend" << endl;
     if (video_sender_ && video_play_flag != 1) {
-        while (video_play_flag > -1) {}
         video_play_flag = 1;
         thread(PlayVideoFileToVirtualCamera, video_sender_, video_source_).detach();
     }
@@ -162,4 +188,3 @@ ZoomSDKVideoSource::ZoomSDKVideoSource(string video_source)
 {
     video_source_ = video_source;
 }
-

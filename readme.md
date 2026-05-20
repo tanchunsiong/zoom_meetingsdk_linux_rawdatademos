@@ -15,6 +15,7 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 - `SendRawVideoAndAudioExample`: send video and audio into a meeting
 - `SendRawVideoAndAudioWithRTMSExample`: RTMS-driven media injection sample
 - `SkeletonExample`: minimal join/auth sample
+- `zoom_sendraw_loadtest`: Docker/Portainer-oriented raw audio/video sender for authorized meeting load tests
 
 ## Repository layout
 
@@ -24,6 +25,7 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 ├── cmake/
 ├── version.txt
 ├── readme.md
+├── zoom_sendraw_loadtest/
 └── <DemoName>/demo
 ```
 
@@ -163,6 +165,11 @@ The config file is intentionally ignored by git.
 
 Per-demo Dockerfiles are included under each sample directory. See
 `readme for docker.md` for example build and run commands.
+
+The `zoom_sendraw_loadtest` folder is the load-test variant. It builds a Docker
+image, fetches Meeting SDK JWTs from `https://nodejs.asdc.cc/meeting` by default,
+and includes converted raw media pairs for randomized send tests. See
+`zoom_sendraw_loadtest/README.md`.
 
 ## WSL / IDE notes
 

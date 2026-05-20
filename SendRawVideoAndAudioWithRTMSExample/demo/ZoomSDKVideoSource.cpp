@@ -128,7 +128,13 @@ void ZoomSDKVideoSource::sendFrames() {
             break;
         }
 
- 
+        if (frame.size() != static_cast<size_t>(frame_len)) {
+            std::cerr << "❌ Skipping frame — got " << frame.size()
+                      << " bytes, expected " << frame_len << "\n";
+            continue;
+        }
+
+
 // std::cout << "📤 Sending frame of size: " << frame.size()
 //           << " | Resolution: " << width_ << "x" << height_
 //           << " | Expected size: " << width_ * height_ * 3 / 2 << "\n";
@@ -136,9 +142,9 @@ void ZoomSDKVideoSource::sendFrames() {
             reinterpret_cast<char*>(frame.data()),
             width_,
             height_,
-            frame_len,
+            static_cast<int>(frame.size()),
             0,
-            FrameDataFormat_I420_FULL
+            FrameDataFormat_I420_LIMITED
         );
 
         if (err == SDKERR_SUCCESS) {
