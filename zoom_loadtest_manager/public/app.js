@@ -17,7 +17,7 @@ const containerRefreshMs = 10_000;
 let containerRefreshInFlight = false;
 
 const envHelp = {
-  MEETING_TOKEN_ENDPOINT: 'HTTP service the manager calls just-in-time to get a Zoom Meeting SDK JWT/signature for a meeting number and role. Default: https://nodejs.asdc.cc/meeting. The returned token is passed into the container as JWT_TOKEN; the container should not fetch it itself.'
+  MEETING_TOKEN_ENDPOINT: 'HTTPS endpoint the manager calls just-in-time to get a Zoom Meeting SDK JWT/signature for a meeting number and role. The returned token is passed into the container as JWT_TOKEN; the container should not fetch it itself.'
 };
 
 function escapeHtml(value) {
