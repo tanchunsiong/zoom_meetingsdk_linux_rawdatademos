@@ -13,8 +13,8 @@
   --warning: #b7791f;
   --danger: #d93025;
   --shadow: 0 12px 32px rgba(31, 35, 41, 0.08);
-  --font-sans: "Almaden Sans", "Aptos", "Helvetica Neue", sans-serif;
-  --font-mono: "Zoom Sans Mono", "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+  --font-sans: "Lato", "Segoe UI Variable", "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-mono: "Noto Sans Mono", "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
 }
 
 * {
@@ -26,10 +26,11 @@ body {
   min-height: 100vh;
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 450;
-  line-height: 1.45;
-  letter-spacing: -0.006em;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
   background:
     linear-gradient(180deg, rgba(11, 92, 255, 0.08), transparent 260px),
@@ -56,9 +57,9 @@ button {
   color: #fff;
   background: var(--zoom-blue);
   cursor: pointer;
-  font-size: 0.88rem;
-  font-weight: 680;
-  letter-spacing: -0.01em;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0;
   box-shadow: 0 4px 10px rgba(11, 92, 255, 0.2);
   transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
 }
@@ -135,9 +136,9 @@ button:disabled {
 .eyebrow {
   margin: 0 0 0.35rem;
   color: var(--zoom-blue);
-  font-size: 0.72rem;
-  font-weight: 760;
-  letter-spacing: 0.045em;
+  font-size: 0.71rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 
@@ -149,25 +150,25 @@ h2 {
 
 h1 {
   max-width: 900px;
-  font-size: clamp(2rem, 3vw, 3.05rem);
-  font-weight: 760;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.9rem, 2.6vw, 2.65rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
 }
 
 h2 {
   margin-bottom: 0.85rem;
-  font-size: 1.02rem;
-  font-weight: 720;
-  letter-spacing: -0.025em;
+  font-size: 1.16rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
 }
 
 .lede {
   max-width: 820px;
   margin: 0.45rem 0 0;
   color: var(--muted);
-  font-size: 0.98rem;
-  font-weight: 430;
+  font-size: 0.96rem;
+  font-weight: 400;
   line-height: 1.45;
 }
 
@@ -219,18 +220,31 @@ h2 {
 
 .card-heading h2 {
   margin-bottom: 0;
+  font-size: 1.18rem;
 }
 
 .compact-heading {
   margin-bottom: 0.65rem;
 }
 
+.compact-heading h2,
+.join-target-panel h2 {
+  font-size: 1rem;
+  letter-spacing: -0.008em;
+}
+
 .hint {
   margin: 0 0 0.85rem;
   color: var(--muted);
-  font-size: 0.84rem;
-  font-weight: 430;
+  font-size: 0.83rem;
+  font-weight: 400;
   line-height: 1.45;
+}
+
+.card-heading .hint {
+  max-width: 760px;
+  margin-top: 0.28rem;
+  font-size: 0.88rem;
 }
 
 label {
@@ -239,8 +253,8 @@ label {
   margin-bottom: 0.75rem;
   color: #4b5563;
   font-size: 0.78rem;
-  font-weight: 680;
-  letter-spacing: 0.006em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .label-row {
@@ -258,7 +272,7 @@ label {
   color: #fff;
   background: var(--zoom-blue);
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1;
   cursor: help;
 }
@@ -266,7 +280,7 @@ label {
 .field-help {
   color: var(--muted);
   font-size: 0.75rem;
-  font-weight: 520;
+  font-weight: 400;
   line-height: 1.35;
 }
 
@@ -279,7 +293,7 @@ textarea {
   padding: 0.62rem 0.72rem;
   color: var(--ink);
   font-size: 0.9rem;
-  font-weight: 430;
+  font-weight: 400;
   background: #fff;
   outline: none;
   transition: border-color 120ms ease, box-shadow 120ms ease;
@@ -380,7 +394,7 @@ textarea:focus {
 .pill strong {
   color: var(--zoom-blue);
   font-size: 0.9rem;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .pill small {
@@ -422,7 +436,7 @@ textarea:focus {
 .health-line small {
   color: var(--muted);
   font-size: 0.78rem;
-  font-weight: 620;
+  font-weight: 600;
 }
 
 .health-badge {
@@ -435,7 +449,7 @@ textarea:focus {
   color: #fff;
   background: var(--muted);
   font-size: 0.72rem;
-  font-weight: 780;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -512,8 +526,8 @@ textarea:focus {
 .user-main strong,
 .container-item strong {
   font-size: 0.94rem;
-  font-weight: 720;
-  letter-spacing: -0.012em;
+  font-weight: 700;
+  letter-spacing: -0.006em;
 }
 
 .inline-actions {
@@ -535,7 +549,7 @@ textarea:focus {
   gap: 0.35rem;
   color: var(--muted);
   font-size: 0.81rem;
-  font-weight: 520;
+  font-weight: 400;
 }
 
 .container-meta span {
@@ -567,7 +581,7 @@ button.compact {
 .detail-grid span {
   color: var(--muted);
   font-size: 0.82rem;
-  font-weight: 680;
+  font-weight: 600;
 }
 
 .detail-grid code,
