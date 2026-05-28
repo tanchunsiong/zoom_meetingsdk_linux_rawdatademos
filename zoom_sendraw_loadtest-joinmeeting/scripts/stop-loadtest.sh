@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT=${1:-${PROJECT:-zoom-loadtest}}
+PROJECT=${1:-${PROJECT:-zoom-loadtest-joinmeeting}}
 
 mapfile -t containers < <(docker ps -aq --filter "label=zoom-loadtest.project=${PROJECT}")
 

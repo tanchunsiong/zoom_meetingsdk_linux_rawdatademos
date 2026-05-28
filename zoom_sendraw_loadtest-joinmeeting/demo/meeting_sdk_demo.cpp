@@ -107,7 +107,7 @@ unsigned int userID;
 
 
 //this will fetch the JWT Token from a web service
-bool useJWTTokenFromWebService = true;
+bool useJWTTokenFromWebService = false;
 //this will fetch the RecordingToken from a web service.
 bool useRecordingTokenFromWebService = false;
 
@@ -335,7 +335,15 @@ bool processJsonValue(const Json& json, const std::string& key, std::string& val
 	auto it = json.find(key);
 	if (it != json.end() && !it->is_null()) {
 		value = it->get<std::string>();
-		printf("config %s: %s\n", key.c_str(), value.c_str());
+		std::string lower_key = key;
+		std::transform(lower_key.begin(), lower_key.end(), lower_key.begin(), ::tolower);
+		if (lower_key.find("token") != std::string::npos ||
+			lower_key.find("password") != std::string::npos) {
+			printf("config %s: %s\n", key.c_str(), value.empty() ? "[empty]" : "[set]");
+		}
+		else {
+			printf("config %s: %s\n", key.c_str(), value.c_str());
+		}
 		return true;
 	}
 	return false;
@@ -519,7 +527,7 @@ void ReadJsonSettings()
 	Json config_json;
 	try {
 		config_json = Json::parse(buffer);
-		printf("values of configuration from localfile: %s\n", buffer.c_str());
+		std::cout << "configuration loaded from local file (" << buffer.size() << " bytes)" << std::endl;
 	}
 	catch (Json::parse_error& ex) {
 		// Handle JSON parse error
@@ -952,11 +960,11 @@ std::string getJWTToken(const std::string& remote_url) {
 
 		// Process the response using your existing code
 		Json responses_json;
-		try
-		{
-			responses_json = Json::parse(responsestr);
-			printf("config from web service: %s\n", responsestr.c_str());
-		}
+			try
+			{
+				responses_json = Json::parse(responsestr);
+				std::cout << "config from web service received (" << responsestr.size() << " bytes)" << std::endl;
+			}
 		catch (Json::parse_error& ex)
 		{
 		}

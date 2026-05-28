@@ -15,7 +15,8 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 - `SendRawVideoAndAudioExample`: send video and audio into a meeting
 - `SendRawVideoAndAudioWithRTMSExample`: RTMS-driven media injection sample
 - `SkeletonExample`: minimal join/auth sample
-- `zoom_sendraw_loadtest`: Docker/Portainer-oriented raw audio/video sender for authorized meeting load tests
+- `zoom_sendraw_loadtest-joinmeeting`: Docker/Portainer-oriented raw audio/video sender for authorized join-meeting load tests
+- `zoom_sendraw_loadtest-start-meeting`: separate Docker/Portainer folder that starts a meeting as host with a ZAK token
 
 ## Repository layout
 
@@ -25,7 +26,8 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 ├── cmake/
 ├── version.txt
 ├── readme.md
-├── zoom_sendraw_loadtest/
+├── zoom_sendraw_loadtest-joinmeeting/
+├── zoom_sendraw_loadtest-start-meeting/
 └── <DemoName>/demo
 ```
 
@@ -166,10 +168,15 @@ The config file is intentionally ignored by git.
 Per-demo Dockerfiles are included under each sample directory. See
 `readme for docker.md` for example build and run commands.
 
-The `zoom_sendraw_loadtest` folder is the load-test variant. It builds a Docker
-image, fetches Meeting SDK JWTs from `https://nodejs.asdc.cc/meeting` by default,
-and includes converted raw media pairs for randomized send tests. See
-`zoom_sendraw_loadtest/README.md`.
+The `zoom_sendraw_loadtest-joinmeeting` folder is the join-meeting load-test
+variant. It builds a Docker image, accepts the Meeting SDK JWT/signature as a
+runtime parameter, and includes converted raw media pairs for randomized send
+tests. See `zoom_sendraw_loadtest-joinmeeting/README.md`.
+
+The `zoom_sendraw_loadtest-start-meeting` folder is a separate copy that uses the
+SDK `Start(...)` path with runtime Meeting SDK JWT/signature and host ZAK token,
+without changing the join-only load-test image. See
+`zoom_sendraw_loadtest-start-meeting/README.md`.
 
 ## WSL / IDE notes
 
