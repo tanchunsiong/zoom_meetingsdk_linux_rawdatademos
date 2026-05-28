@@ -1,0 +1,23 @@
+.docker-sdk/
+demo/bin/
+demo/build/
+demo/config.json
+.env
+*.log
+core
+core.*
+
+# Generated/source media is intentionally local-only.
+media/*
+!media/.gitkeep
+videosamples/*
+!videosamples/.gitkeep
+
+# Do not commit binary audio/video samples in this load-test fork.
+*.mp4
+*.wav
+*.pcm
+*.yuv
+*.m4a
+*.mp3
+*.flac

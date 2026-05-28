@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-IMAGE=${IMAGE:-zoom-sendraw-loadtest:latest}
+IMAGE=${IMAGE:-dcr.asdc.cc/zoom-sendraw-loadtest-joinmeeting:latest}
 SDK_SOURCE=${SDK_SOURCE:-/home/dreamtcs/temp/sdk/zoom-meeting-sdk-linux_x86_64-6.7.5.7391}
 SDK_STAGE_ROOT="${ROOT_DIR}/.docker-sdk"
 SDK_STAGE="${SDK_STAGE_ROOT}/$(basename "$SDK_SOURCE")"
@@ -22,3 +22,9 @@ else
 fi
 
 docker build -t "$IMAGE" "$ROOT_DIR"
+
+case "${PUSH_IMAGE:-false}" in
+  1|true|TRUE|yes|YES|on|ON)
+    docker push "$IMAGE"
+    ;;
+esac
