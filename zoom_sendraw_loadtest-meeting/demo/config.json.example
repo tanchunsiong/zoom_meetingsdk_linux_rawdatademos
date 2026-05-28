@@ -1,0 +1,23 @@
+{
+  "meeting_number": "1234567890",
+  "token": "",
+  "meeting_password": "",
+  "recording_token": "",
+  "remote_url": "https://nodejs.asdc.cc/meeting",
+  "user_name": "ZoomLoadBot",
+  "user_zak": "",
+  "media_manifest": "../../media/manifest.json",
+  "media_index": "-1",
+  "video_width": "1280",
+  "video_height": "720",
+  "video_fps": "30",
+  "audio_sample_rate": "48000",
+  "audio_channels": "1",
+  "jwt_role": "0",
+  "useJWTTokenFromWebService": "false",
+  "useRecordingTokenFromWebService": "false",
+  "SendVideoRawData": "false",
+  "SendAudioRawData": "false",
+  "chatDemo": "true",
+  "exitOnMeetingEnd": "true"
+}

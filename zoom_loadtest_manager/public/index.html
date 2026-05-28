@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zoom Load Test Manager</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Meeting SDK Linux control plane</p>
+          <h1>Zoom Load Test Manager</h1>
+          <p class="lede">Run load-test containers from custCreate users with inline start, join, RTMS, and cleanup controls.</p>
+        </div>
+        <div class="hero-actions">
+          <button data-action="refresh-all">Refresh</button>
+          <button data-action="test-oauth" class="secondary">Test Zoom OAuth</button>
+          <button data-action="docker-login" class="secondary">Docker Login</button>
+        </div>
+      </section>
+
+      <section class="grid two uneven">
+        <form class="card env-card" data-form="env">
+          <div class="card-heading">
+            <h2>Environment</h2>
+            <button>Save .env</button>
+          </div>
+          <p class="hint">Secrets are stored only in the ignored local <code>.env</code>. Blank secret fields keep the existing value.</p>
+          <div id="env-fields" class="env-grid">Loading...</div>
+        </form>
+
+        <article class="card">
+          <h2>Runtime Status</h2>
+          <div id="env-status" class="status-list">Loading...</div>
+        </article>
+      </section>
+
+      <section class="card user-control">
+        <div class="card-heading">
+          <div>
+            <h2>custCreate User Control</h2>
+            <p class="hint">Each row launches with that user's PMI/passcode when available. If no instant meeting ID is exposed, the server schedules a fallback meeting immediately before launch.</p>
+          </div>
+          <div class="button-row">
+            <button data-action="start-all-users">Start Meeting For All</button>
+            <button data-action="refresh-users" class="secondary">Refresh Users</button>
+          </div>
+        </div>
+        <div class="join-target-panel">
+          <div>
+            <h2>Join Meeting Target</h2>
+            <p class="hint">Optional override used by each row's Join Meeting button. Leave blank to join that custCreate user's resolved meeting.</p>
+          </div>
+          <div class="inline-fields adhoc-fields">
+            <label>Meeting ID <input data-join-target="meetingNumber" inputmode="numeric" placeholder="1234567890"></label>
+            <label>Password <input data-join-target="meetingPassword" placeholder="optional"></label>
+          </div>
+        </div>
+        <div id="user-list" class="user-list">Loading...</div>
+
+        <form data-form="adhoc-join" class="create-user-panel">
+          <div class="card-heading compact-heading">
+            <h2>Manual Join Meeting</h2>
+          </div>
+          <div class="inline-fields adhoc-fields">
+            <label>Meeting ID <input name="meetingNumber" inputmode="numeric" required placeholder="1234567890"></label>
+            <label>Password <input name="meetingPassword" placeholder="optional"></label>
+            <label>Instances <input name="count" type="number" min="1" value="1"></label>
+            <button>Join Meeting</button>
+          </div>
+        </form>
+
+        <form data-form="create-user" class="create-user-panel">
+          <div class="card-heading compact-heading">
+            <h2>Create custCreate User</h2>
+            <button data-action="suggest-user" class="secondary" type="button">Randomize Fields</button>
+          </div>
+          <div class="inline-fields">
+            <label>Email <input name="email" type="email" required></label>
+            <label>First Name <input name="firstName" required></label>
+            <label>Last Name <input name="lastName" required></label>
+            <label>User Type
+              <select name="type">
+                <option value="2">Licensed</option>
+                <option value="1">Basic</option>
+              </select>
+            </label>
+            <button>Create</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card log-card">
+        <div class="card-heading">
+          <div>
+            <h2>Containers</h2>
+            <p class="hint">Health auto-refreshes every 10 seconds. Alive means Docker still reports the container as running; exited/dead rows include the exit code. Last check: <code id="container-last-check">never</code>. Current RTMS client ID: <code id="rtms-client-id-label">loading</code>.</p>
+          </div>
+          <div class="button-row">
+            <button data-action="rtms-start-all">Start RTMS For All</button>
+            <button data-action="kill-all" class="danger">Kill All</button>
+          </div>
+        </div>
+        <div id="container-list" class="container-list">Loading...</div>
+      </section>
+
+      <section class="card log-card">
+        <h2>Action Log</h2>
+        <pre id="log"></pre>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
