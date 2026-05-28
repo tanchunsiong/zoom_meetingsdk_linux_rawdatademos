@@ -449,14 +449,22 @@ app.post('/api/zoom/rtms/status', asyncRoute(async (req, res) => {
   try {
     result = await updateRtmsStatus(target.meetingId, action, clientId, participantUserId);
   } catch (error) {
-    if (error instanceof HttpError && Number(error.details?.code) === 2308) {
-      error.details = {
-        ...error.details,
-        participantUserId,
-        fix: 'RTMS can only be started by the meeting host or an alternative host. Use a start-mode host container, or pass participantUserId for the host/alternative host.'
+    if (action === 'stop' && error instanceof HttpError && Number(error.details?.code) === 13277) {
+      result = {
+        alreadyStopped: true,
+        zoomCode: error.details.code,
+        message: error.details.message
       };
+    } else {
+      if (error instanceof HttpError && Number(error.details?.code) === 2308) {
+        error.details = {
+          ...error.details,
+          participantUserId,
+          fix: 'RTMS can only be started by the meeting host or an alternative host. Use a start-mode host container, or pass participantUserId for the host/alternative host.'
+        };
+      }
+      throw error;
     }
-    throw error;
   }
   res.json({
     ok: true,
