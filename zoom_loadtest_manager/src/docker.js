@@ -75,6 +75,52 @@ function addOptionalLabel(args, key, value) {
   }
 }
 
+function parseDockerStats(stdout) {
+  const statsById = new Map();
+  for (const line of stdout.split('\n').map(entry => entry.trim()).filter(Boolean)) {
+    try {
+      const raw = JSON.parse(line);
+      const id = String(raw.ID || raw.Container || '');
+      const name = String(raw.Name || '');
+      const stats = {
+        cpuPercent: raw.CPUPerc || '',
+        memoryUsage: raw.MemUsage || '',
+        memoryPercent: raw.MemPerc || '',
+        networkIo: raw.NetIO || '',
+        blockIo: raw.BlockIO || '',
+        pids: raw.PIDs || ''
+      };
+      for (const key of [id, id.slice(0, 12), name].filter(Boolean)) {
+        statsById.set(key, stats);
+      }
+    } catch {
+      // Ignore malformed docker stats lines instead of breaking container health.
+    }
+  }
+  return statsById;
+}
+
+async function statsForRunningContainers(containers) {
+  const runningIds = containers
+    .filter(container => container.State?.Running)
+    .map(container => container.Id)
+    .filter(Boolean);
+  if (!runningIds.length) return new Map();
+
+  try {
+    const result = await runCommand('docker', [
+      'stats',
+      '--no-stream',
+      '--format',
+      '{{json .}}',
+      ...runningIds
+    ], { timeoutMs: 20_000 });
+    return parseDockerStats(result.stdout);
+  } catch {
+    return new Map();
+  }
+}
+
 export async function startContainers(input) {
   const mode = input.mode === 'start' ? 'start' : 'join';
   const project = input.project || config.docker.project;
@@ -163,17 +209,22 @@ export async function listContainers() {
   if (!ids.length) return [];
 
   const inspectResult = await runCommand('docker', ['inspect', ...ids], { timeoutMs: 30_000 });
-  return JSON.parse(inspectResult.stdout).map(container => {
+  const inspected = JSON.parse(inspectResult.stdout);
+  const statsById = await statsForRunningContainers(inspected);
+
+  return inspected.map(container => {
     const labels = container.Config?.Labels ?? {};
     const dockerState = container.State ?? {};
     const running = Boolean(dockerState.Running);
     const status = dockerState.Status || '';
     const healthStatus = dockerState.Health?.Status || '';
     const health = running ? (healthStatus || 'alive') : (status === 'dead' ? 'dead' : 'exited');
+    const id = String(container.Id || '');
+    const name = String(container.Name || '').replace(/^\//, '');
     return {
-      id: String(container.Id || '').slice(0, 12),
-      fullId: container.Id,
-      name: String(container.Name || '').replace(/^\//, ''),
+      id: id.slice(0, 12),
+      fullId: id,
+      name,
       image: container.Config?.Image || '',
       status,
       health,
@@ -189,6 +240,7 @@ export async function listContainers() {
       userId: labels['zoom-loadtest.user-id'] || '',
       userEmail: labels['zoom-loadtest.user-email'] || '',
       userType: labels['zoom-loadtest.user-type'] || '',
+      stats: statsById.get(id) || statsById.get(id.slice(0, 12)) || statsById.get(name) || null,
       labels
     };
   });

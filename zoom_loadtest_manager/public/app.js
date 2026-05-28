@@ -20,6 +20,12 @@ const envHelp = {
   MEETING_TOKEN_ENDPOINT: 'HTTPS endpoint the manager calls just-in-time to get a Zoom Meeting SDK JWT/signature for a meeting number and role. The returned token is passed into the container as JWT_TOKEN; the container should not fetch it itself.'
 };
 
+const envLabels = {
+  ZOOM_ACCOUNT_ID: 'S2S Zoom Account ID',
+  ZOOM_CLIENT_ID: 'S2S Zoom Client ID',
+  ZOOM_CLIENT_SECRET: 'S2S Zoom Client Secret'
+};
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -100,13 +106,28 @@ function containerHealth(container) {
   };
 }
 
+function statsMeta(container) {
+  const stats = container.stats || {};
+  if (!stats.cpuPercent && !stats.memoryUsage && !stats.blockIo) {
+    return container.running ? '<span>stats pending</span>' : '<span>stats unavailable</span>';
+  }
+
+  return [
+    stats.cpuPercent ? `<span>cpu ${escapeHtml(stats.cpuPercent)}</span>` : '',
+    stats.memoryUsage ? `<span>mem ${escapeHtml(stats.memoryUsage)}</span>` : '',
+    stats.memoryPercent ? `<span>mem% ${escapeHtml(stats.memoryPercent)}</span>` : '',
+    stats.blockIo ? `<span>disk I/O ${escapeHtml(stats.blockIo)}</span>` : '',
+    stats.pids ? `<span>pids ${escapeHtml(stats.pids)}</span>` : ''
+  ].filter(Boolean).join('');
+}
+
 function renderEnvFields(values) {
   envFieldsEl.innerHTML = values.map(item => {
     const help = envHelp[item.key] || '';
     return `
     <label class="${help ? 'has-help' : ''}">
       <span class="label-row">
-        <span>${escapeHtml(item.key)}</span>
+        <span>${escapeHtml(envLabels[item.key] || item.key)}</span>
         ${help ? `<span class="tooltip" title="${escapeHtml(help)}" aria-label="${escapeHtml(help)}">?</span>` : ''}
       </span>
       <input
@@ -227,6 +248,7 @@ function renderContainers(containers) {
           <code>${escapeHtml(container.image || '')}</code>
         </div>
         <div class="container-meta">
+          ${statsMeta(container)}
           <span>${escapeHtml(container.status || '')}</span>
           <span>${escapeHtml(container.mode || '')}</span>
           <span>${container.meetingNumber ? `meeting ${escapeHtml(container.meetingNumber)}` : 'no meeting label'}</span>
@@ -394,6 +416,7 @@ async function startRtmsForAll() {
       method: 'POST',
       body: JSON.stringify({
         containerId: container.id,
+        participantUserId: container.userId,
         action: 'start'
       })
     });
@@ -461,6 +484,7 @@ document.addEventListener('click', async event => {
         method: 'POST',
         body: JSON.stringify({
           containerId: event.target.dataset.containerId,
+          participantUserId: state.containers.find(container => container.id === event.target.dataset.containerId)?.userId || '',
           action: action === 'rtms-start' ? 'start' : 'stop'
         })
       });
