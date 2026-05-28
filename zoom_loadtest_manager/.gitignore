@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+node_modules/
+manager.log
+.data/
+npm-debug.log*
+yarn-error.log*
+.DS_Store
