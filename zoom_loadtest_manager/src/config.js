@@ -26,14 +26,21 @@ export const envDefaults = {
   DOCKER_PROJECT: 'zoom-loadtest-meeting',
   DOCKER_RESTART_POLICY: 'no',
   DOCKER_SHM_SIZE: '256m',
-  DOCKER_CPUS: '',
-  DOCKER_MEMORY: '',
+  DOCKER_CPU_MIN: '0.25',
+  DOCKER_CPU_MAX: '0.5',
+  DOCKER_MEMORY_MIN: '200m',
+  DOCKER_MEMORY_MAX: '500m',
   DOCKER_NETWORK: '',
   DOCKER_LOGIN_BEFORE_RUN: 'false'
 };
 
 function env(name, fallback = '') {
   return process.env[name] ?? fallback;
+}
+
+function envNonEmpty(name, fallback = '') {
+  const raw = process.env[name];
+  return raw === undefined || raw === '' ? fallback : raw;
 }
 
 function intEnv(name, fallback) {
@@ -78,8 +85,10 @@ export const config = {
     project: env('DOCKER_PROJECT', 'zoom-loadtest-meeting'),
     restartPolicy: env('DOCKER_RESTART_POLICY', 'no'),
     shmSize: env('DOCKER_SHM_SIZE', '256m'),
-    cpus: env('DOCKER_CPUS'),
-    memory: env('DOCKER_MEMORY'),
+    cpuMin: envNonEmpty('DOCKER_CPU_MIN', '0.25'),
+    cpuMax: envNonEmpty('DOCKER_CPU_MAX', envNonEmpty('DOCKER_CPUS', '0.5')),
+    memoryMin: envNonEmpty('DOCKER_MEMORY_MIN', '200m'),
+    memoryMax: envNonEmpty('DOCKER_MEMORY_MAX', envNonEmpty('DOCKER_MEMORY', '500m')),
     network: env('DOCKER_NETWORK')
   },
   features: {
@@ -155,8 +164,10 @@ export function reloadConfigFromEnv() {
   config.docker.project = env('DOCKER_PROJECT', 'zoom-loadtest-meeting');
   config.docker.restartPolicy = env('DOCKER_RESTART_POLICY', 'no');
   config.docker.shmSize = env('DOCKER_SHM_SIZE', '256m');
-  config.docker.cpus = env('DOCKER_CPUS');
-  config.docker.memory = env('DOCKER_MEMORY');
+  config.docker.cpuMin = envNonEmpty('DOCKER_CPU_MIN', '0.25');
+  config.docker.cpuMax = envNonEmpty('DOCKER_CPU_MAX', envNonEmpty('DOCKER_CPUS', '0.5'));
+  config.docker.memoryMin = envNonEmpty('DOCKER_MEMORY_MIN', '200m');
+  config.docker.memoryMax = envNonEmpty('DOCKER_MEMORY_MAX', envNonEmpty('DOCKER_MEMORY', '500m'));
   config.docker.network = env('DOCKER_NETWORK');
 
   config.features.dockerLoginBeforeRun = boolEnv('DOCKER_LOGIN_BEFORE_RUN', false);
@@ -177,7 +188,11 @@ export function publicStatus() {
       hasRegistryUsername: Boolean(config.docker.registryUsername),
       hasRegistryPassword: Boolean(config.docker.registryPassword),
       image: config.docker.image,
-      project: config.docker.project
+      project: config.docker.project,
+      cpuMin: config.docker.cpuMin,
+      cpuMax: config.docker.cpuMax,
+      memoryMin: config.docker.memoryMin,
+      memoryMax: config.docker.memoryMax
     }
   };
 }

@@ -105,6 +105,13 @@ uses the custCreate user from that row:
 - Join mode: resolves PMI/passcode or creates a scheduled fallback meeting, fetches Meeting SDK JWT with role `0`, and starts the unified image with `MEETING_MODE=join`.
 - Start mode: resolves PMI or creates a scheduled fallback meeting, fetches Meeting SDK JWT with role `1`, fetches the selected user's ZAK, and starts the unified image with `MEETING_MODE=start`.
 
+Docker resource defaults are applied to every launched container:
+
+- CPU minimum: `DOCKER_CPU_MIN=0.25`, implemented as Docker `--cpu-shares=256` because Docker does not provide a hard CPU reservation with `docker run`.
+- CPU maximum: `DOCKER_CPU_MAX=0.5`, passed as `--cpus=0.5`.
+- Memory minimum: `DOCKER_MEMORY_MIN=200m`, passed as `--memory-reservation=200m`.
+- Memory maximum: `DOCKER_MEMORY_MAX=500m`, passed as `--memory=500m`.
+
 Zoom exposes the user's `type` as the plan type. The manager still shows it, but
 it does not rely on plan type alone to identify custCreate users. It treats
 manager-created users, users matching `CUSTCREATE_EMAIL_DOMAIN`, and API/login
