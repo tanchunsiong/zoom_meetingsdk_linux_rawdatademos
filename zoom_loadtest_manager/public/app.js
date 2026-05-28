@@ -404,7 +404,7 @@ async function startAllUsers() {
   await Promise.all([refreshStatus(), refreshUsers()]);
 }
 
-async function startRtmsForAll() {
+async function setRtmsForAll(action) {
   const eligible = state.containers.filter(container => container.running && container.meetingNumber && container.mode === 'startmeeting');
   if (!eligible.length) {
     throw new Error('No running host start containers with meeting labels are available for RTMS.');
@@ -417,17 +417,18 @@ async function startRtmsForAll() {
       body: JSON.stringify({
         containerId: container.id,
         participantUserId: container.userId,
-        action: 'start'
+        action
       })
     });
     results.push({
       container: container.name || container.id,
       meetingId: result.meetingId,
-      ok: result.ok
+      ok: result.ok,
+      alreadyStopped: Boolean(result.result?.alreadyStopped)
     });
   }
 
-  log('Start RTMS for all completed', results);
+  log(action === 'start' ? 'Start RTMS for all completed' : 'Stop RTMS for all completed', results);
 }
 
 document.addEventListener('submit', async event => {
@@ -490,7 +491,9 @@ document.addEventListener('click', async event => {
       });
       log(action === 'rtms-start' ? 'RTMS start requested' : 'RTMS stop requested', result);
     } else if (action === 'rtms-start-all') {
-      await startRtmsForAll();
+      await setRtmsForAll('start');
+    } else if (action === 'rtms-stop-all') {
+      await setRtmsForAll('stop');
     } else if (action === 'kill-container') {
       log('Container killed', await request('/api/run/kill', {
         method: 'POST',
