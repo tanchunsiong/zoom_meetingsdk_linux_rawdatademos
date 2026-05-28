@@ -17,7 +17,11 @@ const containerRefreshMs = 10_000;
 let containerRefreshInFlight = false;
 
 const envHelp = {
-  MEETING_TOKEN_ENDPOINT: 'HTTPS endpoint the manager calls just-in-time to get a Zoom Meeting SDK JWT/signature for a meeting number and role. The returned token is passed into the container as JWT_TOKEN; the container should not fetch it itself.'
+  MEETING_TOKEN_ENDPOINT: 'HTTPS endpoint the manager calls just-in-time to get a Zoom Meeting SDK JWT/signature for a meeting number and role. The returned token is passed into the container as JWT_TOKEN; the container should not fetch it itself.',
+  DOCKER_CPU_MIN: 'CPU minimum is implemented as Docker cpu-shares, a relative weight under contention rather than a guaranteed reservation. 0.25 maps to 256 shares.',
+  DOCKER_CPU_MAX: 'Hard CPU cap passed to Docker --cpus. 0.5 means each container can use up to half of one CPU core.',
+  DOCKER_MEMORY_MIN: 'Soft memory reservation passed to Docker --memory-reservation. Default is 200m.',
+  DOCKER_MEMORY_MAX: 'Hard memory limit passed to Docker --memory. Default is 500m per container.'
 };
 
 const envLabels = {
@@ -153,7 +157,9 @@ function renderStatus(status) {
     envPill('Docker Registry User', status.docker.hasRegistryUsername, status.docker.registryUrl),
     envPill('Docker Registry Password', status.docker.hasRegistryPassword),
     `<div class="pill"><span>Load-Test Image</span><strong>${escapeHtml(status.docker.image)}</strong></div>`,
-    `<div class="pill"><span>Docker Project</span><strong>${escapeHtml(status.docker.project)}</strong></div>`
+    `<div class="pill"><span>Docker Project</span><strong>${escapeHtml(status.docker.project)}</strong></div>`,
+    `<div class="pill"><span>Docker CPU Min/Max</span><strong>${escapeHtml(status.docker.cpuMin)} / ${escapeHtml(status.docker.cpuMax)}</strong></div>`,
+    `<div class="pill"><span>Docker RAM Min/Max</span><strong>${escapeHtml(status.docker.memoryMin)} / ${escapeHtml(status.docker.memoryMax)}</strong></div>`
   ].join('');
   rtmsClientIdLabelEl.textContent = status.zoom.rtmsClientId || 'not configured';
 }

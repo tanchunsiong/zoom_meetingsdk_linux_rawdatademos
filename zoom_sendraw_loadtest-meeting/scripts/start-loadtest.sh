@@ -46,6 +46,10 @@ fi
 JWT_ROLE=${JWT_ROLE:-$([[ "$MEETING_MODE" == "start" ]] && echo 1 || echo 0)}
 RESTART_POLICY=${RESTART_POLICY:-no}
 SHM_SIZE=${SHM_SIZE:-256m}
+CPU_MIN=${CPU_MIN:-0.25}
+CPU_MAX=${CPU_MAX:-${CPUS:-0.5}}
+MEMORY_MIN=${MEMORY_MIN:-200m}
+MEMORY_MAX=${MEMORY_MAX:-${MEMORY:-500m}}
 
 for i in $(seq 1 "$COUNT"); do
   name="${PROJECT}-${MEETING_MODE}-${RUN_ID}-${i}"
@@ -66,12 +70,21 @@ for i in $(seq 1 "$COUNT"); do
     args+=(--env-file "${ROOT_DIR}/.env")
   fi
 
-  if [[ -n "${CPUS:-}" ]]; then
-    args+=(--cpus "$CPUS")
+  if [[ -n "$CPU_MIN" ]]; then
+    cpu_shares=$(awk -v cpus="$CPU_MIN" 'BEGIN { shares = int(cpus * 1024 + 0.5); if (shares < 2) shares = 2; print shares }')
+    args+=(--cpu-shares "$cpu_shares")
   fi
 
-  if [[ -n "${MEMORY:-}" ]]; then
-    args+=(--memory "$MEMORY")
+  if [[ -n "$CPU_MAX" ]]; then
+    args+=(--cpus "$CPU_MAX")
+  fi
+
+  if [[ -n "$MEMORY_MIN" ]]; then
+    args+=(--memory-reservation "$MEMORY_MIN")
+  fi
+
+  if [[ -n "$MEMORY_MAX" ]]; then
+    args+=(--memory "$MEMORY_MAX")
   fi
 
   if [[ -n "${DOCKER_NETWORK:-}" ]]; then

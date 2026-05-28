@@ -75,6 +75,12 @@ function addOptionalLabel(args, key, value) {
   }
 }
 
+function cpuSharesFromCpus(value) {
+  const cpus = Number(value);
+  if (!Number.isFinite(cpus) || cpus <= 0) return '';
+  return String(Math.max(2, Math.round(cpus * 1024)));
+}
+
 function parseDockerStats(stdout) {
   const statsById = new Map();
   for (const line of stdout.split('\n').map(entry => entry.trim()).filter(Boolean)) {
@@ -173,8 +179,15 @@ export async function startContainers(input) {
     addOptionalEnv(args, 'AUDIO_SAMPLE_RATE', input.audioSampleRate);
     addOptionalEnv(args, 'AUDIO_CHANNELS', input.audioChannels);
 
-    if (input.cpus || config.docker.cpus) args.push('--cpus', input.cpus || config.docker.cpus);
-    if (input.memory || config.docker.memory) args.push('--memory', input.memory || config.docker.memory);
+    const cpuMin = input.cpuMin || config.docker.cpuMin;
+    const cpuMax = input.cpuMax || input.cpus || config.docker.cpuMax;
+    const memoryMin = input.memoryMin || config.docker.memoryMin;
+    const memoryMax = input.memoryMax || input.memory || config.docker.memoryMax;
+    const cpuShares = cpuSharesFromCpus(cpuMin);
+    if (cpuShares) args.push('--cpu-shares', cpuShares);
+    if (cpuMax) args.push('--cpus', cpuMax);
+    if (memoryMin) args.push('--memory-reservation', memoryMin);
+    if (memoryMax) args.push('--memory', memoryMax);
     if (input.network || config.docker.network) args.push('--network', input.network || config.docker.network);
 
     args.push(image);
