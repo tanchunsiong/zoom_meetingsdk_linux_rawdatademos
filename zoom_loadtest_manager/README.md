@@ -19,7 +19,8 @@ start, join, delete, and instance-count controls.
 - Delete a custCreate user from Zoom with `DELETE /users/{userId}?action=delete` and remove it from the local manager list.
 - Get a user's ZAK just in time when starting a meeting as host.
 - Start or stop RTMS inline for running Docker containers with `PATCH /live_meetings/{meetingId}/rtms_app/status`.
-- Fetch Meeting SDK JWT/signature from `https://nodejs.asdc.cc/meeting`.
+- Track RTMS command state per container and confirm actual started/stopped state from Zoom RTMS webhooks when configured.
+- Fetch Meeting SDK JWT/signature from the configured `MEETING_TOKEN_ENDPOINT`.
 - Start join containers from the selected user's instant meeting ID/passcode and runtime JWT with `MEETING_MODE=join`.
 - Start host containers from the selected user's instant meeting ID, runtime JWT, and just-in-time ZAK with `MEETING_MODE=start`.
 - Show ongoing Docker containers with meeting/user labels, then kill one container, join containers, start containers, or all load-test containers.
@@ -62,6 +63,22 @@ DOCKER_REGISTRY_PASSWORD=
 ```
 
 Do not commit `.env`. It is intentionally ignored.
+
+For webhook-confirmed RTMS status, add the Zoom webhook secret token and set the
+Zoom app webhook URL to this manager endpoint:
+
+```bash
+ZOOM_WEBHOOK_SECRET_TOKEN=
+```
+
+```text
+https://YOUR_MANAGER_HOST/api/zoom/rtms/webhook
+```
+
+Zoom validates the endpoint with `ZOOM_WEBHOOK_SECRET_TOKEN`. Subscribe the app
+to `meeting.rtms_started` and `meeting.rtms_stopped`. The UI schedules a delayed
+status check 60 seconds after `Start RTMS`; without webhook delivery it can only
+show that the REST start command was accepted, not that the RTMS stream is live.
 
 ## Run
 
@@ -107,7 +124,7 @@ uses the custCreate user from that row:
 
 Docker resource defaults are applied to every launched container:
 
-- CPU minimum: `DOCKER_CPU_MIN=0.25`, implemented as Docker `--cpu-shares=256` because Docker does not provide a hard CPU reservation with `docker run`.
+- CPU minimum: `DOCKER_CPU_MIN=0.1`, implemented as Docker `--cpu-shares=102` because Docker does not provide a hard CPU reservation with `docker run`.
 - CPU maximum: `DOCKER_CPU_MAX=0.5`, passed as `--cpus=0.5`.
 - Memory minimum: `DOCKER_MEMORY_MIN=200m`, passed as `--memory-reservation=200m`.
 - Memory maximum: `DOCKER_MEMORY_MAX=500m`, passed as `--memory=500m`.

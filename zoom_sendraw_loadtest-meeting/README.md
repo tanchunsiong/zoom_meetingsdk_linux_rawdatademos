@@ -89,7 +89,7 @@ MEETING_MODE=start USER_ZAK="$USER_ZAK" ./scripts/start-loadtest.sh 1 1234567890
 
 The helper applies the same default resource controls as the manager:
 
-- `CPU_MIN=0.25` -> Docker `--cpu-shares=256`
+- `CPU_MIN=0.1` -> Docker `--cpu-shares=102`
 - `CPU_MAX=0.5` -> Docker `--cpus=0.5`
 - `MEMORY_MIN=200m` -> Docker `--memory-reservation=200m`
 - `MEMORY_MAX=500m` -> Docker `--memory=500m`

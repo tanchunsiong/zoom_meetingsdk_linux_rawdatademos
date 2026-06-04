@@ -38,7 +38,6 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     QT_QPA_PLATFORM=offscreen \
-    JWT_ENDPOINT=https://nodejs.asdc.cc/meeting \
     MEETING_MODE=join \
     USE_JWT_TOKEN_FROM_WEB_SERVICE=false \
     USE_RECORDING_TOKEN_FROM_WEB_SERVICE=false \

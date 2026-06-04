@@ -25,8 +25,8 @@ bool_string() {
   esac
 }
 
-JWT_ENDPOINT=${JWT_ENDPOINT:-https://nodejs.asdc.cc/meeting}
-if [[ "$JWT_ENDPOINT" != http://* && "$JWT_ENDPOINT" != https://* ]]; then
+JWT_ENDPOINT=${JWT_ENDPOINT:-}
+if [[ -n "$JWT_ENDPOINT" && "$JWT_ENDPOINT" != http://* && "$JWT_ENDPOINT" != https://* ]]; then
   JWT_ENDPOINT="https://${JWT_ENDPOINT}"
 fi
 SDK_JWT=${JWT_TOKEN:-${JWT_SIGNATURE:-${SIGNATURE:-}}}

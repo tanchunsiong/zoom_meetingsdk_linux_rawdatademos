@@ -62,7 +62,7 @@
 
         <form data-form="adhoc-join" class="create-user-panel">
           <div class="card-heading compact-heading">
-            <h2>Manual Join Meeting</h2>
+            <h2>Anonymous Meeting Join</h2>
           </div>
           <div class="inline-fields adhoc-fields">
             <label>Meeting ID <input name="meetingNumber" inputmode="numeric" required placeholder="1234567890"></label>
@@ -96,7 +96,7 @@
         <div class="card-heading">
           <div>
             <h2>Containers</h2>
-            <p class="hint">Health auto-refreshes every 10 seconds. Alive means Docker still reports the container as running; exited/dead rows include the exit code. Last check: <code id="container-last-check">never</code>. Current RTMS client ID: <code id="rtms-client-id-label">loading</code>.</p>
+            <p class="hint">Health auto-refreshes every 10 seconds. RTMS status is command-tracked and webhook-confirmed; a delayed check runs 60 seconds after Start RTMS. Last check: <code id="container-last-check">never</code>. Current RTMS client ID: <code id="rtms-client-id-label">loading</code>.</p>
           </div>
           <div class="button-row">
             <button data-action="rtms-start-all">Start RTMS For All</button>

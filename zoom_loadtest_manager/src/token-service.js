@@ -9,6 +9,10 @@ function firstString(...values) {
 }
 
 export async function getMeetingSdkToken({ meetingNumber, role }) {
+  if (!config.zoom.tokenEndpoint) {
+    throw new HttpError(400, 'MEETING_TOKEN_ENDPOINT is required before launching meeting tasks');
+  }
+
   const response = await fetch(config.zoom.tokenEndpoint, {
     method: 'POST',
     headers: {

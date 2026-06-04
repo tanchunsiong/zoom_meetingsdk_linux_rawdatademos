@@ -32,7 +32,7 @@ ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 IMAGE=${IMAGE:-dcr.asdc.cc/zoom-sendraw-loadtest-meeting:latest}
 PROJECT=${PROJECT:-zoom-loadtest-meeting}
 RUN_ID=${RUN_ID:-$(date +%Y%m%d%H%M%S)}
-JWT_ENDPOINT=${JWT_ENDPOINT:-https://nodejs.asdc.cc/meeting}
+JWT_ENDPOINT=${JWT_ENDPOINT:-}
 MEETING_MODE=$(printf '%s' "${MEETING_MODE:-join}" | tr '[:upper:]' '[:lower:]')
 if [[ "$MEETING_MODE" != "join" && "$MEETING_MODE" != "joinmeeting" && "$MEETING_MODE" != "start" && "$MEETING_MODE" != "startmeeting" && "$MEETING_MODE" != "host" ]]; then
   echo "MEETING_MODE must be join or start." >&2
@@ -46,7 +46,7 @@ fi
 JWT_ROLE=${JWT_ROLE:-$([[ "$MEETING_MODE" == "start" ]] && echo 1 || echo 0)}
 RESTART_POLICY=${RESTART_POLICY:-no}
 SHM_SIZE=${SHM_SIZE:-256m}
-CPU_MIN=${CPU_MIN:-0.25}
+CPU_MIN=${CPU_MIN:-0.1}
 CPU_MAX=${CPU_MAX:-${CPUS:-0.5}}
 MEMORY_MIN=${MEMORY_MIN:-200m}
 MEMORY_MAX=${MEMORY_MAX:-${MEMORY:-500m}}

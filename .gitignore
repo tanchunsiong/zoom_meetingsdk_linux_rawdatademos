@@ -30,8 +30,26 @@
 *CMakeSettings.json
 
 .env
+*.env
+*.env.*
+!.env.example
 /build/
 /sdk
+node_modules/
+**/node_modules/
+.terraform/
+**/.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+crash.log
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cert
+*.cert.pem
 
 # Local load-test media and runtime config.
 zoom_sendraw_loadtest*/.env

@@ -17,8 +17,9 @@ export const envDefaults = {
   ZOOM_CLIENT_ID: '',
   ZOOM_CLIENT_SECRET: '',
   ZOOM_API_BASE_URL: 'https://api.zoom.us/v2',
-  MEETING_TOKEN_ENDPOINT: 'https://nodejs.asdc.cc/meeting',
+  MEETING_TOKEN_ENDPOINT: '',
   ZOOM_RTMS_CLIENT_ID: 'bnLICtNSlytlF35PKrpQ',
+  ZOOM_WEBHOOK_SECRET_TOKEN: '',
   DOCKER_REGISTRY_URL: 'dcr.asdc.cc',
   DOCKER_REGISTRY_USERNAME: '',
   DOCKER_REGISTRY_PASSWORD: '',
@@ -26,7 +27,7 @@ export const envDefaults = {
   DOCKER_PROJECT: 'zoom-loadtest-meeting',
   DOCKER_RESTART_POLICY: 'no',
   DOCKER_SHM_SIZE: '256m',
-  DOCKER_CPU_MIN: '0.25',
+  DOCKER_CPU_MIN: '0.1',
   DOCKER_CPU_MAX: '0.5',
   DOCKER_MEMORY_MIN: '200m',
   DOCKER_MEMORY_MAX: '500m',
@@ -74,8 +75,9 @@ export const config = {
     clientId: env('ZOOM_CLIENT_ID'),
     clientSecret: env('ZOOM_CLIENT_SECRET'),
     apiBaseUrl: httpsUrlEnv('ZOOM_API_BASE_URL', 'https://api.zoom.us/v2').replace(/\/$/, ''),
-    tokenEndpoint: httpsUrlEnv('MEETING_TOKEN_ENDPOINT', 'https://nodejs.asdc.cc/meeting'),
-    rtmsClientId: env('ZOOM_RTMS_CLIENT_ID', 'bnLICtNSlytlF35PKrpQ')
+    tokenEndpoint: httpsUrlEnv('MEETING_TOKEN_ENDPOINT', ''),
+    rtmsClientId: env('ZOOM_RTMS_CLIENT_ID', 'bnLICtNSlytlF35PKrpQ'),
+    webhookSecretToken: env('ZOOM_WEBHOOK_SECRET_TOKEN')
   },
   docker: {
     registryUrl: env('DOCKER_REGISTRY_URL', 'dcr.asdc.cc'),
@@ -85,7 +87,7 @@ export const config = {
     project: env('DOCKER_PROJECT', 'zoom-loadtest-meeting'),
     restartPolicy: env('DOCKER_RESTART_POLICY', 'no'),
     shmSize: env('DOCKER_SHM_SIZE', '256m'),
-    cpuMin: envNonEmpty('DOCKER_CPU_MIN', '0.25'),
+    cpuMin: envNonEmpty('DOCKER_CPU_MIN', '0.1'),
     cpuMax: envNonEmpty('DOCKER_CPU_MAX', envNonEmpty('DOCKER_CPUS', '0.5')),
     memoryMin: envNonEmpty('DOCKER_MEMORY_MIN', '200m'),
     memoryMax: envNonEmpty('DOCKER_MEMORY_MAX', envNonEmpty('DOCKER_MEMORY', '500m')),
@@ -100,6 +102,7 @@ export const envKeys = Object.keys(envDefaults);
 
 export const secretEnvKeys = new Set([
   'ZOOM_CLIENT_SECRET',
+  'ZOOM_WEBHOOK_SECRET_TOKEN',
   'DOCKER_REGISTRY_PASSWORD'
 ]);
 
@@ -154,8 +157,9 @@ export function reloadConfigFromEnv() {
   config.zoom.clientId = env('ZOOM_CLIENT_ID');
   config.zoom.clientSecret = env('ZOOM_CLIENT_SECRET');
   config.zoom.apiBaseUrl = httpsUrlEnv('ZOOM_API_BASE_URL', 'https://api.zoom.us/v2').replace(/\/$/, '');
-  config.zoom.tokenEndpoint = httpsUrlEnv('MEETING_TOKEN_ENDPOINT', 'https://nodejs.asdc.cc/meeting');
+  config.zoom.tokenEndpoint = httpsUrlEnv('MEETING_TOKEN_ENDPOINT', '');
   config.zoom.rtmsClientId = env('ZOOM_RTMS_CLIENT_ID', 'bnLICtNSlytlF35PKrpQ');
+  config.zoom.webhookSecretToken = env('ZOOM_WEBHOOK_SECRET_TOKEN');
 
   config.docker.registryUrl = env('DOCKER_REGISTRY_URL', 'dcr.asdc.cc');
   config.docker.registryUsername = env('DOCKER_REGISTRY_USERNAME');
@@ -164,7 +168,7 @@ export function reloadConfigFromEnv() {
   config.docker.project = env('DOCKER_PROJECT', 'zoom-loadtest-meeting');
   config.docker.restartPolicy = env('DOCKER_RESTART_POLICY', 'no');
   config.docker.shmSize = env('DOCKER_SHM_SIZE', '256m');
-  config.docker.cpuMin = envNonEmpty('DOCKER_CPU_MIN', '0.25');
+  config.docker.cpuMin = envNonEmpty('DOCKER_CPU_MIN', '0.1');
   config.docker.cpuMax = envNonEmpty('DOCKER_CPU_MAX', envNonEmpty('DOCKER_CPUS', '0.5'));
   config.docker.memoryMin = envNonEmpty('DOCKER_MEMORY_MIN', '200m');
   config.docker.memoryMax = envNonEmpty('DOCKER_MEMORY_MAX', envNonEmpty('DOCKER_MEMORY', '500m'));
@@ -181,7 +185,8 @@ export function publicStatus() {
       hasClientSecret: Boolean(config.zoom.clientSecret),
       apiBaseUrl: config.zoom.apiBaseUrl,
       tokenEndpoint: config.zoom.tokenEndpoint,
-      rtmsClientId: config.zoom.rtmsClientId
+      rtmsClientId: config.zoom.rtmsClientId,
+      hasWebhookSecretToken: Boolean(config.zoom.webhookSecretToken)
     },
     docker: {
       registryUrl: config.docker.registryUrl,

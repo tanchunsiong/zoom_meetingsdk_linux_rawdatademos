@@ -559,6 +559,38 @@ textarea:focus {
   background: #fff;
 }
 
+.container-meta .rtms-status {
+  border-color: #ccd9ff;
+  background: #eef4ff;
+  color: #174ea6;
+  font-weight: 700;
+}
+
+.container-meta .rtms-started {
+  border-color: #b7e4c7;
+  background: #f0fbf4;
+  color: #137333;
+}
+
+.container-meta .rtms-start-requested {
+  border-color: #ffe08a;
+  background: #fff8df;
+  color: #8a5b00;
+}
+
+.container-meta .rtms-not-confirmed,
+.container-meta .rtms-interrupted {
+  border-color: #ffd0cc;
+  background: #fff7f6;
+  color: var(--danger);
+}
+
+.container-meta .rtms-stopped {
+  border-color: #e4e8f0;
+  background: #f7f9fc;
+  color: var(--muted);
+}
+
 button.compact {
   padding: 0.5rem 0.75rem;
   box-shadow: none;

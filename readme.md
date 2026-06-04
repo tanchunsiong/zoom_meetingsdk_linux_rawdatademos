@@ -176,8 +176,9 @@ selects join vs host start with `MEETING_MODE=join|start`. See
 
 The `zoom_loadtest_manager` folder is a Node management website for creating and
 selecting custCreate users, resolving their PMI/passcode, starting RTMS for
-container-associated live meetings, fetching Meeting SDK JWT/signatures from
-`nodejs.asdc.cc/meeting`, and starting/killing the unified Docker load-test image.
+container-associated live meetings, fetching Meeting SDK JWT/signatures from the
+configured `MEETING_TOKEN_ENDPOINT`, and starting/killing the unified Docker
+load-test image.
 See `zoom_loadtest_manager/README.md`.
 
 ## WSL / IDE notes

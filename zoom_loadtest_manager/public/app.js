@@ -14,11 +14,14 @@ const state = {
 
 const secretKeys = /token|zak|password|secret|authorization/i;
 const containerRefreshMs = 10_000;
+const rtmsStatusCheckDelayMs = 60_000;
 let containerRefreshInFlight = false;
+const rtmsStatusTimers = new Map();
 
 const envHelp = {
   MEETING_TOKEN_ENDPOINT: 'HTTPS endpoint the manager calls just-in-time to get a Zoom Meeting SDK JWT/signature for a meeting number and role. The returned token is passed into the container as JWT_TOKEN; the container should not fetch it itself.',
-  DOCKER_CPU_MIN: 'CPU minimum is implemented as Docker cpu-shares, a relative weight under contention rather than a guaranteed reservation. 0.25 maps to 256 shares.',
+  ZOOM_WEBHOOK_SECRET_TOKEN: 'Optional Zoom webhook secret token used for RTMS webhook URL validation. Configure the webhook URL as /api/zoom/rtms/webhook to confirm actual started/stopped events.',
+  DOCKER_CPU_MIN: 'CPU minimum is implemented as Docker cpu-shares, a relative weight under contention rather than a guaranteed reservation. 0.1 maps to 102 shares.',
   DOCKER_CPU_MAX: 'Hard CPU cap passed to Docker --cpus. 0.5 means each container can use up to half of one CPU core.',
   DOCKER_MEMORY_MIN: 'Soft memory reservation passed to Docker --memory-reservation. Default is 200m.',
   DOCKER_MEMORY_MAX: 'Hard memory limit passed to Docker --memory. Default is 500m per container.'
@@ -27,7 +30,8 @@ const envHelp = {
 const envLabels = {
   ZOOM_ACCOUNT_ID: 'S2S Zoom Account ID',
   ZOOM_CLIENT_ID: 'S2S Zoom Client ID',
-  ZOOM_CLIENT_SECRET: 'S2S Zoom Client Secret'
+  ZOOM_CLIENT_SECRET: 'S2S Zoom Client Secret',
+  ZOOM_WEBHOOK_SECRET_TOKEN: 'Zoom Webhook Secret Token'
 };
 
 function escapeHtml(value) {
@@ -125,6 +129,25 @@ function statsMeta(container) {
   ].filter(Boolean).join('');
 }
 
+function rtmsStatusClass(status) {
+  const safe = String(status || 'unknown').replace(/[^a-z0-9_-]+/gi, '-').toLowerCase();
+  return `rtms-${safe || 'unknown'}`;
+}
+
+function rtmsMeta(container) {
+  const rtms = container.rtms || {};
+  const status = rtms.status || 'unknown';
+  const detail = rtms.lastUpdatedAt ? ` at ${dateLabel(rtms.lastUpdatedAt)}` : '';
+  const title = [
+    rtms.message || '',
+    rtms.event ? `event: ${rtms.event}` : '',
+    rtms.streamId ? `stream: ${rtms.streamId}` : '',
+    rtms.confirmationDeadlineAt && status === 'start_requested' ? `check after ${dateLabel(rtms.confirmationDeadlineAt)}` : ''
+  ].filter(Boolean).join(' | ');
+
+  return `<span class="rtms-status ${escapeHtml(rtmsStatusClass(status))}" title="${escapeHtml(title)}">rtms ${escapeHtml(String(status).replace(/_/g, ' '))}${escapeHtml(detail)}</span>`;
+}
+
 function renderEnvFields(values) {
   envFieldsEl.innerHTML = values.map(item => {
     const help = envHelp[item.key] || '';
@@ -154,6 +177,7 @@ function renderStatus(status) {
     envPill('Zoom Client Secret', status.zoom.hasClientSecret),
     envPill('Meeting SDK JWT Service', Boolean(status.zoom.tokenEndpoint), status.zoom.tokenEndpoint),
     envPill('RTMS Client ID', Boolean(status.zoom.rtmsClientId), status.zoom.rtmsClientId),
+    envPill('RTMS Webhook Secret', status.zoom.hasWebhookSecretToken),
     envPill('Docker Registry User', status.docker.hasRegistryUsername, status.docker.registryUrl),
     envPill('Docker Registry Password', status.docker.hasRegistryPassword),
     `<div class="pill"><span>Load-Test Image</span><strong>${escapeHtml(status.docker.image)}</strong></div>`,
@@ -258,12 +282,14 @@ function renderContainers(containers) {
           <span>${escapeHtml(container.status || '')}</span>
           <span>${escapeHtml(container.mode || '')}</span>
           <span>${container.meetingNumber ? `meeting ${escapeHtml(container.meetingNumber)}` : 'no meeting label'}</span>
+          ${rtmsMeta(container)}
           <span>${container.userId ? `rtms user ${escapeHtml(container.userId)}` : 'no rtms user label'}</span>
           <span>${escapeHtml(container.userEmail || '')}</span>
         </div>
         <div class="button-row inline-actions">
           <button data-action="rtms-start" data-container-id="${escapeHtml(container.id)}" title="${escapeHtml(rtmsTitle)}" ${canRtms ? '' : 'disabled'}>Start RTMS</button>
           <button data-action="rtms-stop" data-container-id="${escapeHtml(container.id)}" class="secondary" title="${escapeHtml(rtmsTitle)}" ${canRtms ? '' : 'disabled'}>Stop RTMS</button>
+          <button data-action="rtms-check" data-container-id="${escapeHtml(container.id)}" class="secondary" title="Check the manager's latest RTMS webhook-confirmed status." ${container.meetingNumber ? '' : 'disabled'}>Check RTMS</button>
           <button class="danger" data-action="kill-container" data-container-id="${escapeHtml(container.id)}">Kill</button>
         </div>
       </div>
@@ -363,7 +389,7 @@ async function handleForm(form) {
       method: 'POST',
       body: JSON.stringify(data)
     });
-    log('Manual join containers launched', result);
+    log('Anonymous join containers launched', result);
     await refreshStatus();
   }
 }
@@ -430,11 +456,38 @@ async function setRtmsForAll(action) {
       container: container.name || container.id,
       meetingId: result.meetingId,
       ok: result.ok,
+      rtms: result.rtms?.status || '',
       alreadyStopped: Boolean(result.result?.alreadyStopped)
     });
+    if (action === 'start') {
+      scheduleRtmsStatusCheck(container.id);
+    }
   }
 
   log(action === 'start' ? 'Start RTMS for all completed' : 'Stop RTMS for all completed', results);
+  await refreshStatus();
+}
+
+async function checkRtmsStatus(containerId) {
+  const params = new URLSearchParams({ containerId });
+  const result = await request(`/api/zoom/rtms/status?${params.toString()}`);
+  log('RTMS status checked', result);
+  await refreshStatus();
+  return result;
+}
+
+function scheduleRtmsStatusCheck(containerId) {
+  if (!containerId) return;
+  if (rtmsStatusTimers.has(containerId)) {
+    window.clearTimeout(rtmsStatusTimers.get(containerId));
+  }
+  const timer = window.setTimeout(() => {
+    rtmsStatusTimers.delete(containerId);
+    checkRtmsStatus(containerId).catch(error => {
+      log('RTMS delayed status check failed', error.body || { error: error.message, containerId });
+    });
+  }, rtmsStatusCheckDelayMs);
+  rtmsStatusTimers.set(containerId, timer);
 }
 
 document.addEventListener('submit', async event => {
@@ -496,6 +549,12 @@ document.addEventListener('click', async event => {
         })
       });
       log(action === 'rtms-start' ? 'RTMS start requested' : 'RTMS stop requested', result);
+      await refreshStatus();
+      if (action === 'rtms-start') {
+        scheduleRtmsStatusCheck(event.target.dataset.containerId);
+      }
+    } else if (action === 'rtms-check') {
+      await checkRtmsStatus(event.target.dataset.containerId);
     } else if (action === 'rtms-start-all') {
       await setRtmsForAll('start');
     } else if (action === 'rtms-stop-all') {

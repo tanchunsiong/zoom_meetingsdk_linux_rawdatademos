@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config, envSnapshot, publicStatus, saveEnv } from './config.js';
@@ -39,6 +40,217 @@ function tokenPreview(value) {
   if (!value) return '';
   if (value.length <= 16) return '[set]';
   return `${value.slice(0, 8)}...${value.slice(-6)}`;
+}
+
+const rtmsConfirmDelayMs = 60_000;
+const rtmsByContainer = new Map();
+const rtmsByMeetingUser = new Map();
+
+function normalizedId(value) {
+  return String(value || '').trim();
+}
+
+function meetingUserKey(meetingId, participantUserId = '') {
+  return `${normalizedId(meetingId)}::${normalizedId(participantUserId)}`;
+}
+
+function isSameMeetingUser(record, meetingId, participantUserId = '') {
+  if (normalizedId(record.meetingId) !== normalizedId(meetingId)) return false;
+  return !participantUserId || !record.participantUserId || normalizedId(record.participantUserId) === normalizedId(participantUserId);
+}
+
+function refreshRtmsRecord(record) {
+  if (!record) return null;
+  const deadline = record.confirmationDeadlineAt ? Date.parse(record.confirmationDeadlineAt) : 0;
+  if (record.status === 'start_requested' && deadline && deadline <= Date.now()) {
+    record.status = 'not_confirmed';
+    record.lastUpdatedAt = new Date().toISOString();
+    record.message = 'No meeting.rtms_started webhook was observed within 60 seconds of the start request.';
+  }
+  return record;
+}
+
+function rememberRtmsRecord(patch) {
+  const containerId = normalizedId(patch.containerId);
+  const meetingId = normalizedId(patch.meetingId);
+  const participantUserId = normalizedId(patch.participantUserId);
+  const existing = containerId
+    ? rtmsByContainer.get(containerId)
+    : rtmsByMeetingUser.get(meetingUserKey(meetingId, participantUserId));
+  const record = {
+    ...(existing || {}),
+    ...patch,
+    containerId,
+    meetingId,
+    participantUserId,
+    lastUpdatedAt: new Date().toISOString()
+  };
+
+  if (containerId) {
+    rtmsByContainer.set(containerId, record);
+  }
+  if (meetingId) {
+    rtmsByMeetingUser.set(meetingUserKey(meetingId, participantUserId), record);
+  }
+  return refreshRtmsRecord(record);
+}
+
+function rtmsRecordFor(container) {
+  if (!container) return null;
+  return refreshRtmsRecord(
+    rtmsByContainer.get(container.id) ||
+    rtmsByContainer.get(container.fullId) ||
+    rtmsByMeetingUser.get(meetingUserKey(container.meetingNumber, container.userId)) ||
+    rtmsByMeetingUser.get(meetingUserKey(container.meetingNumber, '')) ||
+    null
+  );
+}
+
+function publicRtmsRecord(record) {
+  const refreshed = refreshRtmsRecord(record);
+  if (!refreshed) {
+    return {
+      status: 'unknown',
+      message: 'No RTMS command or webhook has been tracked for this container.'
+    };
+  }
+  return {
+    status: refreshed.status,
+    action: refreshed.action || '',
+    meetingId: refreshed.meetingId || '',
+    participantUserId: refreshed.participantUserId || '',
+    streamId: refreshed.streamId || '',
+    event: refreshed.event || '',
+    message: refreshed.message || '',
+    lastCommandAt: refreshed.lastCommandAt || '',
+    confirmationDeadlineAt: refreshed.confirmationDeadlineAt || '',
+    confirmedAt: refreshed.confirmedAt || '',
+    webhookReceivedAt: refreshed.webhookReceivedAt || '',
+    lastUpdatedAt: refreshed.lastUpdatedAt || ''
+  };
+}
+
+async function listContainersWithRtms() {
+  const containers = await listContainers();
+  return containers.map(container => ({
+    ...container,
+    rtms: publicRtmsRecord(rtmsRecordFor(container))
+  }));
+}
+
+function rememberRtmsCommand({ action, target, participantUserId, result }) {
+  const now = new Date();
+  const container = target.container || {};
+  const status = action === 'start'
+    ? 'start_requested'
+    : 'stopped';
+
+  return rememberRtmsRecord({
+    status,
+    action,
+    meetingId: target.meetingId,
+    participantUserId,
+    containerId: container.id || '',
+    containerName: container.name || '',
+    lastCommandAt: now.toISOString(),
+    confirmationDeadlineAt: action === 'start'
+      ? new Date(now.getTime() + rtmsConfirmDelayMs).toISOString()
+      : '',
+    result,
+    message: action === 'start'
+      ? 'RTMS start command accepted. Waiting for meeting.rtms_started webhook confirmation.'
+      : 'RTMS stop command accepted.'
+  });
+}
+
+function rtmsEventPayload(body) {
+  const payload = body?.payload || {};
+  const object = payload.object || payload;
+  return {
+    event: body?.event || '',
+    meetingId: normalizedId(object.meeting_id || object.meetingId || payload.meeting_id || payload.meetingId || object.id || payload.id),
+    meetingUuid: normalizedId(object.meeting_uuid || object.meetingUuid || payload.meeting_uuid || payload.meetingUuid || object.uuid || payload.uuid),
+    participantUserId: normalizedId(
+      object.operator_id ||
+      object.participant_user_id ||
+      object.participantUserId ||
+      object.host_id ||
+      payload.operator_id ||
+      payload.participant_user_id ||
+      payload.participantUserId ||
+      payload.host_id
+    ),
+    streamId: normalizedId(object.rtms_stream_id || object.rtmsStreamId || payload.rtms_stream_id || payload.rtmsStreamId),
+    serverUrls: object.server_urls || object.serverUrls || payload.server_urls || payload.serverUrls || ''
+  };
+}
+
+function rtmsStatusFromEvent(event) {
+  if (/\.rtms_started$/.test(event)) return 'started';
+  if (/\.rtms_stopped$/.test(event)) return 'stopped';
+  if (/\.rtms_interrupted$/.test(event)) return 'interrupted';
+  return '';
+}
+
+function applyRtmsWebhook(body) {
+  const event = body?.event || '';
+  const status = rtmsStatusFromEvent(event);
+  if (!status) return null;
+
+  const eventData = rtmsEventPayload(body);
+  if (!eventData.meetingId) return null;
+
+  const records = new Set();
+  const direct = rtmsByMeetingUser.get(meetingUserKey(eventData.meetingId, eventData.participantUserId));
+  if (direct) records.add(direct);
+  for (const record of rtmsByContainer.values()) {
+    if (isSameMeetingUser(record, eventData.meetingId, eventData.participantUserId)) {
+      records.add(record);
+    }
+  }
+
+  const now = new Date().toISOString();
+  const patch = {
+    status,
+    event,
+    meetingId: eventData.meetingId,
+    meetingUuid: eventData.meetingUuid,
+    participantUserId: eventData.participantUserId,
+    streamId: eventData.streamId,
+    serverUrls: eventData.serverUrls,
+    webhookReceivedAt: now,
+    confirmedAt: status === 'started' ? now : '',
+    message: `Confirmed by Zoom webhook ${event}.`
+  };
+
+  if (!records.size) {
+    return rememberRtmsRecord(patch);
+  }
+
+  let lastRecord = null;
+  for (const record of records) {
+    lastRecord = rememberRtmsRecord({
+      ...record,
+      ...patch,
+      containerId: record.containerId || ''
+    });
+  }
+  return lastRecord;
+}
+
+function rtmsUrlValidationResponse(body) {
+  if (body?.event !== 'endpoint.url_validation') return null;
+  if (!config.zoom.webhookSecretToken) {
+    throw new HttpError(500, 'ZOOM_WEBHOOK_SECRET_TOKEN is required for Zoom webhook URL validation');
+  }
+  const plainToken = body.payload?.plainToken || '';
+  return {
+    plainToken,
+    encryptedToken: crypto
+      .createHmac('sha256', config.zoom.webhookSecretToken)
+      .update(plainToken)
+      .digest('hex')
+  };
 }
 
 function cleanUserNamePart(value) {
@@ -280,7 +492,7 @@ async function meetingIdFromRequest(body) {
 }
 
 app.get('/api/status', asyncRoute(async (_req, res) => {
-  const containers = await listContainers().catch(error => ({
+  const containers = await listContainersWithRtms().catch(error => ({
     error: error.message,
     details: error.details
   }));
@@ -289,6 +501,26 @@ app.get('/api/status', asyncRoute(async (_req, res) => {
     containers
   });
 }));
+
+app.post('/api/zoom/rtms/webhook', (req, res, next) => {
+  try {
+    const validation = rtmsUrlValidationResponse(req.body);
+    if (validation) {
+      res.json(validation);
+      return;
+    }
+    res.sendStatus(200);
+    queueMicrotask(() => {
+      try {
+        applyRtmsWebhook(req.body);
+      } catch (error) {
+        console.error('Failed to process RTMS webhook', error);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.get('/api/env', asyncRoute(async (_req, res) => {
   res.json({ values: envSnapshot() });
@@ -424,6 +656,27 @@ app.get('/api/zoom/meetings/:meetingId', asyncRoute(async (req, res) => {
   res.json(await getMeeting(req.params.meetingId));
 }));
 
+app.get('/api/zoom/rtms/status', asyncRoute(async (req, res) => {
+  const target = await meetingIdFromRequest(req.query);
+  const participantUserId = req.query.participantUserId ||
+    target.container?.userId ||
+    target.user?.zoomUserId ||
+    target.user?.id ||
+    '';
+  const record = target.container
+    ? rtmsRecordFor(target.container)
+    : rtmsByMeetingUser.get(meetingUserKey(target.meetingId, participantUserId));
+
+  res.json({
+    ok: true,
+    meetingId: target.meetingId,
+    participantUserId,
+    containerId: target.container?.id || req.query.containerId || '',
+    rtms: publicRtmsRecord(record),
+    note: 'Zoom confirms RTMS readiness through meeting.rtms_started/meeting.rtms_stopped webhooks. The REST endpoint updates status but does not expose a non-mutating GET status API.'
+  });
+}));
+
 app.post('/api/zoom/rtms/status', asyncRoute(async (req, res) => {
   const target = await meetingIdFromRequest(req.body);
   const action = req.body.action === 'stop' ? 'stop' : 'start';
@@ -466,13 +719,15 @@ app.post('/api/zoom/rtms/status', asyncRoute(async (req, res) => {
       throw error;
     }
   }
+  const rtms = rememberRtmsCommand({ action, target, participantUserId, result });
   res.json({
     ok: true,
     action,
     meetingId: target.meetingId,
     participantUserId,
     target,
-    result
+    result,
+    rtms: publicRtmsRecord(rtms)
   });
 }));
 
@@ -497,7 +752,7 @@ app.post('/api/docker/login', asyncRoute(async (_req, res) => {
 }));
 
 app.get('/api/docker/containers', asyncRoute(async (_req, res) => {
-  res.json(await listContainers());
+  res.json(await listContainersWithRtms());
 }));
 
 app.post('/api/run/selected', asyncRoute(async (req, res) => {
