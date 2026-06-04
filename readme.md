@@ -17,6 +17,7 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 - `SkeletonExample`: minimal join/auth sample
 - `zoom_sendraw_loadtest-meeting`: single Docker/Portainer raw audio/video load-test image for both join and host start modes
 - `zoom_loadtest_manager`: Node management website for Zoom S2S OAuth actions and Docker run control
+- `ecs-fargate`: source-only ECS/Fargate copy for AWS scale-to-zero load testing
 
 ## Repository layout
 
@@ -26,6 +27,7 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 ├── cmake/
 ├── version.txt
 ├── readme.md
+├── ecs-fargate/
 ├── zoom_sendraw_loadtest-meeting/
 ├── zoom_loadtest_manager/
 └── <DemoName>/demo
@@ -180,6 +182,12 @@ container-associated live meetings, fetching Meeting SDK JWT/signatures from the
 configured `MEETING_TOKEN_ENDPOINT`, and starting/killing the unified Docker
 load-test image.
 See `zoom_loadtest_manager/README.md`.
+
+The `ecs-fargate` folder contains the AWS variant as a child copy of this repo.
+It is committed as source only: generated builds, local env files, raw/audio/video
+media, Terraform state/cache, SDK binaries, compressed third-party archives, and
+dependency folders are excluded.
+See `ecs-fargate/readme.md` and `ecs-fargate/infra/terraform/README.md`.
 
 ## WSL / IDE notes
 

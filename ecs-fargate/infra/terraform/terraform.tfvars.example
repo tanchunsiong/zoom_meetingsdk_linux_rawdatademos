@@ -1,0 +1,18 @@
+aws_region   = "us-east-1"
+project_name = "zoom-loadtest"
+
+# Terraform creates the VPC, public subnets, ECR repo, ECS cluster, task
+# definition, API Gateway, Lambda, DynamoDB, S3, and CloudFront.
+vpc_cidr            = "10.80.0.0/16"
+public_subnet_cidrs = ["10.80.1.0/24", "10.80.2.0/24"]
+assign_public_ip    = true
+
+# Fargate size requested for this project: 0.25 vCPU / 0.5GB.
+runner_cpu    = 256
+runner_memory = 512
+
+# Store SecureString values under this prefix outside Terraform state.
+ssm_parameter_prefix = "/zoom-loadtest"
+
+# Set this to the CloudFront URL/custom domain once known if you want stricter CORS.
+allowed_cors_origins = ["*"]

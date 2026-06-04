@@ -43,6 +43,7 @@ node_modules/
 *.tfstate.*
 terraform.tfvars
 crash.log
+*.tar.gz
 *.pem
 *.key
 *.p12
