@@ -42,7 +42,7 @@ export const envDefaults = {
   ZOOM_CLIENT_SECRET: '',
   ZOOM_API_BASE_URL: 'https://api.zoom.us/v2',
   MEETING_TOKEN_ENDPOINT: '',
-  ZOOM_RTMS_CLIENT_ID: 'bnLICtNSlytlF35PKrpQ',
+  ZOOM_RTMS_CLIENT_ID: '',
   ZOOM_WEBHOOK_SECRET_TOKEN: '',
   AWS_REGION: 'us-east-1',
   ECS_CLUSTER: '',
@@ -114,7 +114,7 @@ export const config = {
     clientSecret: env('ZOOM_CLIENT_SECRET'),
     apiBaseUrl: httpsUrlEnv('ZOOM_API_BASE_URL', 'https://api.zoom.us/v2').replace(/\/$/, ''),
     tokenEndpoint: httpsUrlEnv('MEETING_TOKEN_ENDPOINT', ''),
-    rtmsClientId: env('ZOOM_RTMS_CLIENT_ID', 'bnLICtNSlytlF35PKrpQ'),
+    rtmsClientId: env('ZOOM_RTMS_CLIENT_ID'),
     webhookSecretToken: env('ZOOM_WEBHOOK_SECRET_TOKEN')
   },
   ecs: {
@@ -155,6 +155,7 @@ export const config = {
 export const envKeys = Object.keys(envDefaults);
 
 export const secretEnvKeys = new Set([
+  'MANAGER_AUTH_PASSWORD',
   'ZOOM_CLIENT_SECRET',
   'ZOOM_WEBHOOK_SECRET_TOKEN',
   'DOCKER_REGISTRY_PASSWORD'
@@ -260,7 +261,7 @@ export function reloadConfigFromEnv() {
   config.zoom.clientSecret = env('ZOOM_CLIENT_SECRET');
   config.zoom.apiBaseUrl = httpsUrlEnv('ZOOM_API_BASE_URL', 'https://api.zoom.us/v2').replace(/\/$/, '');
   config.zoom.tokenEndpoint = httpsUrlEnv('MEETING_TOKEN_ENDPOINT', '');
-  config.zoom.rtmsClientId = env('ZOOM_RTMS_CLIENT_ID', 'bnLICtNSlytlF35PKrpQ');
+  config.zoom.rtmsClientId = env('ZOOM_RTMS_CLIENT_ID');
   config.zoom.webhookSecretToken = env('ZOOM_WEBHOOK_SECRET_TOKEN');
 
   config.ecs.region = env('AWS_REGION', 'us-east-1');

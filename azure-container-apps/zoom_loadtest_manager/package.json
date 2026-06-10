@@ -1,0 +1,20 @@
+{
+  "name": "zoom-loadtest-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Management website for Zoom raw-data load tests on Azure Container Apps Jobs.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.10.0",
+    "@azure/keyvault-secrets": "^4.11.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

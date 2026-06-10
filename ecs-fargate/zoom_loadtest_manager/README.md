@@ -32,7 +32,7 @@ The RTMS start request body is:
 {
   "action": "start",
   "settings": {
-    "client_id": "bnLICtNSlytlF35PKrpQ",
+    "client_id": "<rtms-app-client-id>",
     "participant_user_id": "ZOOM_HOST_OR_ALTERNATIVE_HOST_USER_ID"
   }
 }

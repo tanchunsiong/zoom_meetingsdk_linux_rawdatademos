@@ -1,0 +1,9 @@
+azure_location         = "eastus"
+project_name           = "zoom-loadtest"
+max_runner_executions  = 10
+runner_cpu             = 0.25
+runner_memory          = "0.5Gi"
+
+# First apply: leave runner_image on the public placeholder.
+# After pushing the runner image to the created ACR, set:
+# runner_image = "<acr-name>.azurecr.io/zoom-sendraw-loadtest-meeting:latest"
