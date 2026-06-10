@@ -193,6 +193,11 @@ See `zoom_loadtest_manager/README.md`.
 The ECS copy is designed to scale to zero. There is no always-on runner service:
 the manager starts Fargate tasks only when you request load-test instances.
 
+The deployment machine must have AWS CLI v2, Terraform `>= 1.6.0`, and Docker
+installed. Configure AWS credentials for a dedicated IAM user or temporary role,
+then verify access with `aws sts get-caller-identity` before running Terraform.
+Do not use root-user access keys.
+
 Default runner size:
 
 ```text

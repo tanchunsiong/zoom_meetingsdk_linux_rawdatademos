@@ -18,6 +18,7 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 - `zoom_sendraw_loadtest-meeting`: single Docker/Portainer raw audio/video load-test image for both join and host start modes
 - `zoom_loadtest_manager`: Node management website for Zoom S2S OAuth actions and Docker run control
 - `ecs-fargate`: source-only ECS/Fargate copy for AWS scale-to-zero load testing
+- `azure-container-apps`: source-only Azure Container Apps Jobs copy for Azure scale-to-zero load testing
 
 ## Repository layout
 
@@ -27,6 +28,7 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 ├── cmake/
 ├── version.txt
 ├── readme.md
+├── azure-container-apps/
 ├── ecs-fargate/
 ├── zoom_sendraw_loadtest-meeting/
 ├── zoom_loadtest_manager/
@@ -188,6 +190,11 @@ It is committed as source only: generated builds, local env files, raw/audio/vid
 media, Terraform state/cache, SDK binaries, compressed third-party archives, and
 dependency folders are excluded.
 See `ecs-fargate/readme.md` and `ecs-fargate/infra/terraform/README.md`.
+
+The `azure-container-apps` folder contains the Azure variant. It uses manually
+triggered Azure Container Apps Jobs for scale-to-zero runner executions, ACR for
+the runner image, and a resource group as the cleanup boundary.
+See `azure-container-apps/readme.md` and `azure-container-apps/infra/terraform/README.md`.
 
 ## WSL / IDE notes
 

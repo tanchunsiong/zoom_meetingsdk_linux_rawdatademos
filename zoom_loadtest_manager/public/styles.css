@@ -37,6 +37,84 @@ body {
     var(--subtle);
 }
 
+.login-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  place-items: center;
+  padding: 24px;
+  background: rgba(11, 17, 35, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.login-panel.visible {
+  display: grid;
+}
+
+.login-card {
+  display: grid;
+  gap: 16px;
+  width: min(420px, 100%);
+  padding: 32px;
+  border: 1px solid #d9e1f2;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(8, 20, 48, 0.28);
+}
+
+.login-card h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.login-card label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.login-error {
+  min-height: 1.25em;
+  margin: 0;
+  color: #b42318;
+  font-weight: 600;
+}
+
+.result-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(11, 17, 35, 0.52);
+  backdrop-filter: blur(8px);
+}
+
+.result-panel.visible {
+  display: flex;
+}
+
+.result-card {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(760px, 100%);
+  max-height: min(720px, calc(100vh - 48px));
+  padding: 1rem;
+  border: 1px solid #d9e1f2;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(8, 20, 48, 0.28);
+}
+
+.result-card pre {
+  min-height: 180px;
+  max-height: min(520px, calc(100vh - 220px));
+}
+
 code,
 pre {
   font-family: var(--font-mono);
@@ -310,6 +388,33 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(11, 92, 255, 0.14);
 }
 
+input[readonly],
+input:disabled,
+select:disabled,
+textarea:disabled {
+  color: #667085;
+  border-color: #d8dee8;
+  background: #f3f6fb;
+  cursor: not-allowed;
+}
+
+.readonly-field {
+  color: #667085;
+}
+
+.readonly-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.12rem 0.42rem;
+  color: #42526e;
+  background: #eef2f7;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .checkbox-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -458,10 +563,15 @@ textarea:focus {
   background: var(--success);
 }
 
-.health-badge.unhealthy,
-.health-badge.exited {
+.health-badge.starting,
+.health-badge.unhealthy {
   color: #3b2a0a;
   background: #fbbc04;
+}
+
+.health-badge.disposed {
+  color: #314158;
+  background: #d9e2ef;
 }
 
 .health-badge.dead {

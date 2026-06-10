@@ -17,10 +17,12 @@ provider "aws" {
   region = var.aws_region
 
   default_tags {
-    tags = {
+    tags = merge({
       Project   = var.project_name
       Stack     = "ecs-fargate"
       ManagedBy = "terraform"
-    }
+      Team      = "meeting-sdk"
+      Purpose   = "load-testing"
+    }, var.owner_name != "" ? { Owner = var.owner_name } : {})
   }
 }

@@ -8,16 +8,35 @@ locals {
   ui_bucket_name   = var.ui_bucket_name != "" ? var.ui_bucket_name : null
   api_domain_name  = replace(aws_apigatewayv2_api.manager.api_endpoint, "https://", "")
   runner_image     = "${aws_ecr_repository.runner.repository_url}:latest"
+  ui_source_dir    = "${path.module}/../../zoom_loadtest_manager/public"
+  manager_env_file = "${path.module}/../../zoom_loadtest_manager/.env"
+  manager_env_lines = fileexists(local.manager_env_file) ? [
+    for line in split("\n", file(local.manager_env_file)) : trimspace(line)
+    if trimspace(line) != "" && !startswith(trimspace(line), "#") && strcontains(line, "=")
+  ] : []
+  manager_env = {
+    for line in local.manager_env_lines :
+    trimspace(regex("^([^=]+)=(.*)$", line)[0]) => trim(trimspace(regex("^([^=]+)=(.*)$", line)[1]), "\"'")
+  }
+  ui_files = fileset(local.ui_source_dir, "**")
+  ui_content_types = {
+    css  = "text/css; charset=utf-8"
+    html = "text/html; charset=utf-8"
+    js   = "text/javascript; charset=utf-8"
+    json = "application/json; charset=utf-8"
+    svg  = "image/svg+xml"
+  }
 }
 
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
-data "archive_file" "placeholder_lambda" {
+data "archive_file" "manager_lambda" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda-placeholder"
-  output_path = "${path.module}/.terraform/placeholder-manager.zip"
+  source_dir  = "${path.module}/../../zoom_loadtest_manager"
+  output_path = "${path.module}/.terraform/manager.zip"
+  excludes    = [".env", ".data", "manager.log", "npm-debug.log"]
 }
 
 resource "aws_vpc" "main" {
@@ -74,6 +93,7 @@ resource "aws_route_table_association" "public" {
 resource "aws_ecr_repository" "runner" {
   name                 = "zoom-sendraw-loadtest-meeting"
   image_tag_mutability = "MUTABLE"
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -102,6 +122,7 @@ resource "aws_ecr_lifecycle_policy" "runner" {
 resource "aws_s3_bucket" "ui" {
   bucket        = local.ui_bucket_name
   bucket_prefix = local.ui_bucket_name == null ? "${local.name}-ui-" : null
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "ui" {
@@ -113,7 +134,20 @@ resource "aws_s3_bucket_public_access_block" "ui" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_object" "ui" {
+  for_each = local.ui_files
+
+  bucket        = aws_s3_bucket.ui.id
+  key           = each.value
+  source        = "${local.ui_source_dir}/${each.value}"
+  etag          = filemd5("${local.ui_source_dir}/${each.value}")
+  content_type  = lookup(local.ui_content_types, reverse(split(".", each.value))[0], "application/octet-stream")
+  cache_control = "no-cache"
+}
+
 resource "aws_cloudfront_origin_access_control" "ui" {
+  count = var.enable_cloudfront ? 1 : 0
+
   name                              = "${local.name}-ui-oac"
   description                       = "Access ${aws_s3_bucket.ui.id} from CloudFront only"
   origin_access_control_origin_type = "s3"
@@ -122,6 +156,8 @@ resource "aws_cloudfront_origin_access_control" "ui" {
 }
 
 resource "aws_cloudfront_distribution" "ui" {
+  count = var.enable_cloudfront ? 1 : 0
+
   enabled             = true
   default_root_object = "index.html"
   comment             = "${local.name} static UI and API"
@@ -130,7 +166,7 @@ resource "aws_cloudfront_distribution" "ui" {
   origin {
     origin_id                = "ui"
     domain_name              = aws_s3_bucket.ui.bucket_regional_domain_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.ui.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.ui[0].id
   }
 
   origin {
@@ -193,6 +229,8 @@ resource "aws_cloudfront_distribution" "ui" {
 }
 
 resource "aws_s3_bucket_policy" "ui_cloudfront" {
+  count = var.enable_cloudfront ? 1 : 0
+
   bucket = aws_s3_bucket.ui.id
 
   policy = jsonencode({
@@ -205,7 +243,7 @@ resource "aws_s3_bucket_policy" "ui_cloudfront" {
       Resource  = "${aws_s3_bucket.ui.arn}/*"
       Condition = {
         StringEquals = {
-          "AWS:SourceArn" = aws_cloudfront_distribution.ui.arn
+          "AWS:SourceArn" = aws_cloudfront_distribution.ui[0].arn
         }
       }
     }]
@@ -357,7 +395,8 @@ resource "aws_iam_role_policy" "lambda_manager" {
           "ecs:RunTask",
           "ecs:StopTask",
           "ecs:ListTasks",
-          "ecs:DescribeTasks"
+          "ecs:DescribeTasks",
+          "ecs:TagResource"
         ]
         Resource = "*"
       },
@@ -386,39 +425,51 @@ resource "aws_iam_role_policy" "lambda_manager" {
         Action = [
           "ssm:GetParameter",
           "ssm:GetParameters",
-          "ssm:GetParametersByPath"
+          "ssm:GetParametersByPath",
+          "ssm:PutParameter"
         ]
-        Resource = "arn:aws:ssm:${var.aws_region}:*:parameter${var.ssm_parameter_prefix}/*"
+        Resource = [
+          "arn:aws:ssm:${var.aws_region}:*:parameter${var.ssm_parameter_prefix}",
+          "arn:aws:ssm:${var.aws_region}:*:parameter${var.ssm_parameter_prefix}/*"
+        ]
       }
     ]
   })
 }
 
 resource "aws_lambda_function" "manager" {
-  function_name    = local.lambda_function
-  role             = aws_iam_role.lambda.arn
-  filename         = data.archive_file.placeholder_lambda.output_path
-  source_code_hash = data.archive_file.placeholder_lambda.output_base64sha256
-  handler          = var.lambda_handler
-  runtime          = var.lambda_runtime
-  timeout          = 30
-  memory_size      = 512
+  function_name                  = local.lambda_function
+  description                    = "Zoom load-test manager API"
+  role                           = aws_iam_role.lambda.arn
+  filename                       = data.archive_file.manager_lambda.output_path
+  source_code_hash               = data.archive_file.manager_lambda.output_base64sha256
+  handler                        = "lambda.handler"
+  runtime                        = var.lambda_runtime
+  timeout                        = 30
+  memory_size                    = 512
+  reserved_concurrent_executions = var.manager_reserved_concurrency
 
   environment {
     variables = {
-      AWS_REGION           = var.aws_region
-      ECS_CLUSTER          = aws_ecs_cluster.runner.name
-      ECS_TASK_DEFINITION  = aws_ecs_task_definition.runner.arn
-      ECS_TASK_FAMILY      = aws_ecs_task_definition.runner.family
-      ECS_CONTAINER_NAME   = local.runner_container
-      ECS_SUBNETS          = join(",", aws_subnet.public[*].id)
-      ECS_SECURITY_GROUPS  = aws_security_group.runner.id
-      ECS_ASSIGN_PUBLIC_IP = tostring(var.assign_public_ip)
-      ECS_TASK_CPU         = tostring(var.runner_cpu)
-      ECS_TASK_MEMORY      = tostring(var.runner_memory)
-      ECS_PROJECT          = local.name
-      STATUS_TABLE_NAME    = aws_dynamodb_table.status.name
-      SSM_PARAMETER_PREFIX = var.ssm_parameter_prefix
+      ECS_CLUSTER              = aws_ecs_cluster.runner.name
+      ECS_TASK_DEFINITION      = aws_ecs_task_definition.runner.arn
+      ECS_TASK_FAMILY          = aws_ecs_task_definition.runner.family
+      ECS_CONTAINER_NAME       = local.runner_container
+      ECS_SUBNETS              = join(",", aws_subnet.public[*].id)
+      ECS_SECURITY_GROUPS      = aws_security_group.runner.id
+      ECS_ASSIGN_PUBLIC_IP     = tostring(var.assign_public_ip)
+      ECS_TASK_CPU             = tostring(var.runner_cpu)
+      ECS_TASK_MEMORY          = tostring(var.runner_memory)
+      ECS_MAX_TASKS            = tostring(var.max_runner_tasks)
+      ECS_PROJECT              = local.name
+      STATUS_TABLE_NAME        = aws_dynamodb_table.status.name
+      SSM_PARAMETER_PREFIX     = var.ssm_parameter_prefix
+      MANAGER_AUTH_USERNAME    = sensitive(lookup(local.manager_env, "MANAGER_AUTH_USERNAME", "admin"))
+      MANAGER_AUTH_PASSWORD    = sensitive(lookup(local.manager_env, "MANAGER_AUTH_PASSWORD", "admin"))
+      DOCKER_REGISTRY_URL      = lookup(local.manager_env, "DOCKER_REGISTRY_URL", aws_ecr_repository.runner.repository_url)
+      DOCKER_REGISTRY_USERNAME = lookup(local.manager_env, "DOCKER_REGISTRY_USERNAME", "AWS")
+      DOCKER_IMAGE             = lookup(local.manager_env, "DOCKER_IMAGE", local.runner_image)
+      DOCKER_PROJECT           = lookup(local.manager_env, "DOCKER_PROJECT", local.name)
     }
   }
 }

@@ -5,6 +5,12 @@ const envFieldsEl = document.querySelector('#env-fields');
 const userListEl = document.querySelector('#user-list');
 const rtmsClientIdLabelEl = document.querySelector('#rtms-client-id-label');
 const containerLastCheckEl = document.querySelector('#container-last-check');
+const loginPanelEl = document.querySelector('#login-panel');
+const loginFormEl = document.querySelector('#login-form');
+const loginErrorEl = document.querySelector('#login-error');
+const resultPanelEl = document.querySelector('#result-panel');
+const resultTitleEl = document.querySelector('#result-title');
+const resultBodyEl = document.querySelector('#result-body');
 
 const state = {
   users: [],
@@ -17,6 +23,7 @@ const containerRefreshMs = 10_000;
 const rtmsStatusCheckDelayMs = 60_000;
 let containerRefreshInFlight = false;
 const rtmsStatusTimers = new Map();
+let authorization = sessionStorage.getItem('managerAuthorization') || '';
 
 const envHelp = {
   MEETING_TOKEN_ENDPOINT: 'HTTPS endpoint the manager calls just-in-time to get a Zoom Meeting SDK JWT/signature for a meeting number and role. The returned token is passed into the container as JWT_TOKEN; the container should not fetch it itself.',
@@ -64,19 +71,77 @@ function log(title, payload) {
   logEl.textContent = `[${time}] ${title}\n${JSON.stringify(maskSecrets(payload), null, 2)}\n\n${logEl.textContent}`;
 }
 
+function showResult(title, payload) {
+  resultTitleEl.textContent = title;
+  resultBodyEl.textContent = typeof payload === 'string'
+    ? payload
+    : JSON.stringify(maskSecrets(payload), null, 2);
+  resultPanelEl.classList.add('visible');
+  resultPanelEl.setAttribute('aria-hidden', 'false');
+}
+
+function hideResult() {
+  resultPanelEl.classList.remove('visible');
+  resultPanelEl.setAttribute('aria-hidden', 'true');
+}
+
+function logAndShow(title, payload) {
+  log(title, payload);
+  showResult(title, payload);
+}
+
+function showPending(title, message) {
+  showResult(title, {
+    status: 'running',
+    message
+  });
+}
+
 async function request(path, options = {}) {
   const response = await fetch(path, {
+    ...options,
     headers: {
-      'Content-Type': 'application/json'
-    },
-    ...options
+      'Content-Type': 'application/json',
+      ...(authorization ? { Authorization: authorization } : {}),
+      ...(options.headers || {})
+    }
   });
   const body = await response.json().catch(() => ({}));
+  if (response.status === 401) {
+    showLogin(body.error || 'Authentication required');
+  }
   if (!response.ok) {
     throw Object.assign(new Error(body.error || `HTTP ${response.status}`), { body });
   }
   return body;
 }
+
+function showLogin(message = '') {
+  loginErrorEl.textContent = message;
+  loginPanelEl.classList.add('visible');
+}
+
+function hideLogin() {
+  loginErrorEl.textContent = '';
+  loginPanelEl.classList.remove('visible');
+}
+
+loginFormEl.addEventListener('submit', async event => {
+  event.preventDefault();
+  const values = formObject(loginFormEl);
+  authorization = `Basic ${btoa(`${values.username}:${values.password}`)}`;
+  try {
+    await request('/api/status');
+    sessionStorage.setItem('managerAuthorization', authorization);
+    loginFormEl.reset();
+    hideLogin();
+    await refreshAll();
+  } catch (error) {
+    authorization = '';
+    sessionStorage.removeItem('managerAuthorization');
+    showLogin(error.body?.error || error.message);
+  }
+});
 
 function formObject(form) {
   const data = {};
@@ -102,6 +167,14 @@ function dateLabel(value) {
 }
 
 function containerHealth(container) {
+  if (container.pending) {
+    return {
+      className: 'starting',
+      label: 'starting',
+      detail: container.startedAt ? `started ${dateLabel(container.startedAt)}` : 'provisioning'
+    };
+  }
+
   if (container.running) {
     const health = container.healthStatus || container.health || 'alive';
     return {
@@ -113,9 +186,9 @@ function containerHealth(container) {
 
   const dead = container.health === 'dead' || container.status === 'dead';
   return {
-    className: dead ? 'dead' : 'exited',
-    label: dead ? 'dead' : 'exited',
-    detail: `exit ${container.exitCode ?? 'unknown'}${container.finishedAt ? ` at ${dateLabel(container.finishedAt)}` : ''}`
+    className: dead ? 'dead' : 'disposed',
+    label: dead ? 'dead' : 'disposed',
+    detail: `stopped${container.exitCode !== '' && container.exitCode !== undefined ? ` exit ${container.exitCode}` : ''}${container.finishedAt ? ` at ${dateLabel(container.finishedAt)}` : ''}`
   };
 }
 
@@ -156,11 +229,15 @@ function rtmsMeta(container) {
 function renderEnvFields(values) {
   envFieldsEl.innerHTML = values.map(item => {
     const help = envHelp[item.key] || '';
+    const readonly = Boolean(item.readonly);
+    const readonlyHelp = item.readonlyReason || 'Read-only runtime value.';
+    const fieldHelp = [help, readonly ? readonlyHelp : ''].filter(Boolean).join(' ');
     return `
-    <label class="${help ? 'has-help' : ''}">
+    <label class="${help ? 'has-help' : ''} ${readonly ? 'readonly-field' : ''}">
       <span class="label-row">
         <span>${escapeHtml(envLabels[item.key] || item.key)}</span>
         ${help ? `<span class="tooltip" title="${escapeHtml(help)}" aria-label="${escapeHtml(help)}">?</span>` : ''}
+        ${readonly ? '<span class="readonly-badge">read only</span>' : ''}
       </span>
       <input
         name="${escapeHtml(item.key)}"
@@ -168,8 +245,9 @@ function renderEnvFields(values) {
         value="${escapeHtml(item.value)}"
         placeholder="${escapeHtml(item.placeholder || '')}"
         autocomplete="off"
+        ${readonly ? 'readonly disabled aria-readonly="true"' : ''}
       >
-      ${help ? `<small class="field-help">${escapeHtml(help)}</small>` : ''}
+      ${fieldHelp ? `<small class="field-help">${escapeHtml(fieldHelp)}</small>` : ''}
     </label>
   `;
   }).join('');
@@ -231,7 +309,7 @@ function renderUsers(payload) {
           ${warnings.length ? `<div class="notice small-notice">${warnings.map(escapeHtml).join('<br>')}</div>` : ''}
         </div>
         <label class="compact-label">Instances
-          <input data-user-count="${escapeHtml(user.id)}" type="number" min="1" value="1">
+          <input data-user-count="${escapeHtml(user.id)}" type="number" min="1" max="10" value="1">
         </label>
         <div class="button-row inline-actions">
           <button data-action="resolve-user" data-user-id="${escapeHtml(user.id)}" class="secondary">Resolve</button>
@@ -262,7 +340,7 @@ function renderContainers(containers) {
   });
 
   if (!sorted.length) {
-    containersEl.innerHTML = '<div class="pill"><span>No load-test containers</span><strong>idle</strong></div>';
+    containersEl.innerHTML = '<div class="pill"><span>No active load-test containers</span><strong>scaled to zero</strong></div>';
     return;
   }
 
@@ -274,7 +352,7 @@ function renderContainers(containers) {
       ? 'Start or stop RTMS as the host user stored on this start-mode container.'
       : 'RTMS start requires a running startmeeting container for the meeting host or alternative host.';
     return `
-      <div class="container-item ${container.running ? 'running' : 'stopped'}">
+      <div class="container-item ${container.active ? 'running' : 'stopped'}">
         <div>
           <div class="health-line">
             <span class="health-badge ${escapeHtml(health.className)}">${escapeHtml(health.label)}</span>
@@ -296,7 +374,7 @@ function renderContainers(containers) {
           <button data-action="rtms-start" data-container-id="${escapeHtml(container.id)}" title="${escapeHtml(rtmsTitle)}" ${canRtms ? '' : 'disabled'}>Start RTMS</button>
           <button data-action="rtms-stop" data-container-id="${escapeHtml(container.id)}" class="secondary" title="${escapeHtml(rtmsTitle)}" ${canRtms ? '' : 'disabled'}>Stop RTMS</button>
           <button data-action="rtms-check" data-container-id="${escapeHtml(container.id)}" class="secondary" title="Check the manager's latest RTMS webhook-confirmed status." ${container.meetingNumber ? '' : 'disabled'}>Check RTMS</button>
-          <button class="danger" data-action="kill-container" data-container-id="${escapeHtml(container.id)}">Kill</button>
+          <button class="danger" data-action="kill-container" data-container-id="${escapeHtml(container.id)}" ${container.active ? '' : 'disabled'}>Kill</button>
         </div>
       </div>
     `;
@@ -526,11 +604,22 @@ document.addEventListener('click', async event => {
     } else if (action === 'suggest-user') {
       await suggestUser();
     } else if (action === 'test-oauth') {
-      log('Zoom OAuth test', await request('/api/zoom/oauth/test', { method: 'POST', body: '{}' }));
+      showPending('Zoom OAuth test', 'Testing Zoom Server-to-Server OAuth credentials...');
+      logAndShow('Zoom OAuth test', await request('/api/zoom/oauth/test', { method: 'POST', body: '{}' }));
     } else if (action === 'docker-login') {
-      log('ECS auth info', await request('/api/ecs/auth-info', { method: 'POST', body: '{}' }));
+      showPending('ECS auth info', 'Checking how Fargate pulls the runner image...');
+      logAndShow('ECS auth info', await request('/api/ecs/auth-info', { method: 'POST', body: '{}' }));
+    } else if (action === 'close-result') {
+      hideResult();
+    } else if (action === 'logout') {
+      authorization = '';
+      sessionStorage.removeItem('managerAuthorization');
+      showLogin('Signed out');
     } else if (action === 'start-all-users') {
       await startAllUsers();
+    } else if (action === 'resolve-all-users') {
+      log('Resolve all PMI and passcodes completed', await request('/api/managed-users/resolve-all', { method: 'POST', body: '{}' }));
+      await refreshUsers();
     } else if (action === 'resolve-user') {
       const userId = event.target.dataset.userId;
       log('Instant meeting resolved', await request(`/api/managed-users/${encodeURIComponent(userId)}/resolve`, { method: 'POST', body: '{}' }));
@@ -576,9 +665,21 @@ document.addEventListener('click', async event => {
       await refreshStatus();
     }
   } catch (error) {
-    log('Error', error.body || { error: error.message });
+    logAndShow('Error', error.body || { error: error.message });
   } finally {
     event.target.disabled = false;
+  }
+});
+
+resultPanelEl.addEventListener('click', event => {
+  if (event.target === resultPanelEl) {
+    hideResult();
+  }
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && resultPanelEl.classList.contains('visible')) {
+    hideResult();
   }
 });
 

@@ -35,7 +35,7 @@ function runCommand(command, args, options = {}) {
           reject(new HttpError(500, 'Docker socket permission denied', {
             stdout,
             stderr,
-            fix: 'Add the service user to the docker group, then log out/in or restart the manager: sudo usermod -aG docker dreamtcs'
+            fix: 'Add the service user to the docker group, then log out/in or restart the manager: sudo usermod -aG docker <service-user>'
           }));
           return;
         }
@@ -234,6 +234,7 @@ export async function listContainers() {
     const health = running ? (healthStatus || 'alive') : (status === 'dead' ? 'dead' : 'exited');
     const id = String(container.Id || '');
     const name = String(container.Name || '').replace(/^\//, '');
+    const active = running || ['created', 'restarting', 'paused'].includes(status);
     return {
       id: id.slice(0, 12),
       fullId: id,
@@ -242,7 +243,12 @@ export async function listContainers() {
       status,
       health,
       healthStatus,
+      lifecycle: active ? 'active' : 'disposed',
+      active,
       running,
+      pending: ['created', 'restarting'].includes(status),
+      stopped: !active,
+      disposed: !active,
       exitCode: dockerState.ExitCode,
       startedAt: dockerState.StartedAt,
       finishedAt: dockerState.FinishedAt,
@@ -277,9 +283,25 @@ export async function killContainers({ target = 'all', project = '' } = {}) {
   const ids = await runCommand('docker', filters, { timeoutMs: 30_000 });
   const containerIds = ids.stdout.split('\n').map(line => line.trim()).filter(Boolean);
   if (!containerIds.length) {
-    return [{ project: project || config.docker.project, target, count: 0, containerIds: [] }];
+    return [{
+      project: project || config.docker.project,
+      target,
+      count: 0,
+      stoppedCount: 0,
+      activeRemainingCount: 0,
+      disposed: true,
+      containerIds: []
+    }];
   }
 
   await runCommand('docker', ['rm', '-f', ...containerIds], { timeoutMs: 60_000 });
-  return [{ project: project || config.docker.project, target, count: containerIds.length, containerIds }];
+  return [{
+    project: project || config.docker.project,
+    target,
+    count: containerIds.length,
+    stoppedCount: containerIds.length,
+    activeRemainingCount: 0,
+    disposed: true,
+    containerIds
+  }];
 }

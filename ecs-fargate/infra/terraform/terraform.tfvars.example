@@ -1,5 +1,6 @@
 aws_region   = "us-east-1"
 project_name = "zoom-loadtest"
+owner_name   = ""
 
 # Terraform creates the VPC, public subnets, ECR repo, ECS cluster, task
 # definition, API Gateway, Lambda, DynamoDB, S3, and CloudFront.
@@ -10,9 +11,16 @@ assign_public_ip    = true
 # Fargate size requested for this project: 0.25 vCPU / 0.5GB.
 runner_cpu    = 256
 runner_memory = 512
+max_runner_tasks = 10
+
+# Set to 1 to serialize manager launches when the account Lambda quota allows it.
+manager_reserved_concurrency = -1
 
 # Store SecureString values under this prefix outside Terraform state.
 ssm_parameter_prefix = "/zoom-loadtest"
 
 # Set this to the CloudFront URL/custom domain once known if you want stricter CORS.
 allowed_cors_origins = ["*"]
+
+# Disable if the AWS account is not verified to create CloudFront distributions.
+enable_cloudfront = true

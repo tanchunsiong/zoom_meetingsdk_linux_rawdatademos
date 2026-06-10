@@ -1,36 +1,54 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DeleteCommand, DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = path.join(__dirname, '..', '.data');
-const usersPath = path.join(dataDir, 'custcreate-users.json');
+const usersPath = path.join(__dirname, '..', '.data', 'custcreate-users.json');
+const tableName = process.env.STATUS_TABLE_NAME || '';
+const documentClient = tableName ? DynamoDBDocumentClient.from(new DynamoDBClient({})) : null;
 
-async function readJson(filePath, fallback) {
+async function readLocalUsers() {
   try {
-    return JSON.parse(await fs.readFile(filePath, 'utf8'));
+    return JSON.parse(await fs.readFile(usersPath, 'utf8')).users || [];
   } catch (error) {
-    if (error.code === 'ENOENT') return fallback;
+    if (error.code === 'ENOENT') return [];
     throw error;
   }
 }
 
-async function writeJson(filePath, value) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+async function writeLocalUsers(users) {
+  await fs.mkdir(path.dirname(usersPath), { recursive: true });
+  await fs.writeFile(usersPath, `${JSON.stringify({ users }, null, 2)}\n`, 'utf8');
+}
+
+async function putUser(user) {
+  if (!documentClient) return;
+  await documentClient.send(new PutCommand({
+    TableName: tableName,
+    Item: { pk: 'managed-user', sk: user.id, ...user }
+  }));
 }
 
 export async function listManagedUsers() {
-  const data = await readJson(usersPath, { users: [] });
-  return data.users.sort((a, b) => String(a.email).localeCompare(String(b.email)));
+  if (!documentClient) {
+    return (await readLocalUsers()).sort((a, b) => String(a.email).localeCompare(String(b.email)));
+  }
+  const result = await documentClient.send(new ScanCommand({
+    TableName: tableName,
+    FilterExpression: 'pk = :pk',
+    ExpressionAttributeValues: { ':pk': 'managed-user' }
+  }));
+  return (result.Items || [])
+    .map(({ pk, sk, ...user }) => user)
+    .sort((a, b) => String(a.email).localeCompare(String(b.email)));
 }
 
 export async function addManagedUser(user) {
-  const users = await listManagedUsers();
   const now = new Date().toISOString();
-  const id = user.id || user.zoomUserId || user.email;
   const record = {
-    id,
+    id: user.id || user.zoomUserId || user.email,
     zoomUserId: user.zoomUserId || user.id || user.email,
     email: user.email,
     firstName: user.firstName || '',
@@ -41,38 +59,43 @@ export async function addManagedUser(user) {
     updatedAt: now,
     meeting: user.meeting || null
   };
-
-  const next = users.filter(existing => existing.id !== record.id && existing.email !== record.email);
-  next.push(record);
-  await writeJson(usersPath, { users: next });
+  if (documentClient) {
+    await putUser(record);
+  } else {
+    const users = (await listManagedUsers()).filter(existing => existing.id !== record.id && existing.email !== record.email);
+    users.push(record);
+    await writeLocalUsers(users);
+  }
   return record;
 }
 
 export async function updateManagedUser(id, patch) {
-  const users = await listManagedUsers();
-  const index = users.findIndex(user => user.id === id || user.email === id || user.zoomUserId === id);
-  if (index === -1) return null;
-  users[index] = {
-    ...users[index],
-    ...patch,
-    updatedAt: new Date().toISOString()
-  };
-  await writeJson(usersPath, { users });
-  return users[index];
+  const user = await findManagedUser(id);
+  if (!user) return null;
+  const updated = { ...user, ...patch, updatedAt: new Date().toISOString() };
+  if (documentClient) {
+    await putUser(updated);
+  } else {
+    const users = (await listManagedUsers()).filter(existing => existing.id !== user.id);
+    users.push(updated);
+    await writeLocalUsers(users);
+  }
+  return updated;
 }
 
 export async function removeManagedUser(id) {
-  const users = await listManagedUsers();
-  const next = users.filter(user => user.id !== id && user.email !== id && user.zoomUserId !== id);
-  await writeJson(usersPath, { users: next });
-  return {
-    removed: users.length - next.length
-  };
+  const user = await findManagedUser(id);
+  if (!user) return { removed: 0 };
+  if (documentClient) {
+    await documentClient.send(new DeleteCommand({ TableName: tableName, Key: { pk: 'managed-user', sk: user.id } }));
+  } else {
+    await writeLocalUsers((await listManagedUsers()).filter(existing => existing.id !== user.id));
+  }
+  return { removed: 1 };
 }
 
 export async function findManagedUser(id) {
-  const users = await listManagedUsers();
-  return users.find(user => user.id === id || user.email === id || user.zoomUserId === id) || null;
+  return (await listManagedUsers()).find(user => user.id === id || user.email === id || user.zoomUserId === id) || null;
 }
 
 export function suggestManagedUser(domain) {

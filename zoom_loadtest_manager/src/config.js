@@ -12,6 +12,8 @@ const envPath = path.join(appRoot, '.env');
 export const envDefaults = {
   PORT: '3090',
   HOST: '0.0.0.0',
+  MANAGER_AUTH_USERNAME: 'admin',
+  MANAGER_AUTH_PASSWORD: 'admin',
   CUSTCREATE_EMAIL_DOMAIN: 'loadtest.invalid',
   ZOOM_ACCOUNT_ID: '',
   ZOOM_CLIENT_ID: '',

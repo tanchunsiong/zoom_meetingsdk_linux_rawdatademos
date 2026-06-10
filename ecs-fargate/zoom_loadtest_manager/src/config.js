@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { GetParametersByPathCommand, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +9,29 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.join(__dirname, '..');
 const envPath = path.join(appRoot, '.env');
+const ssm = new SSMClient({});
+const ssmParameterKeys = {
+  'app/custcreate-email-domain': 'CUSTCREATE_EMAIL_DOMAIN',
+  'zoom/account-id': 'ZOOM_ACCOUNT_ID',
+  'zoom/client-id': 'ZOOM_CLIENT_ID',
+  'zoom/client-secret': 'ZOOM_CLIENT_SECRET',
+  'zoom/rtms-client-id': 'ZOOM_RTMS_CLIENT_ID',
+  'zoom/webhook-secret-token': 'ZOOM_WEBHOOK_SECRET_TOKEN',
+  'meeting-token-endpoint': 'MEETING_TOKEN_ENDPOINT',
+  'ecs/task-cpu': 'ECS_TASK_CPU',
+  'ecs/task-memory': 'ECS_TASK_MEMORY',
+  'ecs/max-tasks': 'ECS_MAX_TASKS',
+  'docker/registry-url': 'DOCKER_REGISTRY_URL',
+  'docker/registry-username': 'DOCKER_REGISTRY_USERNAME',
+  'docker/registry-password': 'DOCKER_REGISTRY_PASSWORD',
+  'docker/image': 'DOCKER_IMAGE',
+  'docker/shm-size': 'DOCKER_SHM_SIZE',
+  'docker/cpu-min': 'DOCKER_CPU_MIN',
+  'docker/cpu-max': 'DOCKER_CPU_MAX',
+  'docker/memory-min': 'DOCKER_MEMORY_MIN',
+  'docker/memory-max': 'DOCKER_MEMORY_MAX'
+};
+const lambdaWritableEnvKeys = new Set(Object.values(ssmParameterKeys));
 
 export const envDefaults = {
   PORT: '3090',
@@ -32,6 +56,7 @@ export const envDefaults = {
   ECS_PLATFORM_VERSION: 'LATEST',
   ECS_TASK_CPU: '256',
   ECS_TASK_MEMORY: '512',
+  ECS_MAX_TASKS: '10',
   ECS_PROJECT: 'zoom-loadtest-meeting',
   DOCKER_REGISTRY_URL: 'dcr.asdc.cc',
   DOCKER_REGISTRY_USERNAME: '',
@@ -105,6 +130,7 @@ export const config = {
     platformVersion: env('ECS_PLATFORM_VERSION', 'LATEST'),
     taskCpu: env('ECS_TASK_CPU', '256'),
     taskMemory: env('ECS_TASK_MEMORY', '512'),
+    maxTasks: intEnv('ECS_MAX_TASKS', 10),
     project: env('ECS_PROJECT', 'zoom-loadtest-meeting')
   },
   docker: {
@@ -134,14 +160,21 @@ export const secretEnvKeys = new Set([
   'DOCKER_REGISTRY_PASSWORD'
 ]);
 
+function isReadonlyEnvKey(key) {
+  return Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME && !lambdaWritableEnvKeys.has(key));
+}
+
 export function envSnapshot() {
   return envKeys.map(key => {
     const isSecret = secretEnvKeys.has(key);
     const hasExplicitValue = process.env[key] !== undefined && process.env[key] !== '';
     const effectiveValue = process.env[key] ?? envDefaults[key] ?? '';
+    const readonly = isReadonlyEnvKey(key);
     return {
       key,
       isSecret,
+      readonly,
+      readonlyReason: readonly ? 'Managed by Terraform/Lambda environment. Update Terraform or redeploy to change this value.' : '',
       isSet: hasExplicitValue,
       fromDefault: process.env[key] === undefined && effectiveValue !== '',
       value: isSecret && hasExplicitValue ? '' : String(effectiveValue),
@@ -160,6 +193,9 @@ function quoteEnvValue(value) {
 
 export async function saveEnv(updates) {
   for (const key of envKeys) {
+    if (isReadonlyEnvKey(key)) {
+      continue;
+    }
     if (Object.prototype.hasOwnProperty.call(updates, key)) {
       const nextValue = String(updates[key] ?? '');
       if (secretEnvKeys.has(key) && nextValue === '' && process.env[key]) {
@@ -171,8 +207,46 @@ export async function saveEnv(updates) {
     }
   }
 
-  const lines = envKeys.map(key => `${key}=${quoteEnvValue(process.env[key] ?? envDefaults[key] ?? '')}`);
-  await fs.writeFile(envPath, `${lines.join('\n')}\n`, 'utf8');
+  if (process.env.AWS_LAMBDA_FUNCTION_NAME && process.env.SSM_PARAMETER_PREFIX) {
+    const prefix = process.env.SSM_PARAMETER_PREFIX.replace(/\/$/, '');
+    for (const [suffix, key] of Object.entries(ssmParameterKeys)) {
+      if (!Object.prototype.hasOwnProperty.call(updates, key)) continue;
+      const value = String(process.env[key] ?? '');
+      if (!value) continue;
+      await ssm.send(new PutParameterCommand({
+        Name: `${prefix}/${suffix}`,
+        Type: 'SecureString',
+        Value: value,
+        Overwrite: true
+      }));
+    }
+  } else {
+    const lines = envKeys.map(key => `${key}=${quoteEnvValue(process.env[key] ?? envDefaults[key] ?? '')}`);
+    await fs.writeFile(envPath, `${lines.join('\n')}\n`, 'utf8');
+  }
+  reloadConfigFromEnv();
+}
+
+export async function loadRuntimeConfig() {
+  if (!process.env.SSM_PARAMETER_PREFIX) return;
+  const prefix = process.env.SSM_PARAMETER_PREFIX.replace(/\/$/, '');
+  let nextToken;
+  do {
+    const result = await ssm.send(new GetParametersByPathCommand({
+      Path: prefix,
+      Recursive: true,
+      WithDecryption: true,
+      NextToken: nextToken
+    }));
+    for (const parameter of result.Parameters || []) {
+      const suffix = parameter.Name?.slice(prefix.length + 1);
+      const key = ssmParameterKeys[suffix];
+      if (key && parameter.Value && parameter.Value !== 'REPLACE_ME') {
+        process.env[key] = parameter.Value;
+      }
+    }
+    nextToken = result.NextToken;
+  } while (nextToken);
   reloadConfigFromEnv();
 }
 
@@ -201,6 +275,7 @@ export function reloadConfigFromEnv() {
   config.ecs.platformVersion = env('ECS_PLATFORM_VERSION', 'LATEST');
   config.ecs.taskCpu = env('ECS_TASK_CPU', '256');
   config.ecs.taskMemory = env('ECS_TASK_MEMORY', '512');
+  config.ecs.maxTasks = intEnv('ECS_MAX_TASKS', 10);
   config.ecs.project = env('ECS_PROJECT', 'zoom-loadtest-meeting');
 
   config.docker.registryUrl = env('DOCKER_REGISTRY_URL', 'dcr.asdc.cc');
@@ -254,6 +329,7 @@ export function publicStatus() {
       platformVersion: config.ecs.platformVersion,
       taskCpu: config.ecs.taskCpu,
       taskMemory: config.ecs.taskMemory,
+      maxTasks: config.ecs.maxTasks,
       project: config.ecs.project
     }
   };

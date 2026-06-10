@@ -1,6 +1,6 @@
 output "cloudfront_url" {
   description = "CloudFront URL for the static UI and /api/* proxy."
-  value       = "https://${aws_cloudfront_distribution.ui.domain_name}"
+  value       = var.enable_cloudfront ? "https://${aws_cloudfront_distribution.ui[0].domain_name}" : null
 }
 
 output "api_gateway_url" {

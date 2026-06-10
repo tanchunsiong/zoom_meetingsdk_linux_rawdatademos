@@ -15,6 +15,7 @@ start, join, delete, and instance-count controls.
 - Auto-fill fake email, first name, last name, and a Licensed user type for `custCreate` user creation.
 - List selectable custCreate candidates from manager-created users, fake-domain users, and Zoom API/login type data when available.
 - Resolve the selected user's PMI and PMI passcode from `GET /users/{userId}` and `GET /users/{userId}/settings`.
+- Resolve PMI/passcode for all listed custCreate users from one browser action.
 - Schedule a fallback meeting just before launch if Zoom does not expose an instant/PMI meeting ID for that user.
 - Delete a custCreate user from Zoom with `DELETE /users/{userId}?action=delete` and remove it from the local manager list.
 - Get a user's ZAK just in time when starting a meeting as host.
@@ -24,6 +25,7 @@ start, join, delete, and instance-count controls.
 - Start join containers from the selected user's instant meeting ID/passcode and runtime JWT with `MEETING_MODE=join`.
 - Start host containers from the selected user's instant meeting ID, runtime JWT, and just-in-time ZAK with `MEETING_MODE=start`.
 - Show ongoing Docker containers with meeting/user labels, then kill one container, join containers, start containers, or all load-test containers.
+- Show popup results for OAuth, Docker login, and action errors instead of relying only on the action log.
 
 The RTMS start request body is:
 
@@ -53,6 +55,9 @@ cp .env.example .env
 Edit `.env`, or start the app and edit these values from the Environment card:
 
 ```bash
+MANAGER_AUTH_USERNAME=admin
+MANAGER_AUTH_PASSWORD=change-me
+
 ZOOM_ACCOUNT_ID=
 ZOOM_CLIENT_ID=
 ZOOM_CLIENT_SECRET=
@@ -62,6 +67,7 @@ DOCKER_REGISTRY_USERNAME=
 DOCKER_REGISTRY_PASSWORD=
 ```
 
+These credentials are verified server-side for management API requests.
 Do not commit `.env`. It is intentionally ignored.
 
 For webhook-confirmed RTMS status, add the Zoom webhook secret token and set the

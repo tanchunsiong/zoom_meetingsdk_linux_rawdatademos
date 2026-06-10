@@ -21,10 +21,53 @@ import { getMeetingSdkToken } from './token-service.js';
 import { addManagedUser, findManagedUser, listManagedUsers, removeManagedUser, suggestManagedUser, updateManagedUser } from './store.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const app = express();
+export const app = express();
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+function secureEqual(actual, expected) {
+  const actualBuffer = Buffer.from(String(actual));
+  const expectedBuffer = Buffer.from(String(expected));
+  return actualBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(actualBuffer, expectedBuffer);
+}
+
+function basicCredentials(header = '') {
+  if (!header.startsWith('Basic ')) return null;
+  try {
+    const decoded = Buffer.from(header.slice(6), 'base64').toString('utf8');
+    const separator = decoded.indexOf(':');
+    if (separator === -1) return null;
+    return {
+      username: decoded.slice(0, separator),
+      password: decoded.slice(separator + 1)
+    };
+  } catch {
+    return null;
+  }
+}
+
+app.use('/api', (req, res, next) => {
+  if (req.path === '/zoom/rtms/webhook') {
+    next();
+    return;
+  }
+
+  const expectedUsername = process.env.MANAGER_AUTH_USERNAME || 'admin';
+  const expectedPassword = process.env.MANAGER_AUTH_PASSWORD || 'admin';
+  const credentials = basicCredentials(req.get('authorization'));
+  if (
+    credentials &&
+    secureEqual(credentials.username, expectedUsername) &&
+    secureEqual(credentials.password, expectedPassword)
+  ) {
+    next();
+    return;
+  }
+
+  res.set('WWW-Authenticate', 'Basic realm="Zoom Load Test Manager", charset="UTF-8"');
+  res.status(401).json({ error: 'Authentication required' });
+});
 
 function asyncRoute(handler) {
   return async (req, res, next) => {
@@ -553,6 +596,45 @@ app.get('/api/managed-users', asyncRoute(async (_req, res) => {
   res.json(await selectableCustCreateUsers());
 }));
 
+app.post('/api/managed-users/resolve-all', asyncRoute(async (_req, res) => {
+  const selectable = await selectableCustCreateUsers();
+  const results = [];
+
+  for (const candidate of selectable.users) {
+    try {
+      const user = await selectedUser(candidate.id || candidate.zoomUserId || candidate.email);
+      const resolved = await resolveAndCacheInstantMeeting(user);
+      results.push({
+        ok: true,
+        userId: user.id,
+        zoomUserId: resolved.user?.zoomUserId || user.zoomUserId || '',
+        email: resolved.user?.email || user.email || '',
+        meetingNumber: resolved.meeting?.number || '',
+        meetingPassword: resolved.meeting?.password || '',
+        meetingSource: resolved.meeting?.source || '',
+        warnings: resolved.meeting?.warnings || []
+      });
+    } catch (error) {
+      results.push({
+        ok: false,
+        userId: candidate.id || candidate.zoomUserId || candidate.email || '',
+        email: candidate.email || '',
+        error: error.message,
+        details: error.details
+      });
+    }
+  }
+
+  res.json({
+    ok: results.every(result => result.ok),
+    resolvedCount: results.filter(result => result.ok && result.meetingNumber).length,
+    failedCount: results.filter(result => !result.ok).length,
+    totalCount: results.length,
+    warnings: selectable.warnings || [],
+    results
+  });
+}));
+
 app.post('/api/managed-users', asyncRoute(async (req, res) => {
   const suggested = suggestManagedUser(config.server.custCreateEmailDomain);
   const user = await createCustCreateUser({
@@ -899,6 +981,8 @@ app.use((error, _req, res, _next) => {
   });
 });
 
-app.listen(config.server.port, config.server.host, () => {
-  console.log(`Zoom load-test manager listening on http://${config.server.host}:${config.server.port}`);
-});
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.listen(config.server.port, config.server.host, () => {
+    console.log(`Zoom load-test manager listening on http://${config.server.host}:${config.server.port}`);
+  });
+}

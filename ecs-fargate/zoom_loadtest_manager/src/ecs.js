@@ -100,7 +100,9 @@ function taskToContainer(task) {
   const lastStatus = task.lastStatus || '';
   const desiredStatus = task.desiredStatus || '';
   const running = lastStatus === 'RUNNING';
+  const pending = ['ACTIVATING', 'PENDING', 'PROVISIONING'].includes(lastStatus);
   const stopped = lastStatus === 'STOPPED';
+  const active = !stopped;
 
   return {
     id: shortTaskId(taskArn),
@@ -109,9 +111,14 @@ function taskToContainer(task) {
     image: container.image || '',
     status: lastStatus,
     desiredStatus,
-    health: running ? 'alive' : 'exited',
+    lifecycle: active ? 'active' : 'disposed',
+    health: running ? 'alive' : pending ? 'starting' : 'exited',
     healthStatus: '',
+    active,
     running,
+    pending,
+    stopped,
+    disposed: stopped,
     exitCode: container.exitCode ?? '',
     startedAt: task.startedAt ? task.startedAt.toISOString() : '',
     finishedAt: task.stoppedAt ? task.stoppedAt.toISOString() : '',
@@ -161,6 +168,16 @@ async function listTaskArns(client, desiredStatus) {
   return taskArns;
 }
 
+function isActiveTask(container) {
+  return container.active && container.status !== 'STOPPED';
+}
+
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export async function dockerLogin() {
   return {
     ok: true,
@@ -175,6 +192,27 @@ export async function startContainers(input) {
   const project = input.project || config.ecs.project;
   const runId = input.runId || new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
   const count = Number(input.count || 1);
+  if (!Number.isInteger(count) || count < 1 || count > config.ecs.maxTasks) {
+    throw new HttpError(400, `count must be an integer between 1 and ECS_MAX_TASKS (${config.ecs.maxTasks})`);
+  }
+
+  const activeTaskArns = [
+    ...await listTaskArns(client, 'PENDING'),
+    ...await listTaskArns(client, 'RUNNING')
+  ];
+  const activeTasks = await describeTaskArns(client, [...new Set(activeTaskArns)]);
+  const projectActiveCount = activeTasks
+    .map(taskToContainer)
+    .filter(task => task.project === project || task.labels['zoom-loadtest'] === 'true')
+    .length;
+  if (projectActiveCount + count > config.ecs.maxTasks) {
+    throw new HttpError(409, `Launch would exceed ECS_MAX_TASKS (${config.ecs.maxTasks})`, {
+      activeTasks: projectActiveCount,
+      requestedTasks: count,
+      availableTasks: Math.max(0, config.ecs.maxTasks - projectActiveCount)
+    });
+  }
+
   const indexes = Array.from({ length: count }, (_, index) => index + 1);
   const started = [];
 
@@ -237,12 +275,13 @@ export async function startContainers(input) {
   return started;
 }
 
-export async function listContainers() {
+export async function listContainers({ includeStopped = false } = {}) {
   requireEcsConfig();
   const client = ecsClient();
+  const pending = await listTaskArns(client, 'PENDING');
   const running = await listTaskArns(client, 'RUNNING');
-  const stopped = await listTaskArns(client, 'STOPPED');
-  const tasks = await describeTaskArns(client, [...new Set([...running, ...stopped])]);
+  const stopped = includeStopped ? await listTaskArns(client, 'STOPPED') : [];
+  const tasks = await describeTaskArns(client, [...new Set([...pending, ...running, ...stopped])]);
   return tasks
     .map(taskToContainer)
     .filter(task => task.project === config.ecs.project || task.labels['zoom-loadtest'] === 'true');
@@ -251,7 +290,7 @@ export async function listContainers() {
 export async function killContainers({ target = 'all', project = '' } = {}) {
   requireEcsConfig();
   const client = ecsClient();
-  const containers = await listContainers();
+  const containers = await listContainers({ includeStopped: false });
   const selectedProject = project || config.ecs.project;
   const selected = containers.filter(container => {
     if (target && target !== 'all' && target !== 'join' && target !== 'start') {
@@ -264,7 +303,12 @@ export async function killContainers({ target = 'all', project = '' } = {}) {
   });
 
   const stopped = [];
-  for (const container of selected.filter(item => item.running)) {
+  const alreadyStopped = [];
+  for (const container of selected.filter(item => !isActiveTask(item))) {
+    alreadyStopped.push(container.taskArn);
+  }
+
+  for (const container of selected.filter(isActiveTask)) {
     await client.send(new StopTaskCommand({
       cluster: config.ecs.cluster,
       task: container.taskArn,
@@ -273,5 +317,41 @@ export async function killContainers({ target = 'all', project = '' } = {}) {
     stopped.push(container.taskArn);
   }
 
-  return [{ project: selectedProject, target, count: stopped.length, containerIds: stopped }];
+  const stoppedSet = new Set(stopped);
+  let remainingSelected = [];
+  if (stopped.length) {
+    const deadline = Date.now() + 20_000;
+    do {
+      const latestTasks = await describeTaskArns(client, stopped);
+      remainingSelected = latestTasks
+        .map(taskToContainer)
+        .filter(isActiveTask);
+      if (!remainingSelected.length) break;
+      await sleep(1_500);
+    } while (Date.now() < deadline);
+  }
+
+  const activeContainers = await listContainers({ includeStopped: false });
+  const activeRemaining = activeContainers.filter(container => {
+    if (container.project !== selectedProject) return false;
+    if (target === 'join') return container.mode === 'joinmeeting';
+    if (target === 'start') return container.mode === 'startmeeting';
+    if (target && target !== 'all') {
+      return container.id === target || container.fullId === target || container.name === target || container.taskArn === target;
+    }
+    return true;
+  });
+
+  return [{
+    project: selectedProject,
+    target,
+    requested: selected.length,
+    stoppedCount: stopped.length,
+    alreadyStoppedCount: alreadyStopped.length,
+    activeRemainingCount: activeRemaining.length,
+    disposed: activeRemaining.length === 0 && remainingSelected.length === 0,
+    containerIds: stopped,
+    alreadyStopped,
+    stillStopping: remainingSelected.map(container => container.taskArn).filter(taskArn => stoppedSet.has(taskArn))
+  }];
 }

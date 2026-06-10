@@ -53,6 +53,15 @@ cp .env.example .env
 
 Edit `.env`, or start the app and edit these values from the Environment card:
 
+```dotenv
+MANAGER_AUTH_USERNAME=admin
+MANAGER_AUTH_PASSWORD=change-me
+```
+
+These credentials are verified server-side for management API requests. For the
+hosted Lambda deployment, Terraform reads them from this ignored `.env`; run
+`terraform apply` after changing them.
+
 ```bash
 ZOOM_ACCOUNT_ID=
 ZOOM_CLIENT_ID=
@@ -67,6 +76,27 @@ ECS_SECURITY_GROUPS=sg-runner
 ```
 
 Do not commit `.env`. It is intentionally ignored.
+
+In the hosted Lambda deployment, the Environment card cannot write a local file,
+so editable settings are persisted under the configured SSM parameter prefix and
+loaded on Lambda cold start. Terraform-owned infrastructure wiring remains
+read-only, but these operational values are editable from the page:
+
+```bash
+CUSTCREATE_EMAIL_DOMAIN=
+ECS_TASK_CPU=
+ECS_TASK_MEMORY=
+ECS_MAX_TASKS=
+DOCKER_REGISTRY_URL=
+DOCKER_REGISTRY_USERNAME=
+DOCKER_REGISTRY_PASSWORD=
+DOCKER_IMAGE=
+DOCKER_SHM_SIZE=
+DOCKER_CPU_MIN=
+DOCKER_CPU_MAX=
+DOCKER_MEMORY_MIN=
+DOCKER_MEMORY_MAX=
+```
 
 For webhook-confirmed RTMS status, add the Zoom webhook secret token and set the
 Zoom app webhook URL to this manager endpoint:
@@ -130,10 +160,16 @@ Fargate task-size defaults are:
 
 - CPU: `ECS_TASK_CPU=256`, equivalent to `0.25 vCPU`.
 - Memory: `ECS_TASK_MEMORY=512`, equivalent to `0.5GB`.
+- Maximum concurrent tasks: `ECS_MAX_TASKS=10`.
 
 The ECS task definition should be registered with the same Fargate-compatible
 size: `cpu=256`, `memory=512`. The manager also passes these values as task
 overrides, but the task definition must already be compatible with Fargate.
+The manager rejects launches that would exceed `ECS_MAX_TASKS`, counting both
+pending and running tasks. Set Terraform `manager_reserved_concurrency = 1` to
+serialize manager requests. Accounts with low Lambda concurrency quotas can use
+`-1`, but then a narrow concurrent-launch race remains. Direct ECS API calls
+outside the manager are not covered by this limit.
 
 Zoom exposes the user's `type` as the plan type. The manager still shows it, but
 it does not rely on plan type alone to identify custCreate users. It treats
