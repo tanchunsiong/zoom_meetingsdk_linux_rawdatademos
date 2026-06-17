@@ -3,6 +3,11 @@ output "cloudfront_url" {
   value       = var.enable_cloudfront ? "https://${aws_cloudfront_distribution.ui[0].domain_name}" : null
 }
 
+output "aws_resource_group_name" {
+  description = "AWS Resource Groups group for browsing the load-test stack."
+  value       = var.aws_resource_group_name == "" ? null : aws_resourcegroups_group.stack[0].name
+}
+
 output "api_gateway_url" {
   description = "Direct API Gateway URL."
   value       = aws_apigatewayv2_api.manager.api_endpoint

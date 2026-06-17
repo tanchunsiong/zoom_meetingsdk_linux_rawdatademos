@@ -49,6 +49,23 @@ resource "aws_vpc" "main" {
   }
 }
 
+resource "aws_resourcegroups_group" "stack" {
+  count       = var.aws_resource_group_name == "" ? 0 : 1
+  name        = var.aws_resource_group_name
+  description = "Resources for Zoom RTMS load testing"
+
+  resource_query {
+    type = "TAG_FILTERS_1_0"
+    query = jsonencode({
+      ResourceTypeFilters = ["AWS::AllSupported"]
+      TagFilters = [{
+        Key    = "Project"
+        Values = [var.project_name]
+      }]
+    })
+  }
+}
+
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 

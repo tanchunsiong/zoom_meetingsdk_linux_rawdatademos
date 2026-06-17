@@ -10,6 +10,12 @@ variable "project_name" {
   default     = "zoom-loadtest"
 }
 
+variable "aws_resource_group_name" {
+  description = "Optional AWS Resource Groups group name for browsing all tagged stack resources. Empty disables it."
+  type        = string
+  default     = "zoom_rtms_loadtest"
+}
+
 variable "owner_name" {
   description = "Optional owner name tag for a specific deployment. Leave blank in reusable templates."
   type        = string

@@ -10,6 +10,7 @@ Minimal Terraform for the scale-to-zero load-test shape:
 - ECS cluster and Fargate task definition for one-off runner tasks.
 - ECR repository for the runner image.
 - Disposable VPC with public subnets and an internet gateway.
+- AWS Resource Groups group for browsing all tagged stack resources.
 - DynamoDB on-demand status table with TTL.
 - Outbound-only runner security group.
 - IAM permissions needed for Lambda to run/stop/inspect ECS tasks and read SSM parameters.
@@ -103,6 +104,7 @@ At minimum, set:
 
 - `aws_region`
 - `project_name`, if you want a different resource prefix
+- `aws_resource_group_name`, if you want a different AWS Resource Groups name
 
 Then:
 
