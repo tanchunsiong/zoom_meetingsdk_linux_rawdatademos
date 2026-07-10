@@ -1,6 +1,6 @@
-# Cloud Load Testing
+# Zoom Meeting SDK Load Testing
 
-This folder isolates the load-testing projects from the upstream Meeting SDK raw-data demos.
+This folder isolates the on-premise and cloud load-testing projects from the upstream Meeting SDK raw-data demos.
 
 - `on-premise/zoom_sendraw_loadtest-meeting`: unified local Docker runner for join/start meeting load tests.
 - `on-premise/zoom_loadtest_manager`: local Docker-based manager UI.

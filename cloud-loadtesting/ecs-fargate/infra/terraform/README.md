@@ -11,9 +11,9 @@ Minimal Terraform for the scale-to-zero load-test shape:
 - ECR repository for the runner image.
 - Disposable VPC with public subnets and an internet gateway.
 - AWS Resource Groups group for browsing all tagged stack resources.
-- DynamoDB on-demand status table with TTL.
+- DynamoDB on-demand table for manager-created custCreate user records, with TTL available for expiring records.
 - Outbound-only runner security group.
-- IAM permissions needed for Lambda to run/stop/inspect ECS tasks and read SSM parameters.
+- IAM permissions needed for Lambda to run/stop/inspect ECS tasks and read/write SSM parameters.
 - SSM SecureString placeholder parameter names.
 
 Intentionally not included:
@@ -109,10 +109,14 @@ At minimum, set:
 Then:
 
 ```bash
+npm --prefix ../../zoom_loadtest_manager ci
 terraform init
 terraform plan
 terraform apply
 ```
+
+The dependency install is required because Terraform packages the manager folder,
+including its production `node_modules`, into the Lambda ZIP.
 
 Push the runner image to the output `runner_ecr_repository_url` with tag
 `latest`.
@@ -168,7 +172,7 @@ example:
 /zoom-loadtest/meeting-token-endpoint
 ```
 
-The Lambda role can read parameters under that prefix.
+The Lambda role can read and update parameters under that prefix.
 Update the placeholder values outside Terraform after apply.
 
 ## Notes

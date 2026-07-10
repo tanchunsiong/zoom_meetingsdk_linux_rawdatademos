@@ -3,7 +3,7 @@
 Node/Express management website for launching the unified load-test image as
 one-off ECS Fargate tasks:
 
-- `dcr.asdc.cc/zoom-sendraw-loadtest-meeting:latest`
+- `<account-id>.dkr.ecr.<region>.amazonaws.com/zoom-sendraw-loadtest-meeting:latest`
 
 It uses Zoom Server-to-Server OAuth for REST API control-plane actions and the
 AWS ECS API to start, stop, and inspect Fargate runner tasks. The browser UI is
@@ -12,12 +12,12 @@ join, delete, and instance-count controls.
 
 ## What It Does
 
-- Edit the ignored local `.env` from the browser page.
+- Edit operational environment settings from the browser page; hosted Lambda saves writable values to SSM Parameter Store.
 - Auto-fill fake email, first name, last name, and a Licensed user type for `custCreate` user creation.
 - List selectable custCreate candidates from manager-created users, fake-domain users, and Zoom API/login type data when available.
 - Resolve the selected user's PMI and PMI passcode from `GET /users/{userId}` and `GET /users/{userId}/settings`.
 - Schedule a fallback meeting just before launch if Zoom does not expose an instant/PMI meeting ID for that user.
-- Delete a custCreate user from Zoom with `DELETE /users/{userId}?action=delete` and remove it from the local manager list.
+- Delete a custCreate user from Zoom with `DELETE /users/{userId}?action=delete` and remove it from the manager's DynamoDB-backed user list.
 - Get a user's ZAK just in time when starting a meeting as host.
 - Start or stop RTMS inline for running Fargate tasks with `PATCH /live_meetings/{meetingId}/rtms_app/status`.
 - Track RTMS command state per container and confirm actual started/stopped state from Zoom RTMS webhooks when configured.
@@ -39,7 +39,7 @@ The RTMS start request body is:
 ```
 
 The manager fills `participant_user_id` from the selected custCreate user or the
-container label `zoom-loadtest.user-id`. If this field is omitted, Zoom falls
+ECS task tag `zoom-loadtest.user-id`. If this field is omitted, Zoom falls
 back to the OAuth token user, which can return error `2308` when that user is
 not the meeting host or an alternative host.
 
@@ -98,6 +98,10 @@ DOCKER_MEMORY_MIN=
 DOCKER_MEMORY_MAX=
 ```
 
+The `DOCKER_*` values are retained as compatibility/display settings. ECS runner
+image, CPU, memory, networking, and task definition are controlled by the ECS and
+Terraform settings, not by local Docker flags.
+
 For webhook-confirmed RTMS status, add the Zoom webhook secret token and set the
 Zoom app webhook URL to this manager endpoint:
 
@@ -135,7 +139,7 @@ operation families:
 - Meetings: read user PMI/settings and optionally create/read meetings through the retained API endpoints.
 - RTMS: update participant RTMS app status.
 
-From the installed Zoom skills, the relevant granular scopes include:
+Relevant granular scopes may include:
 
 - `user:read:token` or `user:read:zak`
 - `user:write:user` or corresponding admin user-create scope
@@ -195,8 +199,8 @@ USER_ZAK=host-zak-token
 ```
 
 The Terraform template under `../infra/terraform` creates the ECS cluster, task
-definition, ECR repository, API Gateway, Lambda placeholder, CloudFront/S3 UI,
-DynamoDB state table, SSM SecureString placeholders, disposable VPC, public
+definition, ECR repository, API Gateway, Lambda manager, CloudFront/S3 UI,
+DynamoDB manager-user table, SSM SecureString placeholders, disposable VPC, public
 subnets, and IAM roles. It intentionally does not create CloudWatch log groups,
 NAT Gateway, ALB, Secrets Manager, or an always-on ECS service.
 

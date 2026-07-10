@@ -1,7 +1,7 @@
 # Azure Terraform
 
-This template creates the minimal Azure foundation for the Zoom Meeting SDK
-load-test runner:
+This template creates the minimal Azure foundation for the hosted Zoom load-test
+manager and Meeting SDK runner:
 
 - One resource group for simple cleanup
 - Azure Container Registry Basic
@@ -33,9 +33,10 @@ terraform plan
 terraform apply
 ```
 
-The first apply uses a public placeholder image so ACR can be created before the
-real runner image exists. Build and push the runner, set `runner_image` in
-`terraform.tfvars` to the `runner_image_target` output, and apply again.
+The first apply uses public placeholder images so ACR can be created before the
+real runner and manager images exist. Build and push both images, set
+`runner_image` and `manager_image` in `terraform.tfvars` to their ACR output
+targets, and apply again.
 
 ```bash
 az acr login --name "$(terraform output -raw acr_login_server | cut -d. -f1)"

@@ -1,50 +1,44 @@
 # Docker notes
 
-Run these commands from an individual sample's `demo/` directory.
+Run these commands from `zoom_sendraw_loadtest-meeting/`.
 
-The image tags below are intentionally version-agnostic. Rename them if you want a
-more specific local tag.
+The production runner is an Ubuntu 22.04 image for Azure Container Apps Jobs.
+Docker is used on the deployment machine to build and push that image to the
+Terraform-created Azure Container Registry.
 
-## CentOS 8
-
-```bash
-docker build -t msdk-demo-centos8 -f ../Dockerfile-Centos8/Dockerfile .
-docker run -it --rm msdk-demo-centos8
-```
-
-## CentOS 9
+## Build
 
 ```bash
-docker build -t msdk-demo-centos9 -f ../Dockerfile-Centos9/Dockerfile .
-docker run -it --rm msdk-demo-centos9
+IMAGE="$(terraform -chdir=../infra/terraform output -raw runner_image_target)" ./scripts/build-image.sh
 ```
 
-CentOS 9 may still require extra OpenSSL compatibility work depending on the demo and
-runtime path you use for token-fetching code.
+The build stages the Meeting SDK from `SDK_SOURCE`, which defaults to the local
+Meeting SDK path configured by this Azure copy.
 
-## Ubuntu
+## Push To ACR
 
 ```bash
-docker build -t msdk-demo-ubuntu -f ../Dockerfile-Ubuntu/Dockerfile .
-docker run -it --rm msdk-demo-ubuntu
-docker run --cpus=2.0 --memory=4G -it --rm msdk-demo-ubuntu
+ACR="$(terraform -chdir=../infra/terraform output -raw acr_login_server)"
+az acr login --name "${ACR%%.*}"
+PUSH_IMAGE=true IMAGE="$(terraform -chdir=../infra/terraform output -raw runner_image_target)" ./scripts/build-image.sh
 ```
 
-## Ubuntu Desktop
+## Local Smoke Test
 
 ```bash
-docker build -t msdk-demo-ubuntu-desktop -f ../Dockerfile-UbuntuDesktop/Dockerfile .
-docker run -it --rm msdk-demo-ubuntu-desktop
+MEETING_MODE=join ./scripts/start-loadtest.sh 1 1234567890 "$JWT_TOKEN" "passcode" LoadBot
 ```
 
-## Oracle Linux 8
+The local helper uses Docker only. Normal Azure runs are launched and stopped as
+Container Apps Job executions by `zoom_loadtest_manager`.
+
+## Stop Local Containers
 
 ```bash
-docker build -t msdk-demo-oraclelinux8 -f ../Dockerfile-OracleLinux8/Dockerfile .
-docker run -it --rm msdk-demo-oraclelinux8
+./scripts/stop-loadtest.sh
 ```
 
-## Useful commands
+## Useful Local Commands
 
 ```bash
 docker images -a

@@ -33,6 +33,10 @@ PUSH_IMAGE=true ./scripts/build-image.sh
 The image includes local `media/`, so regenerate media before building when
 source videos change.
 
+A clean checkout contains only `media/.gitkeep`. Populate `media/manifest.json`
+and its referenced YUV/PCM pairs before building an image that sends raw media;
+otherwise the runner exits before joining.
+
 ## Runtime Parameters
 
 Common:

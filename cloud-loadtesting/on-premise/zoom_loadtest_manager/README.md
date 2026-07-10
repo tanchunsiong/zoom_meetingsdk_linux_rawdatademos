@@ -107,7 +107,7 @@ operation families:
 - Meetings: read user PMI/settings and optionally create/read meetings through the retained API endpoints.
 - RTMS: update participant RTMS app status.
 
-From the installed Zoom skills, the relevant granular scopes include:
+Relevant granular scopes may include:
 
 - `user:read:token` or `user:read:zak`
 - `user:write:user` or corresponding admin user-create scope

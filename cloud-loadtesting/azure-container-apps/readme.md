@@ -46,7 +46,7 @@ with `Project`, `Stack`, and `ManagedBy`; no personal owner name is included.
 
 - `zoom_sendraw_loadtest-meeting`: unified start/join Meeting SDK runner image
 - `zoom_loadtest_manager`: Azure ARM-enabled management website
-- `infra/terraform`: minimal Azure runner infrastructure
+- `infra/terraform`: minimal Azure infrastructure for the hosted manager and runner
 
 ## First Deployment
 

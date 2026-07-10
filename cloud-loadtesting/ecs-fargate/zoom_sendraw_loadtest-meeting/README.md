@@ -1,8 +1,7 @@
 # Zoom SendRaw Load Test Meeting
 
-Single Docker/Portainer-oriented load-test image for both Meeting SDK join and
-host start flows. The image contains two binaries and chooses one at runtime with
-`MEETING_MODE`.
+Single ECS Fargate runner image for both Meeting SDK join and host start flows.
+The image contains two binaries and chooses one at runtime with `MEETING_MODE`.
 
 - `MEETING_MODE=join`: join an existing meeting as a participant.
 - `MEETING_MODE=start`: start a meeting as host and join with a ZAK token.
@@ -11,27 +10,32 @@ This folder is for authorized Zoom meeting load tests only.
 
 ## Image
 
-Default image:
+Terraform-managed image:
 
 ```bash
-dcr.asdc.cc/zoom-sendraw-loadtest-meeting:latest
+<account-id>.dkr.ecr.<region>.amazonaws.com/zoom-sendraw-loadtest-meeting:latest
 ```
 
 Build:
 
 ```bash
-./scripts/build-image.sh
+IMAGE="$(terraform -chdir=../infra/terraform output -raw runner_image)" ./scripts/build-image.sh
 ```
 
 Build and push:
 
 ```bash
-docker login dcr.asdc.cc
-PUSH_IMAGE=true ./scripts/build-image.sh
+REGISTRY="$(terraform -chdir=../infra/terraform output -raw runner_ecr_repository_url)"
+aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${REGISTRY%/*}"
+PUSH_IMAGE=true IMAGE="${REGISTRY}:latest" ./scripts/build-image.sh
 ```
 
 The image includes local `media/`, so regenerate media before building when
 source videos change.
+
+A clean checkout contains only `media/.gitkeep`. Populate `media/manifest.json`
+and its referenced YUV/PCM pairs before building the ECR image; otherwise the
+runner exits before joining.
 
 ## Runtime Parameters
 
@@ -87,18 +91,21 @@ Start as host:
 MEETING_MODE=start USER_ZAK="$USER_ZAK" ./scripts/start-loadtest.sh 1 1234567890 "$JWT_TOKEN" "" LoadHost
 ```
 
-The helper applies the same default resource controls as the manager:
+The helper applies these controls only to local Docker smoke tests. ECS task CPU
+and memory are configured by Terraform and the Fargate manager:
 
 - `CPU_MIN=0.1` -> Docker `--cpu-shares=102`
 - `CPU_MAX=0.5` -> Docker `--cpus=0.5`
 - `MEMORY_MIN=200m` -> Docker `--memory-reservation=200m`
 - `MEMORY_MAX=500m` -> Docker `--memory=500m`
 
-Stop containers:
+Stop local Docker containers:
 
 ```bash
 ./scripts/stop-loadtest.sh
 ```
+
+Stop ECS Fargate tasks from the hosted manager UI or its `/api/run/kill` endpoint.
 
 ## Media
 
