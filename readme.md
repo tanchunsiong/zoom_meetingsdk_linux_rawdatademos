@@ -8,13 +8,14 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 
 ## Included demos
 
-- `AllInOneExample`: join a meeting, chat, and exercise raw audio/video send and receive paths
-- `ChatExample`: join a meeting and receive chat events
-- `GetRawVideoAndAudioExample`: subscribe to raw video and audio
-- `GetRawVideoAndAudioAPIExample`: raw data sample with the included Python helper
-- `SendRawVideoAndAudioExample`: send video and audio into a meeting
-- `SendRawVideoAndAudioWithRTMSExample`: RTMS-driven media injection sample
-- `SkeletonExample`: minimal join/auth sample
+- [AllInOneExample](AllInOneExample/readme.md): join a meeting, chat, and exercise raw audio/video send and receive paths
+- [ChatExample](ChatExample/readme.md): join a meeting and demonstrate chat messaging
+- [GetRawShareExample](GetRawShareExample/readme.md): subscribe to raw shared-screen frames
+- [GetRawVideoAndAudioExample](GetRawVideoAndAudioExample/readme.md): subscribe to raw video and audio
+- [GetRawVideoAndAudioAPIExample](GetRawVideoAndAudioAPIExample/readme.md): raw data sample with the included Python helper
+- [SendRawVideoAndAudioExample](SendRawVideoAndAudioExample/readme.md): send video and audio into a meeting
+- [SendRawVideoAndAudioWithRTMSExample](SendRawVideoAndAudioWithRTMSExample/readme.md): RTMS-driven media injection sample
+- [SkeletonExample](SkeletonExample/readme.md): minimal join/auth sample
 - `cloud-loadtesting/on-premise/zoom_sendraw_loadtest-meeting`: single Docker/Portainer raw audio/video load-test image for both join and host start modes
 - `cloud-loadtesting/on-premise/zoom_loadtest_manager`: Node management website for Zoom S2S OAuth actions and Docker run control
 - `cloud-loadtesting/ecs-fargate`: source-only ECS/Fargate copy for AWS scale-to-zero load testing
