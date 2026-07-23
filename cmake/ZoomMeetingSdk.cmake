@@ -134,6 +134,9 @@ function(zoom_meeting_sdk_configure_target target_name)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${ZOOM_MEETING_SDK_ROOT}/cpthost"
       "$<TARGET_FILE_DIR:${target_name}>/cpthost"
+    COMMAND ${CMAKE_COMMAND}
+      "-DCPTHOST=$<TARGET_FILE_DIR:${target_name}>/cpthost"
+      -P "${_zoom_meeting_sdk_cmake_dir}/PatchCpthostRpath.cmake"
     COMMAND ${CMAKE_COMMAND} -E create_symlink
       libmeetingsdk.so
       "$<TARGET_FILE_DIR:${target_name}>/libmeetingsdk.so.1"

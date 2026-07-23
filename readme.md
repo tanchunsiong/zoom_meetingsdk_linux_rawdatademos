@@ -14,6 +14,7 @@ The current SDK target is `6.7.5.7391`. See `version.txt`.
 - [GetRawVideoAndAudioExample](GetRawVideoAndAudioExample/readme.md): subscribe to raw video and audio
 - [GetRawVideoAndAudioAPIExample](GetRawVideoAndAudioAPIExample/readme.md): raw data sample with the included Python helper
 - [SendRawVideoAndAudioExample](SendRawVideoAndAudioExample/readme.md): send video and audio into a meeting
+- [SendRawShareandAudioExample](SendRawShareandAudioExample/readme.md): send video and audio through the meeting share channel
 - [SendRawVideoAndAudioWithRTMSExample](SendRawVideoAndAudioWithRTMSExample/readme.md): RTMS-driven media injection sample
 - [SkeletonExample](SkeletonExample/readme.md): minimal join/auth sample
 - `cloud-loadtesting/on-premise/zoom_sendraw_loadtest-meeting`: single Docker/Portainer raw audio/video load-test image for both join and host start modes
