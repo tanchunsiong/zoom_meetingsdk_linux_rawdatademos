@@ -1,0 +1,7 @@
+{
+  "meeting_number": "1234567890",
+  "token": "YOUR_MEETING_SDK_JWT",
+  "meeting_password": "",
+  "display_name": "Service Quality Demo",
+  "poll_interval_seconds": 5
+}

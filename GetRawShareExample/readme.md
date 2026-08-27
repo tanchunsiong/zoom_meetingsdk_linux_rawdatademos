@@ -2,6 +2,8 @@
 
 This sample joins a meeting and subscribes to raw frames from an active screen-sharing source.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Detecting when a participant starts or stops sharing.

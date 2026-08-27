@@ -1,53 +1,51 @@
-# Docker notes
+# Docker Notes
 
-Run these commands from an individual sample's `demo/` directory.
+The per-example Dockerfiles support Ubuntu, Ubuntu Desktop, CentOS Stream 9, and Oracle Linux 8. CentOS 8 is no longer supported.
 
-The image tags below are intentionally version-agnostic. Rename them if you want a
-more specific local tag.
+Docker builds must use the repository root as the build context. The SDK remains local under `sdk/`; its contents are ignored by git and copied into the build image. The public repository contains only `sdk/.gitkeep`, so a real SDK installation is required for a successful build.
 
-## CentOS 8
+## Build
 
-```bash
-docker build -t msdk-demo-centos8 -f ../Dockerfile-Centos8/Dockerfile .
-docker run -it --rm msdk-demo-centos8
-```
-
-## CentOS 9
+Run these commands from the repository root:
 
 ```bash
-docker build -t msdk-demo-centos9 -f ../Dockerfile-Centos9/Dockerfile .
-docker run -it --rm msdk-demo-centos9
+docker build \
+  -t msdk-demo-ubuntu \
+  -f AllInOneExample/Dockerfile-Ubuntu/Dockerfile .
 ```
 
-CentOS 9 may still require extra OpenSSL compatibility work depending on the demo and
-runtime path you use for token-fetching code.
+Replace `AllInOneExample` and the Dockerfile directory with the example and platform you want to build. Before building, place the extracted SDK contents in `sdk/`. The required files may be directly under `sdk/` or inside one extracted SDK subdirectory. The SDK must contain `h/`, `qt_libs/`, `json/`, `images/`, `cpthost`, `libmeetingsdk.so`, `libcml.so`, and `libmpg123.so`.
 
-## Ubuntu
+## Run
+
+The image expects a runtime configuration file. Mount the ignored local config rather than copying it into the image:
 
 ```bash
-docker build -t msdk-demo-ubuntu -f ../Dockerfile-Ubuntu/Dockerfile .
-docker run -it --rm msdk-demo-ubuntu
-docker run --cpus=2.0 --memory=4G -it --rm msdk-demo-ubuntu
+docker run --rm -it \
+  -v "$PWD/AllInOneExample/demo/config.json:/app/demo/bin/config.json:ro" \
+  msdk-demo-ubuntu
 ```
 
-## Ubuntu Desktop
+Ubuntu and Ubuntu Desktop images start the generated `run.sh` launcher, which initializes the container audio setup before starting the demo. Audio-capable containers may need additional host PulseAudio or device configuration.
+
+## Examples
 
 ```bash
-docker build -t msdk-demo-ubuntu-desktop -f ../Dockerfile-UbuntuDesktop/Dockerfile .
-docker run -it --rm msdk-demo-ubuntu-desktop
+# Ubuntu
+docker build -t msdk-demo-ubuntu \
+  -f ChatExample/Dockerfile-Ubuntu/Dockerfile .
+
+# Ubuntu Desktop
+docker build -t msdk-demo-ubuntu-desktop \
+  -f ChatExample/Dockerfile-UbuntuDesktop/Dockerfile .
+
+# CentOS Stream 9
+docker build -t msdk-demo-centos9 \
+  -f ChatExample/Dockerfile-Centos9/Dockerfile .
+
+# Oracle Linux 8
+docker build -t msdk-demo-oraclelinux8 \
+  -f ChatExample/Dockerfile-OracleLinux8/Dockerfile .
 ```
 
-## Oracle Linux 8
-
-```bash
-docker build -t msdk-demo-oraclelinux8 -f ../Dockerfile-OracleLinux8/Dockerfile .
-docker run -it --rm msdk-demo-oraclelinux8
-```
-
-## Useful commands
-
-```bash
-docker images -a
-docker ps -a
-docker rmi <image-id>
-```
+The RTMS example additionally requires its Boost, OpenSSL, FFmpeg, and WebSocket++ dependencies, which are included in its retained Docker variants.

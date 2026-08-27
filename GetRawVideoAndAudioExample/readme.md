@@ -2,6 +2,8 @@
 
 This sample joins a meeting and receives participant video and meeting audio through the Meeting SDK raw-data interfaces.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Subscribing to participant video with a raw-data renderer.

@@ -115,6 +115,23 @@ IUserInfo* getMyself() {
 	return returnvalue;
 }
 
+gboolean unmuteRawAudioSource(gpointer) {
+	if (!m_pMeetingService || m_pMeetingService->GetMeetingStatus() != MEETING_STATUS_INMEETING) {
+		return G_SOURCE_REMOVE;
+	}
+
+	IMeetingAudioController* audio_controller = m_pMeetingService->GetMeetingAudioController();
+	IUserInfo* myself = getMyself();
+	if (!audio_controller || !myself) {
+		printf("Raw audio delayed unmute skipped: audio controller or self user unavailable\n");
+		return G_SOURCE_REMOVE;
+	}
+
+	SDKError err = audio_controller->UnMuteAudio(myself->GetUserID());
+	printf("Raw audio delayed UnMuteAudio result: %d, muted=%d\n", err, myself->IsAudioMuted());
+	return G_SOURCE_REMOVE;
+}
+
 
 
 
@@ -155,6 +172,17 @@ void CheckAndStartRawSending(bool isVideo, bool isAudio) {
 		IZoomSDKAudioRawDataHelper* audioHelper = GetAudioRawdataHelper();
 		if (audioHelper) {
 			SDKError err = audioHelper->setExternalAudioSource(audio_source);
+			if (err != SDKERR_SUCCESS) {
+				printf("attemptToStartRawAudioSending(): Failed to set external audio source, error code: %d\n", err);
+			}
+			else {
+				printf("attemptToStartRawAudioSending(): Success\n");
+				IMeetingAudioController* audio_controller = m_pMeetingService->GetMeetingAudioController();
+				if (audio_controller) {
+					printf("JoinVoip result: %d\n", audio_controller->JoinVoip());
+					g_timeout_add(1000, unmuteRawAudioSource, nullptr);
+				}
+			}
 		}
 	}
 
@@ -856,4 +884,3 @@ int main(int argc, char* argv[])
 	g_main_loop_run(loop);
 	return 0;
 }
-

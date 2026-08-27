@@ -2,6 +2,8 @@
 
 This sample joins a meeting and injects prerecorded media through the Meeting SDK external video source and virtual microphone APIs.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Supplying decoded frames through an external video source.

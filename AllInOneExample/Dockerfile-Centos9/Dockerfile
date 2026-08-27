@@ -43,8 +43,12 @@ RUN dnf install -y ffmpeg ffmpeg-devel
  # Set the working directory
 WORKDIR /app
 
+# Preserve the repository-relative paths used by the shared CMake helper.
+COPY cmake/ /cmake/
+COPY sdk/ /sdk/
+
  # Copy your application files to the container
-COPY demo/ /app/demo/
+COPY AllInOneExample/demo/ /app/demo/
 
 # Execute additional commands
  RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
@@ -62,5 +66,5 @@ COPY demo/ /app/demo/
 
  # Run the meetingSDKDemo binary when the container starts
  CMD ["/app/demo/run.sh"]
- #CMD ["/bin/bash"]
+ #CMD ["/app/demo/run.sh"]
  #CMD ["./AllInOneDemo"]

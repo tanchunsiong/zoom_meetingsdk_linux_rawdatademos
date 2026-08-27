@@ -2,6 +2,8 @@
 
 This is the minimal baseline sample for authenticating with the Meeting SDK and joining a meeting without a Zoom user login.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Initializing and cleaning up the Linux Meeting SDK.
@@ -21,4 +23,4 @@ cmake --build build -j
 ./bin/run_SkeletonDemo.sh
 ```
 
-The sample uses the repository's shared `sdk/` directory. Update `demo/config.json` before running and see the [repository overview](../readme.md) for common setup.
+The sample uses the repository's shared `sdk/` directory. Update `demo/config.json` before running. If the meeting requires a separate join token, set `join_token` in the ignored local config; it is blank in `config.json.example`. See the [repository overview](../readme.md) for common setup.

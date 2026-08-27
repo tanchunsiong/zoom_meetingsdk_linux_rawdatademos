@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     libsdl2-dev \
     g++-multilib 
 # Install CURL related libs
-RUN apt-get install -y libcurl4-openssl-dev
+RUN apt-get install -y libcurl4-openssl-dev libssl-dev libboost-system-dev
 
 # Install ALSA
 RUN apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
@@ -49,8 +49,12 @@ RUN apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 # Set the working directory
 WORKDIR /app
 
+# Preserve the repository-relative paths used by the shared CMake helper.
+COPY cmake/ /cmake/
+COPY sdk/ /sdk/
+
 # Copy your application files to the container
-COPY demo/ /app/demo/
+COPY SendRawVideoAndAudioWithRTMSExample/demo/ /app/demo/
 
 # Execute additional commands
 RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
@@ -62,12 +66,12 @@ WORKDIR /app/demo/bin
 # Define a shell script to run multiple commands
 RUN echo '#!/bin/bash' > /app/demo/run.sh \
     && echo '/app/demo/setup-pulseaudio.sh' >> /app/demo/run.sh \
-    && echo './SendRawVideoAndAudioDemo' >> /app/demo/run.sh
+    && echo './SendRawVideoAndAudioWithRTMSDemo' >> /app/demo/run.sh
 
 # Make the run script executable
 RUN chmod +x /app/demo/run.sh
 
 # Specify the run script as the CMD
 CMD ["/app/demo/run.sh"]
-#CMD ["/bin/bash"]
-#CMD ["./SendRawVideoAndAudioDemo"]
+#CMD ["/app/demo/run.sh"]
+#CMD ["./SendRawVideoAndAudioWithRTMSDemo"]

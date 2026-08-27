@@ -127,6 +127,23 @@ IUserInfo* getMyself() {
 	return returnvalue;
 }
 
+gboolean unmuteRawAudioSource(gpointer) {
+	if (!m_pMeetingService || m_pMeetingService->GetMeetingStatus() != MEETING_STATUS_INMEETING) {
+		return G_SOURCE_REMOVE;
+	}
+
+	IMeetingAudioController* audio_controller = m_pMeetingService->GetMeetingAudioController();
+	IUserInfo* myself = getMyself();
+	if (!audio_controller || !myself) {
+		printf("Raw audio delayed unmute skipped: audio controller or self user unavailable\n");
+		return G_SOURCE_REMOVE;
+	}
+
+	SDKError err = audio_controller->UnMuteAudio(myself->GetUserID());
+	printf("Raw audio delayed UnMuteAudio result: %d, muted=%d\n", err, myself->IsAudioMuted());
+	return G_SOURCE_REMOVE;
+}
+
 
 
 
@@ -176,11 +193,9 @@ void CheckAndStartRawSending(bool isVideo, bool isAudio) {
 				if (meetingAudController) {
 					SDKError joinErr = meetingAudController->JoinVoip();
 					printf("JoinVoip result: %d\n", joinErr);
-					IUserInfo* myself = getMyself();
-					if (myself) {
-						SDKError unmuteErr = meetingAudController->UnMuteAudio(myself->GetUserID());
-						printf("UnMuteAudio result: %d\n", unmuteErr);
-					}
+					// Joining VoIP and external-source initialization are asynchronous.
+					// Unmute after the SDK has delivered onMicInitialize.
+					g_timeout_add(1000, unmuteRawAudioSource, nullptr);
 				}
 			}
 		}
@@ -881,7 +896,7 @@ void StartMeeting()
 		if (pAudioContext)
 		{
 			pAudioContext->EnableAutoJoinAudio(true);
-			pAudioContext->EnableAlwaysMuteMicWhenJoinVoip(false);
+			pAudioContext->EnableAlwaysMuteMicWhenJoinVoip(true);
 			pAudioContext->SetSuppressBackgroundNoiseLevel(Suppress_BGNoise_Level_None);
 		}
 	}

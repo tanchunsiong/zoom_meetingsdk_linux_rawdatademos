@@ -206,6 +206,23 @@ IUserInfo* getMyself() {
 	return returnvalue;
 }
 
+gboolean unmuteRawAudioSource(gpointer) {
+	if (!m_pMeetingService || m_pMeetingService->GetMeetingStatus() != MEETING_STATUS_INMEETING) {
+		return G_SOURCE_REMOVE;
+	}
+
+	IMeetingAudioController* audio_controller = m_pMeetingService->GetMeetingAudioController();
+	IUserInfo* myself = getMyself();
+	if (!audio_controller || !myself) {
+		printf("Raw audio delayed unmute skipped: audio controller or self user unavailable\n");
+		return G_SOURCE_REMOVE;
+	}
+
+	SDKError err = audio_controller->UnMuteAudio(myself->GetUserID());
+	printf("Raw audio delayed UnMuteAudio result: %d, muted=%d\n", err, myself->IsAudioMuted());
+	return G_SOURCE_REMOVE;
+}
+
 //this is a helper method to get the first User Object, it is just an arbitary User Object
 IUserInfo* getFirstUserObj() {
 	m_pParticipantsController = m_pMeetingService->GetMeetingParticipantsController();
@@ -244,6 +261,11 @@ void CheckAndStartRawSending( bool isAudio) {
 			else
 				{
 				std::cout << "External audio source set successfully" << std::endl;
+				IMeetingAudioController* audio_controller = m_pMeetingService->GetMeetingAudioController();
+				if (audio_controller) {
+					std::cout << "JoinVoip result: " << audio_controller->JoinVoip() << std::endl;
+					g_timeout_add(1000, unmuteRawAudioSource, nullptr);
+				}
 			}
 		}
 	}
@@ -1212,4 +1234,3 @@ int main(int argc, char* argv[])
 	//g_main_loop_run(loop);
 	return 0;
 }
-

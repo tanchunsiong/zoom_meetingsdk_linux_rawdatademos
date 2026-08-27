@@ -193,6 +193,7 @@ void PlayAudioFileToVirtualMic(IZoomSDKAudioRawDataSender* audio_sender, string 
 			std::cout << "Error: Failed to send audio data to virtual mic. Error code: " << err << std::endl;
 			return;
 		}
+		std::cout << "Raw audio send active: bytes=" << buffer.size() << std::endl;
 		file.close();
 		// Sleep for a while before replaying (adjust the delay as needed)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // 10 second delay, this is a 10 second long wave file
@@ -215,7 +216,6 @@ void ZoomSDKVirtualAudioMicEvent::onMicStartSend() {
 	printf("onMicStartSend\n");
 	std::cout << "onStartSend" << std::endl;
 	if (pSender_ && audio_play_flag != 1) {
-		while (audio_play_flag > -1) {}
 		audio_play_flag = 1;
 		thread(PlayAudioFileToVirtualMic2, pSender_, audio_source_).detach();
 

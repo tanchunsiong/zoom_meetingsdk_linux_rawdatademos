@@ -2,6 +2,8 @@
 
 This sample receives meeting media and connects the audio workflow to a Python service for transcription and generated responses.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Receiving participant video and meeting audio through raw-data interfaces.

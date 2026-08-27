@@ -2,6 +2,8 @@
 
 This sample authenticates with the Meeting SDK, joins a meeting, and demonstrates in-meeting chat messaging.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Authentication and meeting join without a Zoom login.

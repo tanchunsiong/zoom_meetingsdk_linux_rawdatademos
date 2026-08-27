@@ -34,7 +34,8 @@
 *.env.*
 !.env.example
 /build/
-/sdk
+/sdk/*
+!/sdk/.gitkeep
 node_modules/
 **/node_modules/
 .terraform/

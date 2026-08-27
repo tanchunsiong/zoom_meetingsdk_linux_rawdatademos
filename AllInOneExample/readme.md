@@ -2,6 +2,8 @@
 
 This sample combines Meeting SDK authentication, meeting join, chat, raw audio/video capture, and external audio/video injection in one application.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Receiving participant video and meeting audio as raw data.

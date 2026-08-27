@@ -1,0 +1,11 @@
+{
+  "meeting_number": "1234567890",
+  "token": "YOUR_MEETING_SDK_JWT",
+  "meeting_password": "",
+  "display_name": "Breakout Room Demo",
+  "breakout_room_name": "SDK Breakout Room",
+  "create_room_on_join": false,
+  "assign_first_unassigned_user": false,
+  "start_breakout_rooms": false,
+  "stop_breakout_rooms_after_seconds": 0
+}

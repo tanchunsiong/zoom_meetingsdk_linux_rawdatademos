@@ -58,8 +58,8 @@ with `Project`, `Stack`, and `ManagedBy`; no personal owner name is included.
 6. Build and push the manager image, set `manager_image`, and apply again.
 7. Open `terraform output -raw manager_url`.
 
-See [infra/terraform/README.md](infra/terraform/README.md) and
-[zoom_loadtest_manager/README.md](zoom_loadtest_manager/README.md).
+See [infra/terraform/readme.md](infra/terraform/readme.md) and
+[zoom_loadtest_manager/readme.md](zoom_loadtest_manager/readme.md).
 
 Terraform populates the generated ACR URL, username, password, and runner image
 for the hosted manager. It does not populate Zoom credentials.

@@ -40,7 +40,7 @@ launches Fargate tasks only when load-test instances are requested.
 5. Configure Zoom and token-service settings through SSM parameters or the manager.
 6. Open `terraform output -raw cloudfront_url` or `terraform output -raw api_gateway_url`.
 
-See [infra/terraform/README.md](infra/terraform/README.md) for detailed commands.
+See [infra/terraform/readme.md](infra/terraform/readme.md) for detailed commands.
 
 ## Defaults
 

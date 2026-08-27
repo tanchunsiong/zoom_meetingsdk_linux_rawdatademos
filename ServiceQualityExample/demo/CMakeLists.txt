@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.16)
+project(ServiceQualityDemo LANGUAGES CXX)
+
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/ZoomMeetingSdk.cmake)
+
+zoom_meeting_sdk_add_demo(
+  TARGET ServiceQualityDemo
+  SOURCES src/main.cpp
+)

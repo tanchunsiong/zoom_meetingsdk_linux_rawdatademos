@@ -2,6 +2,8 @@
 
 This sample joins a meeting and injects prerecorded video and audio through the Meeting SDK raw share channels. The media appears as shared content and shared computer audio, not as the participant's camera and microphone.
 
+See the [demo README](demo/readme.md) for the source-directory build details.
+
 ## What it demonstrates
 
 - Starting an external share with `IZoomSDKShareSourceHelper::setExternalShareSource`.

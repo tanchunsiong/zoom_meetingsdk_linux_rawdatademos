@@ -49,8 +49,12 @@ RUN apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 # Set the working directory
 WORKDIR /app
 
+# Preserve the repository-relative paths used by the shared CMake helper.
+COPY cmake/ /cmake/
+COPY sdk/ /sdk/
+
 # Copy your application files to the container
-COPY demo/ /app/demo/
+COPY ChatExample/demo/ /app/demo/
 
 # Execute additional commands
 RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
@@ -69,5 +73,5 @@ RUN chmod +x /app/demo/run.sh
 
 # Specify the run script as the CMD
 CMD ["/app/demo/run.sh"]
-#CMD ["/bin/bash"]
+#CMD ["/app/demo/run.sh"]
 #CMD ["./ChatDemo"]

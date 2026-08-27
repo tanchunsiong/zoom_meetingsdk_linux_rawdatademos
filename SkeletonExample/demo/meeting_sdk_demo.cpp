@@ -51,7 +51,7 @@ GMainLoop* loop;
 
 //These are needed to readsettingsfromJSON named config.json
 using Json = nlohmann::json;
-std::string meeting_number, token, meeting_password, recording_token, remote_url;
+std::string meeting_number, token, join_token, meeting_password, recording_token, remote_url;
 
 
 //Services which are needed to initialize, authenticate and configure settings for the SDK
@@ -234,6 +234,7 @@ void ReadJsonSettings()
 
 		processJsonValue(config_json, "meeting_number", meeting_number);
 		processJsonValue(config_json, "token", token);
+		processJsonValue(config_json, "join_token", join_token);
 		processJsonValue(config_json, "meeting_password", meeting_password);
 		processJsonValue(config_json, "recording_token", recording_token);
 		processJsonValue(config_json, "remote_url", remote_url);
@@ -358,7 +359,7 @@ void JoinMeeting()
 	withoutloginParam.meetingNumber = std::stoull(meeting_number);
 	withoutloginParam.vanityID = NULL;
 	withoutloginParam.userName = "LinuxChun";
-	withoutloginParam.join_token = "YOUR_MEETING_SDK_JOIN_TOKEN";
+	withoutloginParam.join_token = join_token.empty() ? NULL : join_token.c_str();
 	// withoutloginParam.psw = "1";
 	withoutloginParam.psw = meeting_password.c_str();
 	withoutloginParam.customer_key = NULL;
@@ -672,4 +673,3 @@ int main(int argc, char* argv[])
 	g_main_loop_run(loop);
 	return 0;
 }
-

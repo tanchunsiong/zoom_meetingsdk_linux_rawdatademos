@@ -157,6 +157,8 @@ void PlayAudioFileToVirtualMic(IZoomSDKAudioRawDataSender* audio_sender, string 
 	const size_t frames_per_chunk = std::max<size_t>(1, static_cast<size_t>(audio.sample_rate * chunk_ms / 1000));
 	const size_t chunk_bytes = frames_per_chunk * audio.bytes_per_frame;
 	std::cout << "Streaming audio file " << audio_source << " at " << audio.sample_rate << " Hz" << std::endl;
+	uint64_t chunks_sent = 0;
+	uint64_t bytes_sent = 0;
 
 	while (audio_play_flag > 0 && audio_sender) {
 		for (size_t offset = 0; audio_play_flag > 0 && offset < audio.pcm.size(); offset += chunk_bytes) {
@@ -171,6 +173,12 @@ void PlayAudioFileToVirtualMic(IZoomSDKAudioRawDataSender* audio_sender, string 
 				std::cout << "Error: Failed to send audio data to virtual mic. Error code: " << err << std::endl;
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				continue;
+			}
+			++chunks_sent;
+			bytes_sent += bytes_to_send;
+			if (chunks_sent == 1 || chunks_sent % 1000 == 0) {
+				std::cout << "Raw audio send active: chunks=" << chunks_sent
+					<< " bytes=" << bytes_sent << std::endl;
 			}
 
 			const int frames_sent = static_cast<int>(bytes_to_send / audio.bytes_per_frame);
