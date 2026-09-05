@@ -1,16 +1,9 @@
-# Use the official Ubuntu image as the base image
 FROM dorowu/ubuntu-desktop-lxde-vnc:focal
 
-#only for  dorowu/ubuntu-desktop-lxde-vnc:focal
+ENV DEBIAN_FRONTEND=noninteractive
 RUN sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4EB27DB2A3B88B8B
-
-# Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y build-essential cmake
-#RUN apt-get install -y pkgcon
-
-#no longer needed for headless demo
-#RUN apt-get install -y gtkmm-3.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     libx11-xcb1 \
@@ -22,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     libxcb-keysyms1 \
     libxcb-xtest0 \
     libdbus-1-3 \
-    libglib2.0-0 \
+    libglib2.0-dev \
     libgbm1 \
     libxfixes3 \
     libgl1 \
@@ -33,45 +26,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     pkg-config \
     libegl-mesa0 \
     libsdl2-dev \
-    g++-multilib 
-# Install CURL related libs
+    g++-multilib
 RUN apt-get install -y libcurl4-openssl-dev
-
-# Install ALSA
 RUN apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
-
-# Install Pulseaudio
-RUN apt-get install -y  pulseaudio pulseaudio-utils 
-
-# Install ffmpeg
+RUN apt-get install -y  pulseaudio pulseaudio-utils
 RUN apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
-
-# Set the working directory
 WORKDIR /app
-
-# Preserve the repository-relative paths used by the shared CMake helper.
 COPY cmake/ /cmake/
 COPY sdk/ /sdk/
-
-# Copy your application files to the container
 COPY ChatExample/demo/ /app/demo/
 
-# Execute additional commands
-RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
+RUN mkdir -p /root/.config \
+    && cp /app/demo/zoomus.conf /root/.config/zoomus.conf \
+    && cmake -S /app/demo -B /app/demo/build \
+    && cmake --build /app/demo/build --parallel 2
 
-# Set the working directory to the binary folder
+ENV LD_LIBRARY_PATH=/app/demo/bin:/app/demo/bin/qt_libs:/app/demo/bin/qt_libs/Qt/lib
 WORKDIR /app/demo/bin
-
-
-# Define a shell script to run multiple commands
-RUN echo '#!/bin/bash' > /app/demo/run.sh \
-    && echo '/app/demo/setup-pulseaudio.sh' >> /app/demo/run.sh \
-    && echo './ChatDemo' >> /app/demo/run.sh
-
-# Make the run script executable
-RUN chmod +x /app/demo/run.sh
-
-# Specify the run script as the CMD
-CMD ["/app/demo/run.sh"]
-#CMD ["/app/demo/run.sh"]
-#CMD ["./ChatDemo"]
+CMD ["/bin/bash", "-ec", "mkdir -p /root/.config/pulse; pulseaudio --check || pulseaudio --start --exit-idle-time=-1; pactl load-module module-null-sink sink_name=SpeakerOutput; pactl set-default-sink SpeakerOutput; pactl set-default-source SpeakerOutput.monitor; exec ./ChatDemo"]

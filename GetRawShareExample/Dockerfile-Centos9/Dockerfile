@@ -1,14 +1,6 @@
-# Use the CentOS 9 base image
 FROM quay.io/centos/centos:stream9
 
-
-
-
-
-
 RUN yum update -y
-
-# Install required packages
 RUN yum install -y dnf-plugins-core \
     && dnf install -y cmake gcc gcc-c++ \
     && dnf config-manager --set-enabled crb \
@@ -20,51 +12,20 @@ RUN yum install -y dnf-plugins-core \
     && yum clean all
 
 RUN yum install -y glib2-devel
-
-#no longer needed for headless demo
-#RUN yum install -y yum gtk3-devel gtkmm30 gtkmm30-devel 
-
- # install pulse audio related
- #RUN yum install -y alsa-utils
-
- #RUN yum install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
-
-# Already installed, probably with gtk3
-# RUN yum install -y pulseaudio 
-RUN yum install -y pulseaudio-utils
-
-
-# # install ffmpeg related
-RUN dnf install -y --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+RUN yum install -y pulseaudio pulseaudio-utils dbus
+RUN dnf install -y https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
 RUN dnf update -y
 RUN dnf install -y ffmpeg ffmpeg-devel
-
-
- # Set the working directory
 WORKDIR /app
-
-# Preserve the repository-relative paths used by the shared CMake helper.
 COPY cmake/ /cmake/
 COPY sdk/ /sdk/
-
- # Copy your application files to the container
 COPY GetRawShareExample/demo/ /app/demo/
 
-# Execute additional commands
- RUN cd /app/demo && rm -rf bin && rm -rf build && cmake -B build && cd build && make
+RUN mkdir -p /root/.config \
+    && cp /app/demo/zoomus.conf /root/.config/zoomus.conf \
+    && cmake -S /app/demo -B /app/demo/build \
+    && cmake --build /app/demo/build --parallel 2
 
- # Set the working directory to the binary folder
- WORKDIR /app/demo/bin
-
-# # Define a shell script to run multiple commands
- RUN echo '#!/bin/bash' > /app/demo/run.sh \
-     && echo '/app/demo/setup-pulseaudio-centos.sh' >> /app/demo/run.sh \
-     && echo './GetRawShareDemo' >> /app/demo/run.sh
-
- # Make the run script executable
- RUN chmod +x /app/demo/run.sh
-
- # Run the meetingSDKDemo binary when the container starts
- CMD ["/app/demo/run.sh"]
- #CMD ["/app/demo/run.sh"]
- #CMD ["./GetRawShareDemo"]
+ENV LD_LIBRARY_PATH=/app/demo/bin:/app/demo/bin/qt_libs:/app/demo/bin/qt_libs/Qt/lib
+WORKDIR /app/demo/bin
+CMD ["/bin/bash", "-ec", "mkdir -p /root/.config/pulse; pulseaudio --check || pulseaudio --start --exit-idle-time=-1; pactl load-module module-null-sink sink_name=SpeakerOutput; pactl set-default-sink SpeakerOutput; pactl set-default-source SpeakerOutput.monitor; exec ./GetRawShareDemo"]

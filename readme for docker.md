@@ -26,7 +26,9 @@ docker run --rm -it \
   msdk-demo-ubuntu
 ```
 
-Ubuntu and Ubuntu Desktop images start the generated `run.sh` launcher, which initializes the container audio setup before starting the demo. Audio-capable containers may need additional host PulseAudio or device configuration.
+The sample images initialize PulseAudio and a virtual speaker in their Docker `CMD`, then use `exec` to start the corresponding demo. No generated `run.sh` is needed. `LD_LIBRARY_PATH` includes the copied SDK and Qt libraries, including those needed by `cpthost`.
+
+These containers run as root. The virtual speaker handles SDK audio inside the container; accessing host audio devices requires additional configuration. Build output is always under `demo/build`.
 
 ## Examples
 
