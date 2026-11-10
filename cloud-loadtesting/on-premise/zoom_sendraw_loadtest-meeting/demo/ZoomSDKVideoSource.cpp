@@ -112,10 +112,6 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
     }
 
     while (video_play_flag > 0) {
-        // Initialize FFmpeg.
-        av_register_all();
-        avcodec_register_all();
-
         // Open the input file (MP4).
         AVFormatContext* formatContext = nullptr;
         if (avformat_open_input(&formatContext, video_source.c_str(), nullptr, nullptr) < 0) {
@@ -130,14 +126,14 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
             continue; // Retry opening the file.
         }
 
-        AVCodec* codec = nullptr;
+        const AVCodec* codec = nullptr;
         int videoStreamIndex = -1;
 
         // Find the video codec and stream.
         for (int i = 0; i < formatContext->nb_streams; i++) {
-            if (formatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+            if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
                 videoStreamIndex = i;
-                codec = avcodec_find_decoder(formatContext->streams[i]->codec->codec_id);
+                codec = avcodec_find_decoder(formatContext->streams[i]->codecpar->codec_id);
                 if (!codec) {
                     std::cerr << "Error: Codec not found." << std::endl;
                     avformat_close_input(&formatContext);
@@ -148,15 +144,15 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
         }
 
         // Open the codec.
-        AVCodecContext* codecContext = formatContext->streams[videoStreamIndex]->codec;
-        if (avcodec_open2(codecContext, codec, nullptr) < 0) {
+        AVCodecContext* codecContext = avcodec_alloc_context3(codec);
+        if (!codecContext || avcodec_parameters_to_context(
+                                 codecContext, formatContext->streams[videoStreamIndex]->codecpar) < 0 ||
+            avcodec_open2(codecContext, codec, nullptr) < 0) {
             std::cerr << "Error: Could not open codec." << std::endl;
+            avcodec_free_context(&codecContext);
             avformat_close_input(&formatContext);
             return;
         }
-
-        // Set the pixel format explicitly to YUV420I (also known as YV12).
-        codecContext->pix_fmt = AV_PIX_FMT_YUV420P; // Use YUV420P for decoding
 
         // Read and send frames in a loop.
         AVPacket packet;
@@ -170,10 +166,24 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
                     return;
                 }
 
-                int frameFinished;
-                avcodec_decode_video2(codecContext, frame, &frameFinished, &packet);
+                int decode_result = avcodec_send_packet(codecContext, &packet);
+                while (decode_result >= 0) {
+                    decode_result = avcodec_receive_frame(codecContext, frame);
+                    if (decode_result == AVERROR(EAGAIN) || decode_result == AVERROR_EOF) {
+                        break;
+                    }
+                    if (decode_result < 0) {
+                        std::cerr << "Error: Could not decode video frame." << std::endl;
+                        av_frame_free(&frame);
+                        avcodec_free_context(&codecContext);
+                        avformat_close_input(&formatContext);
+                        return;
+                    }
 
-                if (frameFinished && CopyFrameToContiguousI420(frame, codecContext->width, codecContext->height, i420_frame)) {
+                    if (!CopyFrameToContiguousI420(frame, codecContext->width, codecContext->height, i420_frame)) {
+                        continue;
+                    }
+
                     SDKError err = video_sender->sendVideoFrame(
                         i420_frame.data(),
                         codecContext->width,
@@ -185,6 +195,7 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
                     if (err != SDKERR_SUCCESS) {
                         std::cerr << "Error: Failed to send video frame. Error code: " << err << std::endl;
                         av_frame_free(&frame);
+                        avcodec_free_context(&codecContext);
                         avformat_close_input(&formatContext);
                         return;
                     }
@@ -201,7 +212,7 @@ void PlayVideoFileToVirtualCamera(IZoomSDKVideoSender* video_sender, const std::
         }
 
         // Clean up.
-        avcodec_close(codecContext);
+        avcodec_free_context(&codecContext);
         avformat_close_input(&formatContext);
     }
 }

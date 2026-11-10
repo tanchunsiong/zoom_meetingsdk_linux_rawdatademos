@@ -61,9 +61,9 @@ void StreamShareVideo(
 		}
 
 		int stream_index = -1;
-		AVCodec* codec = nullptr;
+		const AVCodec* codec = nullptr;
 		for (unsigned int i = 0; i < format_context->nb_streams; ++i) {
-			AVCodecContext* candidate = format_context->streams[i]->codec;
+			AVCodecParameters* candidate = format_context->streams[i]->codecpar;
 			if (candidate->codec_type == AVMEDIA_TYPE_VIDEO) {
 				stream_index = static_cast<int>(i);
 				codec = avcodec_find_decoder(candidate->codec_id);
@@ -78,9 +78,12 @@ void StreamShareVideo(
 			return;
 		}
 
-		AVCodecContext* codec_context = format_context->streams[stream_index]->codec;
-		if (avcodec_open2(codec_context, codec, nullptr) < 0) {
+		AVCodecContext* codec_context = avcodec_alloc_context3(codec);
+		if (!codec_context ||
+			avcodec_parameters_to_context(codec_context, format_context->streams[stream_index]->codecpar) < 0 ||
+			avcodec_open2(codec_context, codec, nullptr) < 0) {
 			std::cerr << "Unable to open share video decoder" << std::endl;
+			avcodec_free_context(&codec_context);
 			avformat_close_input(&format_context);
 			sending->store(false);
 			return;
@@ -91,21 +94,31 @@ void StreamShareVideo(
 		while (sending->load() && av_read_frame(format_context, &packet) >= 0) {
 			if (packet.stream_index == stream_index) {
 				AVFrame* frame = av_frame_alloc();
-				int frame_finished = 0;
-				avcodec_decode_video2(codec_context, frame, &frame_finished, &packet);
-
-				if (frame_finished &&
-					CopyToI420(frame, codec_context->width, codec_context->height, i420_frame)) {
-					SDKError error = sender->sendShareFrame(
-						i420_frame.data(),
-						codec_context->width,
-						codec_context->height,
-						static_cast<int>(i420_frame.size()),
-						FrameDataFormat_I420_LIMITED);
-					if (error != SDKERR_SUCCESS) {
-						std::cerr << "sendShareFrame failed: " << error << std::endl;
-						sending->store(false);
+					int decode_result = avcodec_send_packet(codec_context, &packet);
+					while (decode_result >= 0) {
+						decode_result = avcodec_receive_frame(codec_context, frame);
+						if (decode_result == AVERROR(EAGAIN) || decode_result == AVERROR_EOF) {
+							break;
 					}
+						if (decode_result < 0) {
+							std::cerr << "Unable to decode share video frame" << std::endl;
+							break;
+						}
+
+						if (!CopyToI420(frame, codec_context->width, codec_context->height, i420_frame)) {
+							continue;
+						}
+
+						SDKError error = sender->sendShareFrame(
+							i420_frame.data(),
+							codec_context->width,
+							codec_context->height,
+							static_cast<int>(i420_frame.size()),
+							FrameDataFormat_I420_LIMITED);
+						if (error != SDKERR_SUCCESS) {
+							std::cerr << "sendShareFrame failed: " << error << std::endl;
+							sending->store(false);
+						}
 				}
 
 				av_frame_free(&frame);
@@ -115,7 +128,7 @@ void StreamShareVideo(
 			std::this_thread::sleep_for(std::chrono::milliseconds(33));
 		}
 
-		avcodec_close(codec_context);
+		avcodec_free_context(&codec_context);
 		avformat_close_input(&format_context);
 	}
 }

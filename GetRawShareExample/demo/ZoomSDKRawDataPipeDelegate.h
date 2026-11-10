@@ -15,6 +15,7 @@ extern "C"
 #include <libavutil/avutil.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/pixfmt.h>
+#include <libavutil/opt.h>
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 #include <libavcodec/avcodec.h>
@@ -69,18 +70,16 @@ class ZoomSDKRawDataPipeDelegate :
 	const AVFilter* buffersink;
 	AVFilterInOut* outputs;
 	AVFilterInOut* inputs;
-	AVBufferSinkParams* buffersink_params;
-
 	//Output YUV
 	FILE* fp_yuv;
 	int isOutputYUV = 0;
 
 	// ffmpeg encoding
 	AVFormatContext* formatContext;
-	AVOutputFormat* fmt;
+	const AVOutputFormat* fmt;
 	AVStream* videoStream;
 	AVCodecContext* codecContext;
-	AVCodec* videoCodec;
+	const AVCodec* videoCodec;
 	AVPacket pkt;
 
 	bool initCompleted = false;

@@ -261,8 +261,7 @@ bool init_decoder() {
     static bool initialized = false;
     if (initialized) return true;
 
-    avcodec_register_all();
-    AVCodec* codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+    const AVCodec* codec = avcodec_find_decoder(AV_CODEC_ID_H264);
     if (!codec) {
         std::cerr << "❌ H.264 decoder not found\n";
         return false;
