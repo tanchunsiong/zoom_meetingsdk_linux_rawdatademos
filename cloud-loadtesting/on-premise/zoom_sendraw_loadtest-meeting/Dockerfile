@@ -29,7 +29,7 @@ COPY cmake/ /src/cmake/
 COPY demo/ /src/demo/
 COPY .docker-sdk/ /src/sdk/
 
-RUN cmake -S /src/demo -B /src/demo/build \
+RUN cmake -S /src/demo -B /src/demo/build -DZOOM_MEETING_SDK_STAGE_SYMLINKS=OFF \
       -DCMAKE_BUILD_TYPE=Release \
       -DZOOM_MEETING_SDK_DIR=/src/sdk \
   && cmake --build /src/demo/build --parallel "$(nproc)"

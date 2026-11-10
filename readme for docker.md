@@ -30,6 +30,10 @@ The sample images initialize PulseAudio and a virtual speaker in their Docker `C
 
 These containers run as root. The virtual speaker handles SDK audio inside the container; accessing host audio devices requires additional configuration. Build output is always under `demo/build`.
 
+Docker builds pass `-DZOOM_MEETING_SDK_STAGE_SYMLINKS=OFF` so the SDK and Qt
+runtime files are copied into the image rather than symlinked back to the build
+context.
+
 ## Examples
 
 ```bash

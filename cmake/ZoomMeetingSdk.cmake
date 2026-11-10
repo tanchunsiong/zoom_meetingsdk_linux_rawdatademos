@@ -9,6 +9,11 @@ set(
   CACHE PATH
   "Path to repo-local sdk/ or an extracted Zoom Meeting SDK directory"
 )
+option(
+  ZOOM_MEETING_SDK_STAGE_SYMLINKS
+  "Stage large runtime dependencies with symlinks instead of copies"
+  ON
+)
 
 function(_zoom_meeting_sdk_try_layout candidate out_var)
   if(
@@ -110,27 +115,57 @@ function(zoom_meeting_sdk_configure_target target_name)
       BUILD_RPATH "$ORIGIN;$ORIGIN/qt_libs;$ORIGIN/qt_libs/Qt/lib"
   )
 
+  if(ZOOM_MEETING_SDK_STAGE_SYMLINKS)
+    foreach(_zoom_meeting_sdk_library IN
+      ITEMS
+        "${ZOOM_MEETING_SDK_LIBRARY}"
+        "${ZOOM_MEETING_SDK_CML_LIBRARY}"
+        "${ZOOM_MEETING_SDK_MPG123_LIBRARY}"
+    )
+      get_filename_component(_zoom_meeting_sdk_library_name "${_zoom_meeting_sdk_library}" NAME)
+      list(
+        APPEND ZOOM_MEETING_SDK_STAGE_COMMANDS
+        COMMAND /bin/rm -f "$<TARGET_FILE_DIR:${target_name}>/${_zoom_meeting_sdk_library_name}"
+        COMMAND /bin/ln -s "${_zoom_meeting_sdk_library}" "$<TARGET_FILE_DIR:${target_name}>/${_zoom_meeting_sdk_library_name}"
+      )
+    endforeach()
+    foreach(_zoom_meeting_sdk_asset_dir IN ITEMS qt_libs json images)
+      list(
+        APPEND ZOOM_MEETING_SDK_STAGE_COMMANDS
+        COMMAND /bin/rm -rf "$<TARGET_FILE_DIR:${target_name}>/${_zoom_meeting_sdk_asset_dir}"
+        COMMAND /bin/ln -s "${ZOOM_MEETING_SDK_ROOT}/${_zoom_meeting_sdk_asset_dir}" "$<TARGET_FILE_DIR:${target_name}>/${_zoom_meeting_sdk_asset_dir}"
+      )
+    endforeach()
+  else()
+    foreach(_zoom_meeting_sdk_library IN
+      ITEMS
+        "${ZOOM_MEETING_SDK_LIBRARY}"
+        "${ZOOM_MEETING_SDK_CML_LIBRARY}"
+        "${ZOOM_MEETING_SDK_MPG123_LIBRARY}"
+    )
+      get_filename_component(_zoom_meeting_sdk_library_name "${_zoom_meeting_sdk_library}" NAME)
+      list(
+        APPEND ZOOM_MEETING_SDK_STAGE_COMMANDS
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "${_zoom_meeting_sdk_library}"
+          "$<TARGET_FILE_DIR:${target_name}>/${_zoom_meeting_sdk_library_name}"
+      )
+    endforeach()
+    foreach(_zoom_meeting_sdk_asset_dir IN ITEMS qt_libs json images)
+      list(
+        APPEND ZOOM_MEETING_SDK_STAGE_COMMANDS
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${ZOOM_MEETING_SDK_ROOT}/${_zoom_meeting_sdk_asset_dir}"
+          "$<TARGET_FILE_DIR:${target_name}>/${_zoom_meeting_sdk_asset_dir}"
+      )
+    endforeach()
+  endif()
+
   add_custom_command(
     TARGET ${target_name}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${ZOOM_MEETING_SDK_LIBRARY}"
-      "$<TARGET_FILE_DIR:${target_name}>/libmeetingsdk.so"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${ZOOM_MEETING_SDK_CML_LIBRARY}"
-      "$<TARGET_FILE_DIR:${target_name}>/libcml.so"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${ZOOM_MEETING_SDK_MPG123_LIBRARY}"
-      "$<TARGET_FILE_DIR:${target_name}>/libmpg123.so"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${ZOOM_MEETING_SDK_ROOT}/qt_libs"
-      "$<TARGET_FILE_DIR:${target_name}>/qt_libs"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${ZOOM_MEETING_SDK_ROOT}/json"
-      "$<TARGET_FILE_DIR:${target_name}>/json"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${ZOOM_MEETING_SDK_ROOT}/images"
-      "$<TARGET_FILE_DIR:${target_name}>/images"
+    ${ZOOM_MEETING_SDK_STAGE_COMMANDS}
+    COMMAND /bin/rm -f "$<TARGET_FILE_DIR:${target_name}>/cpthost"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${ZOOM_MEETING_SDK_ROOT}/cpthost"
       "$<TARGET_FILE_DIR:${target_name}>/cpthost"

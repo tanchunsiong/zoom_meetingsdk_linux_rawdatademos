@@ -34,11 +34,12 @@ RUN apt-get install -y libavformat-dev libavfilter-dev libavdevice-dev ffmpeg
 WORKDIR /app
 COPY cmake/ /cmake/
 COPY sdk/ /sdk/
+COPY shared_assets/ /shared_assets/
 COPY SendRawVideoAndAudioWithRTMSExample/demo/ /app/demo/
 
 RUN mkdir -p /root/.config \
     && cp /app/demo/zoomus.conf /root/.config/zoomus.conf \
-    && cmake -S /app/demo -B /app/demo/build \
+    && cmake -S /app/demo -B /app/demo/build -DZOOM_MEETING_SDK_STAGE_SYMLINKS=OFF \
     && cmake --build /app/demo/build --parallel 2
 
 ENV LD_LIBRARY_PATH=/app/demo/bin:/app/demo/bin/qt_libs:/app/demo/bin/qt_libs/Qt/lib

@@ -107,7 +107,11 @@ cmake -B build
 cmake --build build -j
 ```
 
-The build copies the required SDK runtime assets into `demo/bin/`.
+The build stages the required SDK runtime assets into `demo/bin/`. By default,
+it symlinks `libmeetingsdk.so`, `libcml.so`, `libmpg123.so`, and `qt_libs` to
+avoid duplicating the SDK runtime. `json`, `images`, and `cpthost` are still
+copied. Pass `-DZOOM_MEETING_SDK_STAGE_SYMLINKS=OFF` to copy all runtime
+assets; Dockerfiles use copy mode so images contain real files.
 
 If your SDK is not under repo-local `sdk/`, you can override the path:
 
